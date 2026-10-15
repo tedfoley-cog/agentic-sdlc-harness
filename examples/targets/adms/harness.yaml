@@ -44,8 +44,8 @@ boundaries:
     allowed: [docs/**, README.md]
 layers:
   models: [backend/app/models.py]
-  logic: [backend/app/flisr.py, backend/app/state_estimation.py, backend/app/agc.py]
-  api: [backend/app/main.py]
+  logic: [backend/app/flisr.py, backend/app/state_estimator.py, backend/app/agc.py, backend/app/network.py, backend/app/savecase.py]
+  api: [backend/app/api.py]
   ui: [console/**]
   visibility: { api: [logic, models], logic: [models], ui: [api] }
 loops: { architect: 2, qa: 2, rca: 2 }

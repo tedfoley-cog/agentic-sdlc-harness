@@ -19,13 +19,153 @@
   ],
   "cursor": 0,
   "attempts": {
-    "specify:-": 0
+    "specify:-": 1
   },
-  "artifacts": {},
+  "artifacts": {
+    "specify.specification": "# Specification: FLISR restoration respects tie-switch capacity\n\nRun `feature-tie-capacity`, stage SPECIFY, attempt 1. Target repo `tedfoley-cog/adms-test-automation-demo` @ `5f6b471` (main).\n\n## 1. Classification (STD-REQ-6, STD-SAFETY-1)\n**Safety-critical** (IEC 61508-3 context). The change decides whether a tie switch is closed onto field load during FLISR restoration. Every unit derived from this specification inherits this classification. `backend/app/flisr.py` is a protected path: two human reviewers before merge (STD-GOV-6).\n\n## 2. Where the behaviour lives today (repo evidence)\n- The capacity decision is in `backend/app/flisr.py::build_plan` (lines 64-128), not in `locate_fault`. `locate_fault` (lines 24-35) only picks the faulted section and never reads capacity.\n- Capacity input: `build_plan(..., tie_capacity_kw: dict[str, float] | None)`. Over HTTP it is `FlisrRequest.tie_capacity_kw: dict[str, float] = {}` in `backend/app/api.py` (lines 15-18). No timestamp, quality flag or source field exists.\n- Load transferred by a tie = sum of `Section.load_kw` (static model value, kW) over the nodes the tie would pick up (`_nodes_restored_by` + `network.load_on_nodes`).\n- Rule today: `available = tie_capacity_kw.get(switch.mrid, 0.0)`; the tie closes when `transferred <= available`, otherwise it is skipped with a note.\n\nCurrent behaviour, observed on the shipped `FDR-1201` model with `CB-1201.open = True` (fault at SEC-1201-03, tie `TIE-1201-1405` would pick up 1490 kW / 341 customers):\n\n| Capacity input for TIE-1201-1405 | Tie closed? | Plan note | Conforms to source? |\n|---|---|---|---|\n| 2000 kW | yes, 1490 kW transferred | none | yes |\n| 1920 kW | yes | none | yes |\n| -5 kW | no | \"skipped: 1490 kW exceeds -5 kW available capacity\" | no: an invalid value is reported as a real capacity |\n| missing | no | \"skipped: 1490 kW exceeds 0 kW available capacity\" | no: missing is treated as 0 kW (implicit zero, STD-REQ-3) and the plan does not say capacity is unknown |\n| missing, candidate load 0 kW | **yes** | none | **no: closes a tie whose capacity is unknown** |\n| NaN | **yes, 1490 kW transferred** | none | **no: `1490 > nan` is False, so an invalid value restores** |\n| +inf | **yes** | none | no: a non-finite value is accepted as capacity |\n\nPydantic accepts `-1` and `NaN` in `FlisrRequest.tie_capacity_kw` without error.\n\n## 3. Requirements\nInputs: feeder model, lockout switch mRID, per-tie capacity value. Outputs: `RestorationPlan.restoration`, `.notes`, `.customers_restored`, `.customers_remaining`, `.transferred_load_kw`.\n\n**REQ-FLISR-001 (capacity bound).** For every tie switch `T` that `build_plan` puts in `plan.restoration` with action `close`, the load transferred through `T` (kW, sum of `load_kw` of the sections `T` would pick up after isolation) shall be less than or equal to the known capacity of `T` (kW), subject to the limit rule in REQ-FLISR-002.\n- Unit: kW (pending Q-SPEC-1). Range: finite, >= 0. \n- Verification: test plus a seeded invariant (>= 500 cases, STD-SAFETY-5). Oracle: see section 5.\n\n**REQ-FLISR-002 (behaviour at the limit).** When transferred load equals the known capacity, the tie shall [close | not close] and the comparison shall use tolerance [X kW / X p.u.]. *Open: Q-SPEC-4.* Today the tie closes at equality with exact float comparison.\n- Verification: boundary tests at capacity - delta, = capacity, + delta, with delta stated in kW and p.u. (STD-SAFETY-6).\n\n**REQ-FLISR-003 (exceeds capacity).** When transferred load exceeds the known capacity of `T`, `build_plan` shall not close `T`; shall add a note naming `T`'s name, the transferred kW and the capacity kW; shall add the customers `T` would have picked up to `customers_remaining`; and shall add nothing for `T` to `customers_restored` or `transferred_load_kw`. Whether partial pick-up should be tried instead: *Q-SPEC-6.*\n- Verification: test (characterization of the current note format plus the counters).\n\n**REQ-FLISR-004 (unknown capacity: missing).** When no capacity value is supplied for a SCADA-controllable tie `T` that has candidate nodes, `build_plan` shall refuse to close `T` (whatever the candidate load, including 0 kW) and shall add a note that names `T` and says its capacity is unknown. It shall not report a numeric capacity for `T`, and shall not treat the missing value as 0 kW. Counters as in REQ-FLISR-003. Whether the rest of the plan still proceeds: *Q-SPEC-5.*\n- Handling: **refuse** (STD-REQ-3).\n- Verification: tests for missing with candidate load > 0 and with candidate load = 0 kW (the second fails today).\n\n**REQ-FLISR-005 (unknown capacity: invalid).** A capacity value that is NaN, +/-inf or negative shall be treated as unknown: REQ-FLISR-004 applies, and the note shall say the value was invalid. Zero is a valid, known capacity: any candidate load > 0 kW exceeds it (REQ-FLISR-003).\n- Handling: **refuse + flag quality** in the note.\n- Verification: tests for NaN, +inf, -inf, -5 kW and 0 kW. NaN and +inf fail today.\n\n**REQ-FLISR-006 (unknown capacity: stale / bad quality).** Capacity telemetry arrives from the SCADA scan every 10 s. A capacity value older than [N s] at plan time, or flagged bad quality by SCADA, shall be treated as unknown (REQ-FLISR-004), with the note giving the age or quality. Whether a hold-last-value window is allowed: *Q-SPEC-2.* How age and quality reach `build_plan` / `POST /flisr/plan` (today only a bare float exists): *Q-SPEC-3.*\n- Handling: refuse (hold-last-value only if Q-SPEC-2 allows it).\n- Verification: tests with value age at limit - 1 s, = limit, limit + 1 s; bad-quality flag.\n\n**REQ-FLISR-007 (capacity in the API).** `POST /flisr/plan` shall accept the capacity inputs needed by REQ-FLISR-004..006 and shall return the plan (HTTP 200) with the unknown-capacity note. It shall not answer 422 or 409 just because one tie's capacity is unknown, unless Q-SPEC-5 decides the whole plan is refused.\n- Verification: API test through `fastapi.testclient` with missing, NaN (if the JSON transport allows it) and negative values.\n\n**REQ-FLISR-008 (unchanged behaviour).** With every tie capacity known, valid, fresh and not exceeded, `build_plan` shall give the same plan as `main@5f6b471`: every isolation step, restoration step and order, the counters and the notes. This includes the existing test `test_build_plan_isolates_and_restores_tail` (2000 kW, 341 customers restored).\n- Verification: characterization tests (`@pytest.mark.characterization`) written before any code change (STD-SAFETY-2).\n\n**REQ-FLISR-009 (defects reproduced first).** Before the fix, DEF-FLISR-001..003 shall each have a failing test that states the defect in operational terms (STD-SAFETY-3).\n\n### Defects found while specifying\n- **DEF-FLISR-001**: a NaN capacity closes the tie and transfers 1490 kW (`transferred > available` is False for NaN). Violates REQ-FLISR-001 and 005.\n- **DEF-FLISR-002**: a missing capacity defaults to 0.0 kW. The plan reports \"0 kW available capacity\" instead of \"unknown\", and the tie closes when the candidate load is 0 kW. Violates REQ-FLISR-004 and STD-REQ-3.\n- **DEF-FLISR-003**: +inf and negative capacities are accepted as real values (+inf restores; -5 kW is reported as a capacity). Violates REQ-FLISR-005.\n\n## 4. Safety invariant (STD-SAFETY-5)\n**INV-1**: For every plan, each tie in `plan.restoration` with action `close` has a known, valid, fresh capacity C and an independently computed transferred load L with L <= C (+ the tolerance from Q-SPEC-4). No tie whose capacity is missing, invalid or stale is ever closed.\nDemonstrated over at least 500 seeded `random` cases: radial and branched feeders with 1-3 tie switches, fault-indicator patterns, section loads 0-3000 kW (including 0), and capacity inputs drawn from {missing, NaN, +/-inf, negative, 0, below L, = L, above L}. No new dependencies.\n\n## 5. Verification method and independent oracle (STD-REQ-5, STD-SAFETY-6)\n| Req | Method | Oracle |\n|---|---|---|\n| REQ-FLISR-001, 002 | test + seeded invariant | Closed-form oracle written in the test: BFS over the test-built topology with isolation switches open and the tie closed, minus nodes reachable from the own source; L = sum of section `load_kw`. It does not call `_nodes_restored_by`, `network.energised_nodes` or `network.load_on_nodes`. Tolerance stated in kW and in p.u. of the tie capacity (base per Q-SPEC-1). |\n| REQ-FLISR-003 | test | Hand-computed expected note and counters for FDR-1201. |\n| REQ-FLISR-004, 005, 006 | test | Expected outcome tables (section 2 and the requirement text); for missing/invalid/stale, the expected result is \"not closed + unknown-capacity note\". |\n| REQ-FLISR-007 | test (API) | HTTP status + plan body. |\n| REQ-FLISR-008 | characterization test | Plans recorded from `main@5f6b471`. |\n| REQ-FLISR-009 | test (fails before the fix) | Failure output kept for the PR. |\n| INV-1 | analysis/demonstration over >= 500 seeded cases | Same BFS oracle as REQ-FLISR-001. |\n\n## 6. Scope exclusions (STD-REQ-7)\n- `locate_fault` fault location logic (no capacity involvement; see Q-SPEC-8).\n- The known defect where `_isolation_switches` skips tie switches (back-feed of a section next to a tie). Separate change.\n- Real-time measured load on the transferred sections: the static `Section.load_kw` stays the load basis unless Q-SPEC-1 decides otherwise.\n- The SCADA scan adapter / ICCP ingest itself. This change specifies only what `build_plan` and `POST /flisr/plan` do with the value they receive.\n- Console (`console/**`) UI changes, AGC, state estimation, firmware, legacy Habitat tasks.\n- Partial pick-up / load shedding to fit a tie's capacity (pending Q-SPEC-6; excluded unless the answer brings it in).\n- Thermal, voltage-drop or protection-coordination checks on the alternate feeder other than the single capacity number.\n\n## 7. Open questions (STD-REQ-4)\n- **Q-SPEC-1** (blocks REQ-FLISR-001, 002, 003, INV-1): What quantity is \"tie capacity\"? The source says \"rated capacity\" (a static nameplate rating), yet says it comes from the SCADA scan every 10 s (a live value, normally the alternate feeder's spare capacity). Which is it, and in which unit: kW (as the code uses today), kVA or A (feeders carry `rating_amps`)? If kVA or A, what power factor / voltage base converts the `load_kw` load basis? What p.u. base should the tolerance use?\n- **Q-SPEC-2** (blocks REQ-FLISR-006): After what age is a 10 s scan value \"late\" (for example 2 missed scans = 20 s, or 30 s)? Inside that window, may the last good value be held (hold-last-value), or must any value older than one scan be refused?\n- **Q-SPEC-3** (blocks REQ-FLISR-006, 007): How do value timestamp and SCADA quality reach the planner? Today `tie_capacity_kw` is a bare `dict[str, float]` with no time or quality. Is it acceptable to extend the `build_plan` signature and the `POST /flisr/plan` body (an API change for the SCADA adapter), and who owns the adapter side?\n- **Q-SPEC-4** (blocks REQ-FLISR-002, INV-1): At exactly `transferred == capacity`, close or not? Is a safety margin or comparison tolerance needed (in kW and p.u.)?\n- **Q-SPEC-5** (blocks REQ-FLISR-004, 007): \"The plan must say so instead of restoring.\" When one tie's capacity is unknown, does that block only that tie (the lockout reclose and other ties with known capacity still go ahead), or the whole restoration (plan returns isolation only / manual action, or the API answers 409)? Should \"capacity unknown\" also be a machine-readable field in `RestorationPlan`, not only a free-text note?\n- **Q-SPEC-6** (blocks REQ-FLISR-003): When load exceeds capacity, should the planner try partial pick-up (open a downstream sectionalizer so the rest fits), or is skipping the tie (today's behaviour) the required outcome?\n- **Q-SPEC-7** (blocks REQ-FLISR-001, INV-1): When two or more ties pick up load from the same alternate feeder, is capacity per tie or shared, so the sum of transfers must fit? The shipped model has one tie, so the source does not settle it.\n- **Q-SPEC-8** (non-blocking for the spec text; blocks DESIGN/ARCHITECT): The brief's layer map names `backend/app/state_estimation.py` and `backend/app/main.py`, which do not exist (the real files are `state_estimator.py` and `api.py`). The source names `locate_fault` as the planner, but the capacity logic is in `build_plan`. Please confirm `build_plan` + `api.py` is the intended scope and correct the repo contract's layer map.\n\n## 8. Notes for later stages\n- `ruff check backend tools` already fails on `main` (UP017 in `tools/build_coverage_report.py:183`), before any change from this run. Later stages should not count it as a regression or fix it as drive-by scope.\n- To exercise `build_plan` on the shipped model, set `CB-1201.open = True`: no lockout is open in `feeder_model.json`, so `/flisr/plan` returns 409 otherwise.\n"
+  },
   "units": [],
   "waves_done": [],
-  "questions": [],
-  "answers": [],
+  "questions": [
+    {
+      "id": "Q-SPEC-1",
+      "question": "What is 'tie capacity'? The source says it is the 'rated capacity' (a static nameplate rating) but also says it arrives from the SCADA scan every 10 s (a live value, usually the alternate feeder's spare capacity). Which is it, and in which unit: kW (what the code uses today), kVA or A (feeders carry rating_amps)? If it is kVA or A, what power factor or voltage converts the load_kw load basis, and what p.u. base should the tolerance use?",
+      "blocking_units": [
+        "REQ-FLISR-001",
+        "REQ-FLISR-002",
+        "REQ-FLISR-003",
+        "INV-1"
+      ],
+      "stage": "specify",
+      "status": "answered",
+      "answer": "Live value. 'Tie capacity' is the alternate feeder's spare capacity as delivered by the SCADA scan every 10 s, in kW on the same basis as load_kw. No unit conversion, no p.u. base; comparison tolerance is 0.5 kW. The 'rated capacity' wording in the source is loose and does not mean nameplate.",
+      "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-SPEC-2",
+      "question": "When is a 10 s scan value 'late' (for example 20 s = 2 missed scans, or 30 s)? Inside that window, may the planner hold the last good value, or must it refuse any value older than one scan?",
+      "blocking_units": [
+        "REQ-FLISR-006"
+      ],
+      "stage": "specify",
+      "status": "answered",
+      "answer": "A value is late when it is older than 20 s (two missed scans). Inside 20 s the planner may use the last value only if its quality is GOOD. Older than 20 s, or any quality other than GOOD, is 'unknown' and must not be used.",
+      "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-SPEC-3",
+      "question": "Today tie_capacity_kw is a bare dict[str, float] with no timestamp or quality. How should the value's timestamp and SCADA quality reach build_plan and POST /flisr/plan? May we extend the build_plan signature and the POST /flisr/plan body (an API change for the SCADA adapter), and who owns the adapter side?",
+      "blocking_units": [
+        "REQ-FLISR-006",
+        "REQ-FLISR-007"
+      ],
+      "stage": "specify",
+      "status": "answered",
+      "answer": "Extend build_plan with tie_capacity: dict[str, TieCapacity] where TieCapacity carries kw, timestamp and quality (a Pydantic model in backend/app/models.py). Extend the POST /flisr/plan body the same way. Keep the legacy dict[str, float] accepted for one release and treat it as quality GOOD with timestamp now, with a deprecation note. The SCADA adapter side is owned by the integration team and is out of scope for this change.",
+      "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-SPEC-4",
+      "question": "When transferred load exactly equals tie capacity, should the tie close or not? Is a safety margin or comparison tolerance needed, stated in kW and p.u.?",
+      "blocking_units": [
+        "REQ-FLISR-002",
+        "INV-1"
+      ],
+      "stage": "specify",
+      "status": "answered",
+      "answer": "Equality closes: the tie may close when transferred load <= capacity. No additional safety margin; the only tolerance is the 0.5 kW comparison tolerance from Q-SPEC-1. No p.u. statement needed.",
+      "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-SPEC-5",
+      "question": "The source says 'the plan must say so instead of restoring'. When one tie's capacity is unknown, is only that tie blocked (the lockout reclose and ties with known capacity still go ahead), or is the whole restoration refused (isolation-only / manual-action plan, or HTTP 409)? Must 'capacity unknown' also be a machine-readable RestorationPlan field, not only a free-text note?",
+      "blocking_units": [
+        "REQ-FLISR-004",
+        "REQ-FLISR-007"
+      ],
+      "stage": "specify",
+      "status": "answered",
+      "answer": "Per tie. Only the tie with unknown capacity is blocked; isolation and ties with a known capacity proceed. 'Capacity unknown' must be machine-readable: RestorationPlan gains blocked_ties: list[BlockedTie{tie_id, reason in CAPACITY_UNKNOWN | CAPACITY_STALE | CAPACITY_INVALID | CAPACITY_EXCEEDED}] and an operator-readable note; HTTP 200, not 409.",
+      "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-SPEC-6",
+      "question": "When load exceeds capacity, should the planner try a partial pick-up (open a downstream sectionalizer so the rest fits), or is skipping the tie the required outcome? Skipping is today's behaviour.",
+      "blocking_units": [
+        "REQ-FLISR-003"
+      ],
+      "stage": "specify",
+      "status": "answered",
+      "answer": "Skip the tie (today's behaviour) and record it in blocked_ties with reason CAPACITY_EXCEEDED. Partial pick-up is out of scope.",
+      "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-SPEC-7",
+      "question": "When two or more ties pick up load from the same alternate feeder, is capacity per tie, or shared so that the sum of the transfers must fit? The shipped model has one tie, so the source does not settle this.",
+      "blocking_units": [
+        "REQ-FLISR-001",
+        "INV-1"
+      ],
+      "stage": "specify",
+      "status": "answered",
+      "answer": "Per tie. Shared alternate-feeder capacity across several ties is out of scope; list it as a scope exclusion.",
+      "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-SPEC-8",
+      "question": "The brief's layer map names backend/app/state_estimation.py and backend/app/main.py, but those files do not exist; the real files are state_estimator.py and api.py. The source also names locate_fault as the planner, but the capacity logic is in build_plan. Please confirm that build_plan plus api.py is the intended scope, and correct the repo contract's layer map.",
+      "blocking_units": [
+        "DESIGN",
+        "ARCHITECT"
+      ],
+      "stage": "specify",
+      "status": "answered",
+      "answer": "Confirmed: scope is build_plan in backend/app/flisr.py plus backend/app/api.py (and models.py for the new types). The repo contract layer map has been corrected to state_estimator.py / api.py.",
+      "by": "ops-lead-standin"
+    }
+  ],
+  "answers": [
+    {
+      "id": "Q-SPEC-1",
+      "answer": "Live value. 'Tie capacity' is the alternate feeder's spare capacity as delivered by the SCADA scan every 10 s, in kW on the same basis as load_kw. No unit conversion, no p.u. base; comparison tolerance is 0.5 kW. The 'rated capacity' wording in the source is loose and does not mean nameplate.",
+      "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-SPEC-2",
+      "answer": "A value is late when it is older than 20 s (two missed scans). Inside 20 s the planner may use the last value only if its quality is GOOD. Older than 20 s, or any quality other than GOOD, is 'unknown' and must not be used.",
+      "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-SPEC-3",
+      "answer": "Extend build_plan with tie_capacity: dict[str, TieCapacity] where TieCapacity carries kw, timestamp and quality (a Pydantic model in backend/app/models.py). Extend the POST /flisr/plan body the same way. Keep the legacy dict[str, float] accepted for one release and treat it as quality GOOD with timestamp now, with a deprecation note. The SCADA adapter side is owned by the integration team and is out of scope for this change.",
+      "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-SPEC-4",
+      "answer": "Equality closes: the tie may close when transferred load <= capacity. No additional safety margin; the only tolerance is the 0.5 kW comparison tolerance from Q-SPEC-1. No p.u. statement needed.",
+      "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-SPEC-5",
+      "answer": "Per tie. Only the tie with unknown capacity is blocked; isolation and ties with a known capacity proceed. 'Capacity unknown' must be machine-readable: RestorationPlan gains blocked_ties: list[BlockedTie{tie_id, reason in CAPACITY_UNKNOWN | CAPACITY_STALE | CAPACITY_INVALID | CAPACITY_EXCEEDED}] and an operator-readable note; HTTP 200, not 409.",
+      "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-SPEC-6",
+      "answer": "Skip the tie (today's behaviour) and record it in blocked_ties with reason CAPACITY_EXCEEDED. Partial pick-up is out of scope.",
+      "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-SPEC-7",
+      "answer": "Per tie. Shared alternate-feeder capacity across several ties is out of scope; list it as a scope exclusion.",
+      "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-SPEC-8",
+      "answer": "Confirmed: scope is build_plan in backend/app/flisr.py plus backend/app/api.py (and models.py for the new types). The repo contract layer map has been corrected to state_estimator.py / api.py.",
+      "by": "ops-lead-standin"
+    }
+  ],
   "loops": {},
   "gates": {},
   "status": "running",
@@ -37,7 +177,7 @@
     "reason": "awaiting-session",
     "stage": "specify",
     "unit": "-",
-    "attempt": 1,
-    "request": "sessions/specify:-:1.request.json"
+    "attempt": 2,
+    "request": "sessions/specify:-:2.request.json"
   }
 }

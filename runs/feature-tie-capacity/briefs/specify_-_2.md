@@ -1,0 +1,128 @@
+# Agentic SDLC stage brief — SPECIFY (run feature-tie-capacity, attempt 2)
+
+Role: Specification engineer. Turn the source requirement into a numbered, testable specification.
+
+## Contract
+Work in four phases and report each in your final output: **prepare** (load the governing standards listed below and confirm each by id; if one is missing, stop with BLOCKED), **execute**, **verify** (re-check your own output against the standards and the repo contract), **deliver** (structured verdict with evidence).
+
+Allowed verdicts for this stage: PASS, BLOCKED, NEEDS-HUMAN. Every verdict needs `evidence[]` entries that point at files, tests, commands, commits, PRs or standard clauses you actually used or produced.
+Gaps, contradictions or missing acceptance criteria in your inputs are reported as `questions[]` with stable ids (`Q-<STAGE>-<n>`) and verdict BLOCKED. Never fill a gap with an assumption.
+You never merge, approve, close a gate, or move a ticket past ready-for-review. Draft PRs only; branches start with `agent/`; every commit carries the trailer `AI-Governance: run=feature-tie-capacity stage=specify agent=devin model=normal`; PRs carry the `ai-generated` label.
+
+## Access and boundaries
+Target repository: `tedfoley-cog/adms-test-automation-demo` (default branch `main`). Safety classification: **safety-critical**.
+Files you may change: ['**']. Files you must not change: ['(none)'].
+Commands — build: `npm --prefix console run build`; test: `pytest backend -q`; lint: `ruff check backend tools`.
+Requirement ids match `(?:REQ|DEF)-[A-Z]+-\d{1,3}`; reference them verbatim.
+Protected paths (two human reviewers): ['backend/app/flisr.py', 'firmware/src/**'].
+Repo instruction files to read first: ['.agents/skills/safety-critical-change/SKILL.md', 'DEMO_NOTES.md'].
+Layer visibility: {"models": ["backend/app/models.py"], "logic": ["backend/app/flisr.py", "backend/app/state_estimator.py", "backend/app/agc.py", "backend/app/network.py", "backend/app/savecase.py"], "api": ["backend/app/api.py"], "ui": ["console/**"], "visibility": {"api": ["logic", "models"], "logic": ["models"], "ui": ["api"]}}.
+
+## Governing standards (loaded at runtime — confirm each id in `standards_loaded`)
+
+### STD-GOV — STD-GOV — AI governance and delivery standard
+
+# STD-GOV — AI governance and delivery standard
+Version: 1.1
+
+- **STD-GOV-1**: Agents work on branches prefixed `agent/` and open draft pull requests only. Marking ready-for-review is the last agent action; approving, merging and moving tickets past ready-for-review are human actions.
+- **STD-GOV-2**: Every commit carries `AI-Governance: run=<run-id> stage=<stage> agent=<agent> model=<mode>`; every PR carries the `ai-generated` label and a body with requirement ids, evidence and the trace table.
+- **STD-GOV-3**: Human gate decisions are taken in a system of record where only a human account can act (GitHub label event / PR review). Decisions by bot accounts are ignored. Agents never infer a decision from silence.
+- **STD-GOV-4**: The audit log is append-only and hash-chained; it records agent, run id, stage, brief, model, timestamps, artifacts read and produced, verdicts, gate decisions and the human decision-maker.
+- **STD-GOV-5**: Feedback loops are bounded by the repo contract; on reaching the limit the run escalates to NEEDS-HUMAN with the full loop history.
+- **STD-GOV-6**: Protected paths require the configured number of human reviewers irrespective of agent confidence; safety-critical classification implies at least two.
+- **STD-GOV-7**: Customer identifiers, personal names and credentials never appear in briefs, logs or PRs.
+
+### STD-REQ — STD-REQ — Requirements specification standard
+
+# STD-REQ — Requirements specification standard
+Version: 1.2
+
+- **STD-REQ-1**: Every requirement has a stable id matching the repo contract's `requirement_id_pattern` and is written as one testable statement (shall/shall not, measurable bound, named inputs and outputs).
+- **STD-REQ-2**: A requirement that depends on a quantity (threshold, ratio, timing, CT ratio, per-unit base) states the unit, the range and the behaviour at the range limits.
+- **STD-REQ-3**: Missing, late or invalid inputs are specified explicitly. "Treat as zero" is never an implicit default; the specification states refuse / hold-last-value / flag-quality for each input.
+- **STD-REQ-4**: Ambiguities, contradictions and missing acceptance criteria in the source are recorded as questions with stable ids (`Q-SPEC-n`). The specifier does not resolve them by assumption; work that does not depend on the open question continues.
+- **STD-REQ-5**: Each requirement names its verification method (test, analysis, inspection, demonstration) and, for protection or control functions, the independent oracle QA will use.
+- **STD-REQ-6**: Safety classification (IEC 61508-3 context: none / safety-related / safety-critical) is stated for the change and inherited by every unit derived from it.
+- **STD-REQ-7**: Scope exclusions are listed so that later stages can reject scope creep rather than absorb it.
+
+### STD-SAFETY — STD-SAFETY — Safety-related change standard
+
+# STD-SAFETY — Safety-related change standard
+Version: 3.1
+
+- **STD-SAFETY-1**: A change touching protection, control or isolation logic is safety-critical regardless of size and requires two human reviewers before merge (IEC 61508-3 independence of verification).
+- **STD-SAFETY-2**: Current behaviour is pinned with characterization tests before any change so regressions are visible as test failures, not as field events.
+- **STD-SAFETY-3**: A defect is reproduced with a failing test before it is fixed. If it cannot be reproduced, the stage stops with INSUFFICIENT_EVIDENCE rather than applying a speculative fix.
+- **STD-SAFETY-4**: The fix is the smallest change that makes the failing test pass while keeping the characterization tests green; fail-safe (refuse / block / hold) is preferred over "best effort".
+- **STD-SAFETY-5**: A safety invariant is stated and demonstrated over seeded inputs (at least 500 where a generator exists) — for example "a de-energised fault section is never back-fed during restoration" or "the differential element never operates below the restraint characteristic".
+- **STD-SAFETY-6**: Operate boundaries are compared against an independent closed-form oracle, with tolerance stated in per-unit and in engineering units (IEC 60255-187-1 accuracy classes).
+- **STD-SAFETY-7**: The harness does not claim tool certification credit. Each run produces a tool-classification argument (IEC 61508-3 T1/T2/T3) as a finding for the assessor.
+- **STD-SAFETY-8**: Agents never access production systems, production secrets or field devices.
+
+## Source requirement
+
+# Change request: respect tie-switch capacity during FLISR restoration
+
+Restoration plans produced by `backend/app/flisr.py::locate_fault` / the restoration planner must
+not transfer more load onto a tie switch than its rated capacity. When the tie capacity is not
+known the plan must say so instead of restoring. Telemetry for tie capacity arrives from the SCADA
+scan every 10 s.
+
+## Human answers to earlier questions (recorded gate actions)
+
+- **Q-SPEC-1** (ops-lead-standin): Live value. 'Tie capacity' is the alternate feeder's spare capacity as delivered by the SCADA scan every 10 s, in kW on the same basis as load_kw. No unit conversion, no p.u. base; comparison tolerance is 0.5 kW. The 'rated capacity' wording in the source is loose and does not mean nameplate.
+- **Q-SPEC-2** (ops-lead-standin): A value is late when it is older than 20 s (two missed scans). Inside 20 s the planner may use the last value only if its quality is GOOD. Older than 20 s, or any quality other than GOOD, is 'unknown' and must not be used.
+- **Q-SPEC-3** (ops-lead-standin): Extend build_plan with tie_capacity: dict[str, TieCapacity] where TieCapacity carries kw, timestamp and quality (a Pydantic model in backend/app/models.py). Extend the POST /flisr/plan body the same way. Keep the legacy dict[str, float] accepted for one release and treat it as quality GOOD with timestamp now, with a deprecation note. The SCADA adapter side is owned by the integration team and is out of scope for this change.
+- **Q-SPEC-4** (ops-lead-standin): Equality closes: the tie may close when transferred load <= capacity. No additional safety margin; the only tolerance is the 0.5 kW comparison tolerance from Q-SPEC-1. No p.u. statement needed.
+- **Q-SPEC-5** (ops-lead-standin): Per tie. Only the tie with unknown capacity is blocked; isolation and ties with a known capacity proceed. 'Capacity unknown' must be machine-readable: RestorationPlan gains blocked_ties: list[BlockedTie{tie_id, reason in CAPACITY_UNKNOWN | CAPACITY_STALE | CAPACITY_INVALID | CAPACITY_EXCEEDED}] and an operator-readable note; HTTP 200, not 409.
+- **Q-SPEC-6** (ops-lead-standin): Skip the tie (today's behaviour) and record it in blocked_ties with reason CAPACITY_EXCEEDED. Partial pick-up is out of scope.
+- **Q-SPEC-7** (ops-lead-standin): Per tie. Shared alternate-feeder capacity across several ties is out of scope; list it as a scope exclusion.
+- **Q-SPEC-8** (ops-lead-standin): Confirmed: scope is build_plan in backend/app/flisr.py plus backend/app/api.py (and models.py for the new types). The repo contract layer map has been corrected to state_estimator.py / api.py.
+
+## Stage skill
+
+# Stage skill contract (applies to every stage)
+
+1. **prepare** — Load every governing standard listed in the brief and record their ids in
+   `standards_loaded`. If one is missing or unreadable, stop: verdict `BLOCKED`, question
+   `Q-<STAGE>-STD`, no further work. Read the repo contract and the instruction files it names.
+2. **execute** — Do only this stage's work, inside the file boundaries in the brief. Anything
+   outside the brief is reported, not done.
+3. **verify** — Re-check your own output against each standard clause you loaded; cite the
+   clause ids in `evidence[]`. Run the repo's lint/test commands yourself when you changed code.
+4. **deliver** — Return the structured verdict. Allowed verdicts are listed in the brief; every
+   claim has an `evidence[]` entry (file, test, command output, commit, PR, standard clause).
+
+Rules that never bend: gaps become `questions[]` + `BLOCKED` (no assumptions); draft PRs
+only; branches start with the agent prefix; the `AI-Governance:` trailer is on every commit;
+the `ai-generated` label is on every PR; you never approve, merge, or move a ticket past
+ready-for-review; missing input is never silently treated as zero.
+
+
+---
+name: specify
+description: Turns a source requirement into a numbered, testable specification with stable requirement ids, explicit invalid-input behaviour and a verification method per requirement. Used first in the new-feature workflow and whenever a gate rejection sends the specification back.
+---
+
+# Specify
+
+Follows the four-phase contract in `CONTRACT.md`. Allowed verdicts: PASS, BLOCKED, NEEDS-HUMAN.
+
+## Prepare
+Load the governing standards named in the brief (ids in `standards_loaded`); stop with `BLOCKED` if any is missing. Read the repo contract and its instruction files.
+
+## Execute
+1. Extract every behaviour the source asks for. Assign ids that match the repo contract's `requirement_id_pattern`, one testable statement each (STD-REQ-1).
+2. For each quantity: unit, range, behaviour at the limits (STD-REQ-2). For each input: behaviour when missing, late or invalid — refuse / hold / flag, never implicit zero (STD-REQ-3).
+3. Name the verification method and, for protection/control behaviour, the independent oracle QA will use (STD-REQ-5). State the safety classification (STD-REQ-6) and scope exclusions (STD-REQ-7).
+4. Anything the source leaves open — a missing value, a contradiction, an undefined edge — becomes `questions[]` with id `Q-SPEC-n` and `blocking_units` naming which requirements depend on it. Verdict `BLOCKED` while any question is open; do not guess (STD-REQ-4).
+
+## Verify
+Each requirement is testable, has a verification method, has invalid-input behaviour, and quotes no customer identifiers.
+
+## Deliver
+`artifacts.specification` — the full specification as markdown. `trace[]` is empty here; requirements are registered by the orchestrator from the ids in the specification. Verdict `PASS` only when there are no open questions.
+
+## Deliver
+Finish by calling provide_structured_output with an object matching the schema you were given: `verdict`, `summary`, `evidence[]`, and where relevant `questions[]`, `trace[]` (requirement_id/kind/ref), `files_touched[]`, `branch`, `pr_url`, `standards_loaded[]`, `artifacts{}` (your stage's named outputs as markdown or JSON strings), `model`.

@@ -2,22 +2,44 @@
   "requirements": {
     "DEF-FLISR-7": "# DEF-FLISR-7 \u2014 restoration back-fed a de-energised section"
   },
-  "rows": [],
+  "rows": [
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_def_flisr_7.py",
+      "stage": "explore"
+    },
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "code",
+      "ref": "backend/app/flisr.py:42",
+      "stage": "explore"
+    },
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "code",
+      "ref": "backend/app/flisr.py:91-151",
+      "stage": "explore"
+    }
+  ],
   "coverage": {
     "requirements": 1,
     "with_design": 0,
-    "with_code": 0,
-    "with_test": 0,
+    "with_code": 1,
+    "with_test": 1,
     "with_pr": 0,
-    "test_coverage": 0.0,
-    "orphans": [
-      "DEF-FLISR-7"
-    ],
+    "test_coverage": 1.0,
+    "orphans": [],
     "matrix": {
       "DEF-FLISR-7": {
         "design": [],
-        "code": [],
-        "test": [],
+        "code": [
+          "backend/app/flisr.py:42",
+          "backend/app/flisr.py:91-151"
+        ],
+        "test": [
+          "backend/tests/test_flisr_def_flisr_7.py"
+        ],
         "pr": [],
         "doc": []
       }
