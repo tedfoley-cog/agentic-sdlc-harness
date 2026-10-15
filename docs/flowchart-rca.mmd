@@ -1,0 +1,8 @@
+flowchart LR
+  DEF([Defect]) --> EXP[Explore] --> EVA[Evaluate · evidence only]
+  EVA -- REFUTED --> EXP
+  EVA -- CONFIRMED --> REV[Review] --> H4{{Human gate after-review}}
+  H4 -->|approved| FIX[Fix · failing test first] --> VER2[Checks] --> QA2[QA] --> INT2[Integrate] --> TR2[Trace] --> H5{{Human gate before-merge}}
+  H5 -->|approved| PR2([Draft PR])
+  classDef human fill:#f1ebfd,stroke:#6941c6
+  class H4,H5 human

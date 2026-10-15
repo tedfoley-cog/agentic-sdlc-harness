@@ -1,0 +1,16 @@
+flowchart LR
+  REQ([Requirement]) --> SPEC[Specify]
+  SPEC -- Q-SPEC-n --> H1{{Human: answer + gate after-specify}}
+  H1 -->|approved| DEC[Decompose] --> DES[Design] --> ARC[Architect]
+  ARC -- VIOLATION --> DES
+  ARC -- CONFIRMED --> H2{{Human gate after-architect}}
+  H2 -->|approved| COD[Coding · test first]
+  COD --> VER[Deterministic checks]
+  VER -- FAIL --> COD
+  VER -- PASS --> QA[QA · different mode]
+  QA -- FAIL --> COD
+  QA -- PASS --> INT[Integrate] --> DOC[Document] --> TR[Trace]
+  TR --> H3{{Human gate before-merge}}
+  H3 -->|approved| PR([Draft PR ready for review])
+  classDef human fill:#f1ebfd,stroke:#6941c6
+  class H1,H2,H3 human

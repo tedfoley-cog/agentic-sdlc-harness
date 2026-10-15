@@ -1,0 +1,48 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Agentic SDLC harness — stage machine</title>
+<style>body{font-family:Inter,system-ui,sans-serif;margin:24px;color:#1b1f24}h1{font-size:18px}h2{font-size:14px;color:#5b6470;margin-top:28px}.mermaid{background:#fff;border:1px solid #dfe3e8;border-radius:8px;padding:12px}</style>
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'neutral'});</script></head><body>
+<h1>Agentic SDLC harness — stage machine</h1>
+<p>Purple nodes are human decisions recorded in the audit log. Everything else is a Devin child session (one per stage attempt) or a deterministic step.</p>
+<h2>New feature</h2>
+<pre class="mermaid">
+flowchart LR
+  REQ([Requirement]) --> SPEC[Specify]
+  SPEC -- Q-SPEC-n --> H1{{Human: answer + gate after-specify}}
+  H1 -->|approved| DEC[Decompose] --> DES[Design] --> ARC[Architect]
+  ARC -- VIOLATION ≤ loops.architect --> DES
+  ARC -- CONFIRMED --> H2{{Human gate after-architect}}
+  H2 -->|approved| COD[Coding · test first · agent/ branch]
+  COD --> VER[Deterministic checks]
+  VER -- FAIL --> COD
+  VER -- PASS --> QA[QA · different mode · own oracle]
+  QA -- FAIL ≤ loops.qa --> COD
+  QA -- PASS --> INT[Integrate] --> DOC[Document] --> TR[Trace]
+  TR --> H3{{Human gate before-merge · 2 reviewers on protected paths}}
+  H3 -->|approved| PR([Draft PR ready for review · humans merge])
+  classDef human fill:#f1ebfd,stroke:#6941c6
+  class H1,H2,H3 human
+</pre>
+<h2>Root-cause analysis</h2>
+<pre class="mermaid">
+flowchart LR
+  DEF([Defect report]) --> EXP[Explore · reproduce · hypothesis + evidence package]
+  EXP --> EVA[Evaluate · evidence only · no code access]
+  EVA -- REFUTED / INSUFFICIENT ≤ loops.rca --> EXP
+  EVA -- still unconfirmed --> RET([RETRACTION published])
+  EVA -- CONFIRMED --> REV[Review · blast radius · fail-safe fix shape]
+  REV --> H1{{Human gate after-review}}
+  H1 -->|approved| FIX[Fix · failing test first · smallest fail-safe change · invariant over seeds]
+  FIX --> VER[Deterministic checks] -- FAIL --> FIX
+  VER -- PASS --> QA[QA · different mode] -- FAIL --> FIX
+  QA -- PASS --> INT[Integrate] --> DOC[Document] --> TR[Trace] --> H2{{Human gate before-merge}}
+  H2 -->|approved| PR([Draft PR ready for review])
+  classDef human fill:#f1ebfd,stroke:#6941c6
+  class H1,H2 human
+</pre>
+<h2>Every stage, every time</h2>
+<pre class="mermaid">
+flowchart LR
+  P[prepare · load standards or BLOCKED] --> E[execute · inside brief boundaries] --> V[verify · cite clauses · run lint/test] --> D[deliver · structured verdict + evidence + trace rows]
+  D --> L[(append-only hash-chained audit log)]
+</pre>
+</body></html>
