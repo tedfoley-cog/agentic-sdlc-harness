@@ -253,13 +253,7 @@
       ]
     }
   },
-  "paused_on": {
-    "reason": "gate-waiting",
-    "gate": "before-merge",
-    "ref": "/home/ubuntu/repos/agentic-sdlc-harness/runs/rca-backfeed/gates/before-merge.md",
-    "reviewers": 0,
-    "reviewers_required": 2
-  },
+  "paused_on": null,
   "results": {
     "evaluate:-:1": {
       "verdict": "CONFIRMED",

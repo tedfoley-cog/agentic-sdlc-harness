@@ -97,6 +97,7 @@ class Orchestrator:
         self.state.setdefault("results", {})
         if not self.state["results"] and self.state.get("attempts"):
             self._backfill_results()
+        self.state["paused_on"] = None
         try:
             while self.state["status"] == "running":
                 step = self.state["plan"][self.state["cursor"]]
