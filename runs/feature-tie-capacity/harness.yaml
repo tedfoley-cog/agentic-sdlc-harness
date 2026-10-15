@@ -3,9 +3,9 @@
 repo: tedfoley-cog/adms-test-automation-demo
 default_branch: main
 commands:
-  build: npm --prefix console run build
+  build: npm --prefix console ci --no-audit --no-fund && npm --prefix console run build   # verifier runs in a fresh worktree
   test: pytest backend -q
-  lint: ruff check backend tools
+  lint: ruff check backend          # tools/ carries a pre-existing UP017 on main (Q-EXPLORE-4): stages lint what they may touch
 requirement_id_pattern: '(?:REQ|DEF)-[A-Z]+-\d{1,3}'
 safety_classification: safety-critical          # FLISR isolates and restores feeders
 protected_paths:

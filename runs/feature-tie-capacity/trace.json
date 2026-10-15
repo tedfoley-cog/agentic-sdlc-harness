@@ -163,6 +163,144 @@
       "kind": "design",
       "ref": "docs/specs/feature-tie-capacity/units.json#U4",
       "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-1",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 models.TieCapacity, models.IsoAwareDatetime",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-2",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan signature and as_of resolution",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-3",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict close branch",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-4",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict CAPACITY_EXCEEDED + tie loop",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-5",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict missing/non-GOOD; no default at flisr.py:98",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-6",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict age > TIE_CAPACITY_MAX_AGE",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-7",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict age < -TIE_CAPACITY_MAX_LEAD",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-8",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict finite and >= 0",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-9",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict statement order / TieBlockReason",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-10",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan per-tie loop",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-11",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 models.BlockedTie, TieBlockReason, RestorationPlan.blocked_ties",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-12",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr._blocked_note",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-13",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.FlisrRequest, api.flisr_plan",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-14",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 models.RestorationPlan.as_of; build_plan UTC normalisation",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-15",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.FlisrRequest._mutually_exclusive; build_plan ValueError",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-16",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr._legacy_to_tie_capacity; RestorationPlan.deprecations",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-17",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.flisr_plan route description",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-18",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan tie-loop accounting",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-19",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan no-fault early return (unchanged)",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-20",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan single clock read",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-21",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 tie_capacity_verdict + tie loop; U4 invariant",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-22",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 unchanged isolation/restoration paths; U1 characterization",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-23",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.server_now, api._check_as_of_bound",
+      "stage": "design"
     }
   ],
   "coverage": {
@@ -178,7 +316,8 @@
     "matrix": {
       "REQ-TIECAP-23": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U3"
+          "docs/specs/feature-tie-capacity/units.json#U3",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.server_now, api._check_as_of_bound"
         ],
         "code": [],
         "test": [],
@@ -187,7 +326,8 @@
       },
       "REQ-TIECAP-8": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U3"
+          "docs/specs/feature-tie-capacity/units.json#U3",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict finite and >= 0"
         ],
         "code": [],
         "test": [],
@@ -196,7 +336,8 @@
       },
       "REQ-TIECAP-1": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U2"
+          "docs/specs/feature-tie-capacity/units.json#U2",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 models.TieCapacity, models.IsoAwareDatetime"
         ],
         "code": [],
         "test": [],
@@ -205,7 +346,8 @@
       },
       "REQ-TIECAP-13": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U3"
+          "docs/specs/feature-tie-capacity/units.json#U3",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.FlisrRequest, api.flisr_plan"
         ],
         "code": [],
         "test": [],
@@ -214,7 +356,8 @@
       },
       "REQ-TIECAP-2": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U3"
+          "docs/specs/feature-tie-capacity/units.json#U3",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan signature and as_of resolution"
         ],
         "code": [],
         "test": [],
@@ -223,7 +366,8 @@
       },
       "REQ-TIECAP-5": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U3"
+          "docs/specs/feature-tie-capacity/units.json#U3",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict missing/non-GOOD; no default at flisr.py:98"
         ],
         "code": [],
         "test": [],
@@ -232,7 +376,8 @@
       },
       "REQ-TIECAP-3": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U3"
+          "docs/specs/feature-tie-capacity/units.json#U3",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict close branch"
         ],
         "code": [],
         "test": [],
@@ -241,7 +386,8 @@
       },
       "REQ-TIECAP-4": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U3"
+          "docs/specs/feature-tie-capacity/units.json#U3",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict CAPACITY_EXCEEDED + tie loop"
         ],
         "code": [],
         "test": [],
@@ -250,7 +396,8 @@
       },
       "REQ-TIECAP-6": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U3"
+          "docs/specs/feature-tie-capacity/units.json#U3",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict age > TIE_CAPACITY_MAX_AGE"
         ],
         "code": [],
         "test": [],
@@ -259,7 +406,8 @@
       },
       "REQ-TIECAP-7": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U3"
+          "docs/specs/feature-tie-capacity/units.json#U3",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict age < -TIE_CAPACITY_MAX_LEAD"
         ],
         "code": [],
         "test": [],
@@ -268,7 +416,8 @@
       },
       "REQ-TIECAP-9": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U3"
+          "docs/specs/feature-tie-capacity/units.json#U3",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict statement order / TieBlockReason"
         ],
         "code": [],
         "test": [],
@@ -277,7 +426,8 @@
       },
       "REQ-TIECAP-10": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U3"
+          "docs/specs/feature-tie-capacity/units.json#U3",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan per-tie loop"
         ],
         "code": [],
         "test": [],
@@ -286,7 +436,8 @@
       },
       "REQ-TIECAP-11": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U2"
+          "docs/specs/feature-tie-capacity/units.json#U2",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 models.BlockedTie, TieBlockReason, RestorationPlan.blocked_ties"
         ],
         "code": [],
         "test": [],
@@ -295,7 +446,8 @@
       },
       "REQ-TIECAP-12": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U3"
+          "docs/specs/feature-tie-capacity/units.json#U3",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr._blocked_note"
         ],
         "code": [],
         "test": [],
@@ -304,7 +456,8 @@
       },
       "REQ-TIECAP-14": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U3"
+          "docs/specs/feature-tie-capacity/units.json#U3",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 models.RestorationPlan.as_of; build_plan UTC normalisation"
         ],
         "code": [],
         "test": [],
@@ -313,7 +466,8 @@
       },
       "REQ-TIECAP-15": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U3"
+          "docs/specs/feature-tie-capacity/units.json#U3",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.FlisrRequest._mutually_exclusive; build_plan ValueError"
         ],
         "code": [],
         "test": [],
@@ -322,7 +476,8 @@
       },
       "REQ-TIECAP-16": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U3"
+          "docs/specs/feature-tie-capacity/units.json#U3",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr._legacy_to_tie_capacity; RestorationPlan.deprecations"
         ],
         "code": [],
         "test": [],
@@ -331,7 +486,8 @@
       },
       "REQ-TIECAP-17": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U3"
+          "docs/specs/feature-tie-capacity/units.json#U3",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.flisr_plan route description"
         ],
         "code": [],
         "test": [],
@@ -340,7 +496,8 @@
       },
       "REQ-TIECAP-18": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U3"
+          "docs/specs/feature-tie-capacity/units.json#U3",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan tie-loop accounting"
         ],
         "code": [],
         "test": [],
@@ -349,7 +506,8 @@
       },
       "REQ-TIECAP-19": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U1"
+          "docs/specs/feature-tie-capacity/units.json#U1",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan no-fault early return (unchanged)"
         ],
         "code": [],
         "test": [],
@@ -358,7 +516,8 @@
       },
       "REQ-TIECAP-20": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U3"
+          "docs/specs/feature-tie-capacity/units.json#U3",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan single clock read"
         ],
         "code": [],
         "test": [],
@@ -367,7 +526,8 @@
       },
       "REQ-TIECAP-21": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U4"
+          "docs/specs/feature-tie-capacity/units.json#U4",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 tie_capacity_verdict + tie loop; U4 invariant"
         ],
         "code": [],
         "test": [],
@@ -376,7 +536,8 @@
       },
       "REQ-TIECAP-22": {
         "design": [
-          "docs/specs/feature-tie-capacity/units.json#U1"
+          "docs/specs/feature-tie-capacity/units.json#U1",
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 unchanged isolation/restoration paths; U1 characterization"
         ],
         "code": [],
         "test": [],

@@ -12,7 +12,7 @@ You never merge, approve, close a gate, or move a ticket past ready-for-review. 
 ## Access and boundaries
 Target repository: `tedfoley-cog/adms-test-automation-demo` (default branch `main`). Safety classification: **safety-critical**.
 Files you may change: ['**']. Files you must not change: ['(none)'].
-Commands — build: `npm --prefix console run build`; test: `pytest backend -q`; lint: `ruff check backend tools`.
+Commands — build: `npm --prefix console ci --no-audit --no-fund && npm --prefix console run build`; test: `pytest backend -q`; lint: `ruff check backend`.
 Requirement ids match `(?:REQ|DEF)-[A-Z]+-\d{1,3}`; reference them verbatim.
 Protected paths (two human reviewers): ['backend/app/flisr.py', 'firmware/src/**'].
 Repo instruction files to read first: ['.agents/skills/safety-critical-change/SKILL.md', 'DEMO_NOTES.md'].

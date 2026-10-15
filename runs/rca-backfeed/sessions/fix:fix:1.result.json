@@ -1,0 +1,133 @@
+{
+  "session_id": "28223982d72d4bceaeefeab801fc7e74",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/28223982d72d4bceaeefeab801fc7e74",
+  "status": "waiting_for_user",
+  "devin_mode": "normal",
+  "acus": 4.036708505926762,
+  "structured_output": {
+    "verdict": "PASS",
+    "summary": "prepare: STD-CODE v1.4, STD-GOV v1.1 and STD-SAFETY v3.1 loaded; .agents/skills/safety-critical-change/SKILL.md and DEMO_NOTES.md read. execute: on agent/rca-backfeed/fix, characterization tests were committed first (932ccfb), then a failing DEF-FLISR-7 reproduction plus a 500-case seeded invariant with ties on any node (9863be7; 282/500 failed before the fix), then the smallest fail-safe fix (20d2a30): in build_plan's restoration loop, any SCADA tie whose pick-up set contains an endpoint of the faulted section is held open and a note names the tie and the section. DEF-FLISR-7 scenario: 0 restored / 341 remaining / 0 kW (Q-REVIEW-2). verify: pytest backend -q gives 13 passed; ruff check backend is clean; console build and make -C firmware test pass. ruff check backend tools fails only on the UP017 error in tools/build_coverage_report.py:183 that is already on main, an existing exception per Q-EXPLORE-4, so tools/ was not touched. In CI the backend job fails at that same lint step and never reaches pytest, so the pytest evidence is from local runs; native and ui pass. deliver: draft PR #13 with the ai-generated label; two human reviewers required. Follow-ups, not fixed here: a separate unisolated-fault-via-lockout-reclose defect when the upstream boundary switch is non-SCADA (55/412 seeded plans); and the platform-added Co-Authored-By trailer contains a personal name, which conflicts with STD-GOV-7.",
+    "branch": "agent/rca-backfeed/fix",
+    "pr_url": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13",
+    "session_url": "https://devin-gtm.devinenterprise.com/sessions/28223982d72d4bceaeefeab801fc7e74",
+    "model": "normal",
+    "standards_loaded": [
+      "STD-CODE",
+      "STD-GOV",
+      "STD-SAFETY"
+    ],
+    "files_touched": [
+      "backend/app/flisr.py",
+      "backend/tests/conftest.py",
+      "backend/tests/test_flisr_characterization.py",
+      "backend/tests/test_flisr_def_flisr_7.py"
+    ],
+    "trace": [
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "code",
+        "ref": "backend/app/flisr.py (build_plan restoration loop guard, commit 20d2a30)"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_characterization.py"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7.py"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13"
+      }
+    ],
+    "evidence": [
+      {
+        "kind": "commit",
+        "ref": "932ccfb",
+        "detail": "Characterization tests pinning build_plan on FDR-1201 before the fix (STD-SAFETY-2); green before and after"
+      },
+      {
+        "kind": "commit",
+        "ref": "9863be7",
+        "detail": "Failing reproduction + invariant committed before the production change (STD-CODE-1, STD-SAFETY-3): 6 failed / 7 passed, invariant 282/500 back-fed"
+      },
+      {
+        "kind": "commit",
+        "ref": "20d2a30",
+        "detail": "Smallest fail-safe fix: refuse the tie close, no re-routing (STD-SAFETY-4); all commits carry AI-Governance: run=rca-backfeed stage=fix agent=devin model=normal (STD-CODE-5, STD-GOV-2)"
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7.py::test_def_flisr_7_invariant_faulted_section_never_back_fed_over_seeded_feeders",
+        "detail": "Seed 20261015, 500 radial/branched feeders, 1-3 ties on arbitrary nodes, independent BFS oracle: 0 back-fed after the fix (STD-SAFETY-5)"
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend -q",
+        "detail": "13 passed (local)"
+      },
+      {
+        "kind": "command",
+        "ref": "ruff check backend",
+        "detail": "All checks passed"
+      },
+      {
+        "kind": "command",
+        "ref": "ruff check backend tools",
+        "detail": "1 error: UP017 in tools/build_coverage_report.py:183, already on main; existing exception per Q-EXPLORE-4, not fixed here"
+      },
+      {
+        "kind": "command",
+        "ref": "npm --prefix console run build",
+        "detail": "built"
+      },
+      {
+        "kind": "command",
+        "ref": "make -C firmware test",
+        "detail": "fault_detect: 2 cases, 0 failed"
+      },
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13",
+        "detail": "Draft, label ai-generated, sections Defect/Root cause/Fix/Evidence/Blast radius/trace. CI: native and ui pass; backend fails at the pre-existing tools/ UP017 lint step before pytest"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-GOV-6",
+        "detail": "Protected safety-critical path backend/app/flisr.py: two human reviewers required (also STD-SAFETY-1); no approval or merge by the agent"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-CODE-2",
+        "detail": "Only backend/app/flisr.py and backend/tests/** changed; models.py, firmware/**, legacy/** and tools/** untouched"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-CODE-7",
+        "detail": "All new tests carry pytest.mark.requirement('DEF-FLISR-7')"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-SAFETY-7",
+        "detail": "Seeded invariant and probes are T2 verification tools (could hide a defect, cannot introduce one); no certification credit claimed"
+      },
+      {
+        "kind": "note",
+        "ref": "STD-GOV-7",
+        "detail": "The platform-added Co-Authored-By trailer contains a personal name; needs a human or platform fix"
+      },
+      {
+        "kind": "note",
+        "ref": "follow-up",
+        "detail": "Separate defect, not fixed: when the upstream boundary switch is non-SCADA, the lockout reclose energises the fault from the feeder source (55/412 seeded plans); documented in the PR"
+      }
+    ],
+    "artifacts": {
+      "pr_body": "/home/ubuntu/evidence/pr_body.md"
+    }
+  }
+}

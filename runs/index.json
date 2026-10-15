@@ -9,7 +9,7 @@
     "prs": [
       "https://github.com/example-org/product-repo/pull/101"
     ],
-    "updated": "2026-10-15T23:07:00Z"
+    "updated": "2026-10-15T23:13:39Z"
   },
   {
     "run_id": "example-rca-backfeed",
@@ -21,7 +21,7 @@
     "prs": [
       "https://github.com/example-org/product-repo/pull/102"
     ],
-    "updated": "2026-10-15T23:07:00Z"
+    "updated": "2026-10-15T23:13:39Z"
   },
   {
     "run_id": "feature-tie-capacity",
@@ -31,7 +31,7 @@
     "requirement_ref": "examples/targets/adms/requirements/REQ-tie-capacity.md",
     "dir": "feature-tie-capacity",
     "prs": [],
-    "updated": "2026-10-15T23:07:00Z"
+    "updated": "2026-10-15T23:13:39Z"
   },
   {
     "run_id": "rca-backfeed",
@@ -40,7 +40,9 @@
     "target_repo": "",
     "requirement_ref": "examples/targets/adms/defects/DEF-FLISR-7.md",
     "dir": "rca-backfeed",
-    "prs": [],
-    "updated": "2026-10-15T23:07:00Z"
+    "prs": [
+      "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13"
+    ],
+    "updated": "2026-10-15T23:13:39Z"
   }
 ]

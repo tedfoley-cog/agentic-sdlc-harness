@@ -98,6 +98,30 @@
       "kind": "design",
       "ref": "artifacts.review#proposed-fix-shape",
       "stage": "review"
+    },
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "code",
+      "ref": "backend/app/flisr.py (build_plan restoration loop guard, commit 20d2a30)",
+      "stage": "fix"
+    },
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_characterization.py",
+      "stage": "fix"
+    },
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_def_flisr_7.py",
+      "stage": "fix"
+    },
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "pr",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13",
+      "stage": "fix"
     }
   ],
   "coverage": {
@@ -105,7 +129,7 @@
     "with_design": 1,
     "with_code": 1,
     "with_test": 1,
-    "with_pr": 0,
+    "with_pr": 1,
     "test_coverage": 1.0,
     "orphans": [],
     "matrix": {
@@ -122,7 +146,8 @@
           "backend/app/flisr.py:91-122",
           "backend/app/flisr.py:136-151",
           "backend/app/flisr.py:42",
-          "backend/app/api.py:40-49"
+          "backend/app/api.py:40-49",
+          "backend/app/flisr.py (build_plan restoration loop guard, commit 20d2a30)"
         ],
         "test": [
           "backend/tests/test_flisr_def_flisr_7.py",
@@ -130,9 +155,13 @@
           "backend/tests/test_flisr_def_flisr_7.py::test_def_flisr_7_post_flisr_plan_closes_tie_onto_faulted_section",
           "backend/tests/test_flisr_def_flisr_7.py::test_def_flisr_7_tie_does_not_back_feed_faulted_tail_section",
           "backend/tests/test_flisr_def_flisr_7.py::test_def_flisr_7_post_flisr_plan_closes_tie_onto_faulted_section",
-          "backend/tests/rca_def_flisr_7_review_probe.py"
+          "backend/tests/rca_def_flisr_7_review_probe.py",
+          "backend/tests/test_flisr_characterization.py",
+          "backend/tests/test_flisr_def_flisr_7.py"
         ],
-        "pr": [],
+        "pr": [
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13"
+        ],
         "doc": []
       }
     }
