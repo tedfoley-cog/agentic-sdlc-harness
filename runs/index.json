@@ -9,7 +9,7 @@
     "prs": [
       "https://github.com/example-org/product-repo/pull/101"
     ],
-    "updated": "2026-10-15T22:45:53Z"
+    "updated": "2026-10-15T22:50:32Z"
   },
   {
     "run_id": "example-rca-backfeed",
@@ -21,7 +21,7 @@
     "prs": [
       "https://github.com/example-org/product-repo/pull/102"
     ],
-    "updated": "2026-10-15T22:45:53Z"
+    "updated": "2026-10-15T22:50:32Z"
   },
   {
     "run_id": "feature-tie-capacity",
@@ -31,7 +31,7 @@
     "requirement_ref": "examples/targets/adms/requirements/REQ-tie-capacity.md",
     "dir": "feature-tie-capacity",
     "prs": [],
-    "updated": "2026-10-15T22:45:53Z"
+    "updated": "2026-10-15T22:50:32Z"
   },
   {
     "run_id": "rca-backfeed",
@@ -41,6 +41,6 @@
     "requirement_ref": "examples/targets/adms/defects/DEF-FLISR-7.md",
     "dir": "rca-backfeed",
     "prs": [],
-    "updated": "2026-10-15T22:45:53Z"
+    "updated": "2026-10-15T22:50:32Z"
   }
 ]

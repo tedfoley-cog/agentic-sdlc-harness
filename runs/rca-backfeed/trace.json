@@ -20,6 +20,36 @@
       "kind": "code",
       "ref": "backend/app/flisr.py:91-151",
       "stage": "explore"
+    },
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_def_flisr_7.py::test_def_flisr_7_tie_does_not_back_feed_faulted_tail_section",
+      "stage": "explore"
+    },
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_def_flisr_7.py::test_def_flisr_7_post_flisr_plan_closes_tie_onto_faulted_section",
+      "stage": "explore"
+    },
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "code",
+      "ref": "backend/app/flisr.py:91-122",
+      "stage": "explore"
+    },
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "code",
+      "ref": "backend/app/flisr.py:136-151",
+      "stage": "explore"
+    },
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "code",
+      "ref": "backend/app/api.py:40-49",
+      "stage": "explore"
     }
   ],
   "coverage": {
@@ -35,10 +65,15 @@
         "design": [],
         "code": [
           "backend/app/flisr.py:42",
-          "backend/app/flisr.py:91-151"
+          "backend/app/flisr.py:91-151",
+          "backend/app/flisr.py:91-122",
+          "backend/app/flisr.py:136-151",
+          "backend/app/api.py:40-49"
         ],
         "test": [
-          "backend/tests/test_flisr_def_flisr_7.py"
+          "backend/tests/test_flisr_def_flisr_7.py",
+          "backend/tests/test_flisr_def_flisr_7.py::test_def_flisr_7_tie_does_not_back_feed_faulted_tail_section",
+          "backend/tests/test_flisr_def_flisr_7.py::test_def_flisr_7_post_flisr_plan_closes_tie_onto_faulted_section"
         ],
         "pr": [],
         "doc": []

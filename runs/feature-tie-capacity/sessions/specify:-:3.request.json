@@ -1,0 +1,160 @@
+{
+  "prompt": "# Agentic SDLC stage brief \u2014 SPECIFY (run feature-tie-capacity, attempt 3)\n\nRole: Specification engineer. Turn the source requirement into a numbered, testable specification.\n\n## Contract\nWork in four phases and report each in your final output: **prepare** (load the governing standards listed below and confirm each by id; if one is missing, stop with BLOCKED), **execute**, **verify** (re-check your own output against the standards and the repo contract), **deliver** (structured verdict with evidence).\n\nAllowed verdicts for this stage: PASS, BLOCKED, NEEDS-HUMAN. Every verdict needs `evidence[]` entries that point at files, tests, commands, commits, PRs or standard clauses you actually used or produced.\nGaps, contradictions or missing acceptance criteria in your inputs are reported as `questions[]` with stable ids (`Q-<STAGE>-<n>`) and verdict BLOCKED. Never fill a gap with an assumption.\nYou never merge, approve, close a gate, or move a ticket past ready-for-review. Draft PRs only; branches start with `agent/`; every commit carries the trailer `AI-Governance: run=feature-tie-capacity stage=specify agent=devin model=normal`; PRs carry the `ai-generated` label.\n\n## Access and boundaries\nTarget repository: `tedfoley-cog/adms-test-automation-demo` (default branch `main`). Safety classification: **safety-critical**.\nFiles you may change: ['**']. Files you must not change: ['(none)'].\nCommands \u2014 build: `npm --prefix console run build`; test: `pytest backend -q`; lint: `ruff check backend tools`.\nRequirement ids match `(?:REQ|DEF)-[A-Z]+-\\d{1,3}`; reference them verbatim.\nProtected paths (two human reviewers): ['backend/app/flisr.py', 'firmware/src/**'].\nRepo instruction files to read first: ['.agents/skills/safety-critical-change/SKILL.md', 'DEMO_NOTES.md'].\nLayer visibility: {\"models\": [\"backend/app/models.py\"], \"logic\": [\"backend/app/flisr.py\", \"backend/app/state_estimator.py\", \"backend/app/agc.py\", \"backend/app/network.py\", \"backend/app/savecase.py\"], \"api\": [\"backend/app/api.py\"], \"ui\": [\"console/**\"], \"visibility\": {\"api\": [\"logic\", \"models\"], \"logic\": [\"models\"], \"ui\": [\"api\"]}}.\n\n## Governing standards (loaded at runtime \u2014 confirm each id in `standards_loaded`)\n\n### STD-GOV \u2014 STD-GOV \u2014 AI governance and delivery standard\n\n# STD-GOV \u2014 AI governance and delivery standard\nVersion: 1.1\n\n- **STD-GOV-1**: Agents work on branches prefixed `agent/` and open draft pull requests only. Marking ready-for-review is the last agent action; approving, merging and moving tickets past ready-for-review are human actions.\n- **STD-GOV-2**: Every commit carries `AI-Governance: run=<run-id> stage=<stage> agent=<agent> model=<mode>`; every PR carries the `ai-generated` label and a body with requirement ids, evidence and the trace table.\n- **STD-GOV-3**: Human gate decisions are taken in a system of record where only a human account can act (GitHub label event / PR review). Decisions by bot accounts are ignored. Agents never infer a decision from silence.\n- **STD-GOV-4**: The audit log is append-only and hash-chained; it records agent, run id, stage, brief, model, timestamps, artifacts read and produced, verdicts, gate decisions and the human decision-maker.\n- **STD-GOV-5**: Feedback loops are bounded by the repo contract; on reaching the limit the run escalates to NEEDS-HUMAN with the full loop history.\n- **STD-GOV-6**: Protected paths require the configured number of human reviewers irrespective of agent confidence; safety-critical classification implies at least two.\n- **STD-GOV-7**: Customer identifiers, personal names and credentials never appear in briefs, logs or PRs.\n\n### STD-REQ \u2014 STD-REQ \u2014 Requirements specification standard\n\n# STD-REQ \u2014 Requirements specification standard\nVersion: 1.2\n\n- **STD-REQ-1**: Every requirement has a stable id matching the repo contract's `requirement_id_pattern` and is written as one testable statement (shall/shall not, measurable bound, named inputs and outputs).\n- **STD-REQ-2**: A requirement that depends on a quantity (threshold, ratio, timing, CT ratio, per-unit base) states the unit, the range and the behaviour at the range limits.\n- **STD-REQ-3**: Missing, late or invalid inputs are specified explicitly. \"Treat as zero\" is never an implicit default; the specification states refuse / hold-last-value / flag-quality for each input.\n- **STD-REQ-4**: Ambiguities, contradictions and missing acceptance criteria in the source are recorded as questions with stable ids (`Q-SPEC-n`). The specifier does not resolve them by assumption; work that does not depend on the open question continues.\n- **STD-REQ-5**: Each requirement names its verification method (test, analysis, inspection, demonstration) and, for protection or control functions, the independent oracle QA will use.\n- **STD-REQ-6**: Safety classification (IEC 61508-3 context: none / safety-related / safety-critical) is stated for the change and inherited by every unit derived from it.\n- **STD-REQ-7**: Scope exclusions are listed so that later stages can reject scope creep rather than absorb it.\n\n### STD-SAFETY \u2014 STD-SAFETY \u2014 Safety-related change standard\n\n# STD-SAFETY \u2014 Safety-related change standard\nVersion: 3.1\n\n- **STD-SAFETY-1**: A change touching protection, control or isolation logic is safety-critical regardless of size and requires two human reviewers before merge (IEC 61508-3 independence of verification).\n- **STD-SAFETY-2**: Current behaviour is pinned with characterization tests before any change so regressions are visible as test failures, not as field events.\n- **STD-SAFETY-3**: A defect is reproduced with a failing test before it is fixed. If it cannot be reproduced, the stage stops with INSUFFICIENT_EVIDENCE rather than applying a speculative fix.\n- **STD-SAFETY-4**: The fix is the smallest change that makes the failing test pass while keeping the characterization tests green; fail-safe (refuse / block / hold) is preferred over \"best effort\".\n- **STD-SAFETY-5**: A safety invariant is stated and demonstrated over seeded inputs (at least 500 where a generator exists) \u2014 for example \"a de-energised fault section is never back-fed during restoration\" or \"the differential element never operates below the restraint characteristic\".\n- **STD-SAFETY-6**: Operate boundaries are compared against an independent closed-form oracle, with tolerance stated in per-unit and in engineering units (IEC 60255-187-1 accuracy classes).\n- **STD-SAFETY-7**: The harness does not claim tool certification credit. Each run produces a tool-classification argument (IEC 61508-3 T1/T2/T3) as a finding for the assessor.\n- **STD-SAFETY-8**: Agents never access production systems, production secrets or field devices.\n\n## Source requirement\n\n# Change request: respect tie-switch capacity during FLISR restoration\n\nRestoration plans produced by `backend/app/flisr.py::locate_fault` / the restoration planner must\nnot transfer more load onto a tie switch than its rated capacity. When the tie capacity is not\nknown the plan must say so instead of restoring. Telemetry for tie capacity arrives from the SCADA\nscan every 10 s.\n\n## Human answers to earlier questions (recorded gate actions)\n\n- **Q-SPEC-1** (ops-lead-standin): Live value. 'Tie capacity' is the alternate feeder's spare capacity as delivered by the SCADA scan every 10 s, in kW on the same basis as load_kw. No unit conversion, no p.u. base; comparison tolerance is 0.5 kW. The 'rated capacity' wording in the source is loose and does not mean nameplate.\n- **Q-SPEC-2** (ops-lead-standin): A value is late when it is older than 20 s (two missed scans). Inside 20 s the planner may use the last value only if its quality is GOOD. Older than 20 s, or any quality other than GOOD, is 'unknown' and must not be used.\n- **Q-SPEC-3** (ops-lead-standin): Extend build_plan with tie_capacity: dict[str, TieCapacity] where TieCapacity carries kw, timestamp and quality (a Pydantic model in backend/app/models.py). Extend the POST /flisr/plan body the same way. Keep the legacy dict[str, float] accepted for one release and treat it as quality GOOD with timestamp now, with a deprecation note. The SCADA adapter side is owned by the integration team and is out of scope for this change.\n- **Q-SPEC-4** (ops-lead-standin): Equality closes: the tie may close when transferred load <= capacity. No additional safety margin; the only tolerance is the 0.5 kW comparison tolerance from Q-SPEC-1. No p.u. statement needed.\n- **Q-SPEC-5** (ops-lead-standin): Per tie. Only the tie with unknown capacity is blocked; isolation and ties with a known capacity proceed. 'Capacity unknown' must be machine-readable: RestorationPlan gains blocked_ties: list[BlockedTie{tie_id, reason in CAPACITY_UNKNOWN | CAPACITY_STALE | CAPACITY_INVALID | CAPACITY_EXCEEDED}] and an operator-readable note; HTTP 200, not 409.\n- **Q-SPEC-6** (ops-lead-standin): Skip the tie (today's behaviour) and record it in blocked_ties with reason CAPACITY_EXCEEDED. Partial pick-up is out of scope.\n- **Q-SPEC-7** (ops-lead-standin): Per tie. Shared alternate-feeder capacity across several ties is out of scope; list it as a scope exclusion.\n- **Q-SPEC-8** (ops-lead-standin): Confirmed: scope is build_plan in backend/app/flisr.py plus backend/app/api.py (and models.py for the new types). The repo contract layer map has been corrected to state_estimator.py / api.py.\n- **Q-SPEC-9** (ops-lead-standin): CAPACITY_INVALID = kw is NaN, +/-inf, negative, or not a finite number, or the timestamp is unparseable/timezone-naive/future-dated (see Q-SPEC-10). A quality other than GOOD is CAPACITY_UNKNOWN (same as missing). Precedence when several apply, evaluate in this order and report the first: CAPACITY_INVALID, CAPACITY_UNKNOWN, CAPACITY_STALE, CAPACITY_EXCEEDED. Malformed HTTP input (wrong types, unknown fields) is rejected by request validation with HTTP 422 and never reaches the planner.\n- **Q-SPEC-10** (ops-lead-standin): Time reference is the request's as_of field: a timezone-aware ISO-8601 UTC instant supplied by the caller; when absent the server uses UTC now and echoes the value it used in the response. Capacity timestamps must be timezone-aware; naive timestamps are CAPACITY_INVALID. A timestamp more than 2 s ahead of as_of is CAPACITY_INVALID. Age = as_of - timestamp.\n- **Q-SPEC-11** (ops-lead-standin): The new body field tie_capacity (dict[str, TieCapacity]) and the legacy tie_capacity_kw are mutually exclusive; both present is HTTP 422. Legacy-only requests are treated as quality GOOD with timestamp = as_of and the response carries deprecations: ['tie_capacity_kw']. The deprecation note lives in the endpoint's OpenAPI description and in the docs page the Document stage produces; removal is a separate change after one release.\n\n## Stage skill\n\n# Stage skill contract (applies to every stage)\n\n1. **prepare** \u2014 Load every governing standard listed in the brief and record their ids in\n   `standards_loaded`. If one is missing or unreadable, stop: verdict `BLOCKED`, question\n   `Q-<STAGE>-STD`, no further work. Read the repo contract and the instruction files it names.\n2. **execute** \u2014 Do only this stage's work, inside the file boundaries in the brief. Anything\n   outside the brief is reported, not done.\n3. **verify** \u2014 Re-check your own output against each standard clause you loaded; cite the\n   clause ids in `evidence[]`. Run the repo's lint/test commands yourself when you changed code.\n4. **deliver** \u2014 Return the structured verdict. Allowed verdicts are listed in the brief; every\n   claim has an `evidence[]` entry (file, test, command output, commit, PR, standard clause).\n\nRules that never bend: gaps become `questions[]` + `BLOCKED` (no assumptions); draft PRs\nonly; branches start with the agent prefix; the `AI-Governance:` trailer is on every commit;\nthe `ai-generated` label is on every PR; you never approve, merge, or move a ticket past\nready-for-review; missing input is never silently treated as zero.\n\n\n---\nname: specify\ndescription: Turns a source requirement into a numbered, testable specification with stable requirement ids, explicit invalid-input behaviour and a verification method per requirement. Used first in the new-feature workflow and whenever a gate rejection sends the specification back.\n---\n\n# Specify\n\nFollows the four-phase contract in `CONTRACT.md`. Allowed verdicts: PASS, BLOCKED, NEEDS-HUMAN.\n\n## Prepare\nLoad the governing standards named in the brief (ids in `standards_loaded`); stop with `BLOCKED` if any is missing. Read the repo contract and its instruction files.\n\n## Execute\n1. Extract every behaviour the source asks for. Assign ids that match the repo contract's `requirement_id_pattern`, one testable statement each (STD-REQ-1).\n2. For each quantity: unit, range, behaviour at the limits (STD-REQ-2). For each input: behaviour when missing, late or invalid \u2014 refuse / hold / flag, never implicit zero (STD-REQ-3).\n3. Name the verification method and, for protection/control behaviour, the independent oracle QA will use (STD-REQ-5). State the safety classification (STD-REQ-6) and scope exclusions (STD-REQ-7).\n4. Anything the source leaves open \u2014 a missing value, a contradiction, an undefined edge \u2014 becomes `questions[]` with id `Q-SPEC-n` and `blocking_units` naming which requirements depend on it. Verdict `BLOCKED` while any question is open; do not guess (STD-REQ-4).\n\n## Verify\nEach requirement is testable, has a verification method, has invalid-input behaviour, and quotes no customer identifiers.\n\n## Deliver\n`artifacts.specification` \u2014 the full specification as markdown. `trace[]` is empty here; requirements are registered by the orchestrator from the ids in the specification. Verdict `PASS` only when there are no open questions.\n\n## Deliver\nFinish by calling provide_structured_output with an object matching the schema you were given: `verdict`, `summary`, `evidence[]`, and where relevant `questions[]`, `trace[]` (requirement_id/kind/ref), `files_touched[]`, `branch`, `pr_url`, `standards_loaded[]`, `artifacts{}` (your stage's named outputs as markdown or JSON strings), `model`.\n",
+  "title": "[feature-tie-capacity] specify  #3",
+  "repos": [
+    "tedfoley-cog/adms-test-automation-demo"
+  ],
+  "devin_mode": "normal",
+  "structured_output_schema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+      "verdict",
+      "summary",
+      "evidence"
+    ],
+    "properties": {
+      "verdict": {
+        "type": "string",
+        "enum": [
+          "PASS",
+          "FAIL",
+          "BLOCKED",
+          "CONFIRMED",
+          "VIOLATION",
+          "NEEDS-HUMAN",
+          "REFUTED",
+          "INSUFFICIENT_EVIDENCE",
+          "RETRACTION"
+        ]
+      },
+      "summary": {
+        "type": "string",
+        "minLength": 1
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "kind",
+            "ref"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "file",
+                "test",
+                "command",
+                "pr",
+                "commit",
+                "url",
+                "standard",
+                "requirement",
+                "artifact",
+                "session",
+                "note"
+              ]
+            },
+            "ref": {
+              "type": "string"
+            },
+            "detail": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "questions": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "id",
+            "question"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^Q-[A-Z0-9-]+$"
+            },
+            "question": {
+              "type": "string"
+            },
+            "blocking_units": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "artifacts": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "trace": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "requirement_id",
+            "kind",
+            "ref"
+          ],
+          "properties": {
+            "requirement_id": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "design",
+                "code",
+                "test",
+                "pr",
+                "doc"
+              ]
+            },
+            "ref": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "standards_loaded": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "files_touched": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "branch": {
+        "type": "string"
+      },
+      "pr_url": {
+        "type": "string"
+      },
+      "session_url": {
+        "type": "string"
+      },
+      "model": {
+        "type": "string"
+      }
+    }
+  },
+  "structured_output_required": true,
+  "tags": [
+    "agentic-sdlc",
+    "feature-tie-capacity",
+    "specify"
+  ],
+  "max_acu_limit": 15
+}
