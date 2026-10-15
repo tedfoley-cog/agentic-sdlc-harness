@@ -1,67 +1,119 @@
-# Repo contract for the public ADMS fixture (tedfoley-cog/adms-test-automation-demo).
-# Everything the harness knows about a target repo is in this file; swap it to point at another repo.
 repo: tedfoley-cog/adms-test-automation-demo
 default_branch: main
 commands:
-  build: npm --prefix console ci --no-audit --no-fund && npm --prefix console run build   # verifier runs in a fresh worktree
+  build: npm --prefix console ci --no-audit --no-fund && npm --prefix console run
+    build
   test: pytest backend -q
-  lint: ruff check backend          # tools/ carries a pre-existing UP017 on main (Q-EXPLORE-4): stages lint what they may touch
-requirement_id_pattern: '(?:REQ|DEF)-[A-Z]+-\d{1,3}'
-safety_classification: safety-critical          # FLISR isolates and restores feeders
+  lint: ruff check backend
+requirement_id_pattern: (?:REQ|DEF)-[A-Z]+-\d{1,3}
+safety_classification: safety-critical
 protected_paths:
-  - pattern: backend/app/flisr.py
-    reviewers: 2
-    reason: isolation / restoration logic
-  - pattern: firmware/src/**
-    reviewers: 2
-    reason: protection firmware
+- pattern: backend/app/flisr.py
+  reviewers: 2
+  reason: isolation / restoration logic
+- pattern: firmware/src/**
+  reviewers: 2
+  reason: protection firmware
 standards:
-  provider: markdown                             # or: confluence (CONFLUENCE_BASE_URL / CONFLUENCE_TOKEN env)
+  provider: markdown
   location: standards
-  required: [STD-GOV, STD-SAFETY]
+  required:
+  - STD-GOV
+  - STD-SAFETY
   by_stage:
-    specify: [STD-REQ]
-    design: [STD-ARCH]
-    architect: [STD-ARCH]
-    coding: [STD-CODE]
-    fix: [STD-CODE]
-    qa: [STD-QA]
-    document: [STD-DOC]
-    explore: [STD-RCA]
-    evaluate: [STD-RCA]
-    review: [STD-RCA]
+    specify:
+    - STD-REQ
+    design:
+    - STD-ARCH
+    architect:
+    - STD-ARCH
+    coding:
+    - STD-CODE
+    fix:
+    - STD-CODE
+    qa:
+    - STD-QA
+    document:
+    - STD-DOC
+    explore:
+    - STD-RCA
+    evaluate:
+    - STD-RCA
+    review:
+    - STD-RCA
 instructions:
-  - .agents/skills/safety-critical-change/SKILL.md
-  - DEMO_NOTES.md
+- .agents/skills/safety-critical-change/SKILL.md
+- DEMO_NOTES.md
 boundaries:
   coding:
-    allowed: [backend/app/flisr.py, backend/tests/**]
-    forbidden: [backend/app/models.py, firmware/**, legacy/**]
+    allowed:
+    - backend/app/flisr.py
+    - backend/tests/**
+    forbidden:
+    - backend/app/models.py
+    - firmware/**
+    - legacy/**
   fix:
-    allowed: [backend/app/flisr.py, backend/tests/**]
-    forbidden: [backend/app/models.py, firmware/**, legacy/**]
+    allowed:
+    - backend/app/flisr.py
+    - backend/tests/**
+    forbidden:
+    - backend/app/models.py
+    - firmware/**
+    - legacy/**
   document:
-    allowed: [docs/**, README.md]
+    allowed:
+    - docs/**
+    - README.md
 layers:
-  models: [backend/app/models.py]
-  logic: [backend/app/flisr.py, backend/app/state_estimator.py, backend/app/agc.py, backend/app/network.py, backend/app/savecase.py]
-  api: [backend/app/api.py]
-  ui: [console/**]
-  visibility: { api: [logic, models], logic: [models], ui: [api] }
-loops: { architect: 2, qa: 2, rca: 2 }
+  models:
+  - backend/app/models.py
+  logic:
+  - backend/app/flisr.py
+  - backend/app/state_estimator.py
+  - backend/app/agc.py
+  - backend/app/network.py
+  - backend/app/savecase.py
+  api:
+  - backend/app/api.py
+  ui:
+  - console/**
+  visibility:
+    api:
+    - logic
+    - models
+    logic:
+    - models
+    ui:
+    - api
+loops:
+  architect: 3
+  qa: 2
+  rca: 2
 models:
   default: normal
   coding: normal
-  qa: ultra          # QA must differ from coding (enforced)
+  qa: ultra
   evaluate: ultra
 gates:
-  provider: file     # dry run: GitHub gate would (correctly) ignore the only account available, devin-ai-integration[bot]; decisions recorded as explicit stand-ins
+  provider: file
   repo: tedfoley-cog/adms-test-automation-demo
   approve_label: gate:approved
   reject_label: gate:rejected
   min_reviewers: 1
-governance: { branch_prefix: agent/, draft_only: true, pr_label: ai-generated, trailer: AI-Governance }
-checks: { model_globs: ['**/models.py'] }
-rca: { fix_files: [backend/app/flisr.py, backend/tests/**] }
-release: { enabled: false }
-limits: { max_acu_per_stage: 15 }
+governance:
+  branch_prefix: agent/
+  draft_only: true
+  pr_label: ai-generated
+  trailer: AI-Governance
+checks:
+  model_globs:
+  - '**/models.py'
+rca:
+  fix_files:
+  - backend/app/flisr.py
+  - backend/tests/**
+release:
+  enabled: false
+limits:
+  max_acu_per_stage: 15

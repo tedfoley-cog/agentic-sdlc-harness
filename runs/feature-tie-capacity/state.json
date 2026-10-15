@@ -580,8 +580,11 @@
   ],
   "verify_results": {},
   "paused_on": {
-    "reason": "loop limit 2 reached",
-    "stage": "architect"
+    "reason": "awaiting-session",
+    "stage": "design",
+    "unit": "-",
+    "attempt": 5,
+    "request": "sessions/design:-:5.request.json"
   },
   "results": {
     "specify:-:1": {

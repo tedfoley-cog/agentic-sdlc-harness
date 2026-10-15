@@ -133,6 +133,11 @@ def main(argv: list[str] | None = None) -> int:
         orch.answer(args.question_id, args.text, args.actor)
         print(f"recorded answer to {args.question_id} by {args.actor}")
         return 0
+    if args.cmd == "extend":
+        orch = _orch(RUNS_DIR / args.run_id, None, "relay", None)
+        orch.extend_loop(args.loop, args.rounds, args.actor, args.reason)
+        print(f"loop {args.loop} extended by {args.rounds} by {args.actor}")
+        return 0
     if args.cmd == "time":
         orch = _orch(RUNS_DIR / args.run_id, None, "relay", None)
         orch.record_human_time(args.minutes, args.actor, args.note)
