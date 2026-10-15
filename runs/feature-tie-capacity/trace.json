@@ -25,197 +25,359 @@
     "REQ-TIECAP-22": "| REQ-TIECAP-22 | For inputs where every candidate tie has usable capacity and `L \u2264 C` or `L > C + 0.5 kW`, the isolation steps, restoration steps and their order, `customers_restored`, `customers_remaining` and `transferred_load_kw` shall equal `main` @ 5f6b471. | \u2014 | \u2014 | Test: `@pytest.mark.characterization` tests pinned on unmodified code before any change (STD-SAFETY-2). | \u2014 |",
     "DEF-FLISR-7": "- `locate_fault` / fault-location logic; `_isolation_switches` and DEF-FLISR-7 (a tie that is an isolation point back-feeds the faulted section) \u2014 separate defect run. This change shall neither fix nor mask DEF-FLISR-7."
   },
-  "rows": [],
+  "rows": [
+    {
+      "requirement_id": "REQ-TIECAP-19",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U1",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-22",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U1",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-1",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U2",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-11",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U2",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-2",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U3",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-3",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U3",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-4",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U3",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-5",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U3",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-6",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U3",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-7",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U3",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-8",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U3",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-9",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U3",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-10",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U3",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-12",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U3",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-13",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U3",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-14",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U3",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-15",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U3",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-16",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U3",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-17",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U3",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-18",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U3",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-20",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U3",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-23",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U3",
+      "stage": "decompose"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-21",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/units.json#U4",
+      "stage": "decompose"
+    }
+  ],
   "coverage": {
     "requirements": 24,
-    "with_design": 0,
+    "with_design": 23,
     "with_code": 0,
     "with_test": 0,
     "with_pr": 0,
     "test_coverage": 0.0,
     "orphans": [
-      "DEF-FLISR-7",
-      "REQ-TIECAP-1",
-      "REQ-TIECAP-10",
-      "REQ-TIECAP-11",
-      "REQ-TIECAP-12",
-      "REQ-TIECAP-13",
-      "REQ-TIECAP-14",
-      "REQ-TIECAP-15",
-      "REQ-TIECAP-16",
-      "REQ-TIECAP-17",
-      "REQ-TIECAP-18",
-      "REQ-TIECAP-19",
-      "REQ-TIECAP-2",
-      "REQ-TIECAP-20",
-      "REQ-TIECAP-21",
-      "REQ-TIECAP-22",
-      "REQ-TIECAP-23",
-      "REQ-TIECAP-3",
-      "REQ-TIECAP-4",
-      "REQ-TIECAP-5",
-      "REQ-TIECAP-6",
-      "REQ-TIECAP-7",
-      "REQ-TIECAP-8",
-      "REQ-TIECAP-9"
+      "DEF-FLISR-7"
     ],
     "matrix": {
       "REQ-TIECAP-23": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U3"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-8": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U3"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-1": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U2"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-13": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U3"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-2": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U3"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-5": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U3"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-3": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U3"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-4": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U3"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-6": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U3"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-7": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U3"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-9": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U3"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-10": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U3"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-11": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U2"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-12": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U3"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-14": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U3"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-15": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U3"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-16": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U3"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-17": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U3"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-18": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U3"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-19": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U1"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-20": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U3"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-21": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U4"
+        ],
         "code": [],
         "test": [],
         "pr": [],
         "doc": []
       },
       "REQ-TIECAP-22": {
-        "design": [],
+        "design": [
+          "docs/specs/feature-tie-capacity/units.json#U1"
+        ],
         "code": [],
         "test": [],
         "pr": [],

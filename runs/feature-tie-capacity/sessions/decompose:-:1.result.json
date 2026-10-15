@@ -1,0 +1,225 @@
+{
+  "session_id": "d936648c40dc4a42bfb8a40bda8946d3",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/d936648c40dc4a42bfb8a40bda8946d3",
+  "status": "waiting_for_user",
+  "devin_mode": "normal",
+  "acus": 1.972112633843647,
+  "structured_output": {
+    "verdict": "PASS",
+    "model": "normal",
+    "branch": "agent/feature-tie-capacity/decompose",
+    "session_url": "https://devin-gtm.devinenterprise.com/sessions/d936648c40dc4a42bfb8a40bda8946d3",
+    "standards_loaded": [
+      "STD-GOV",
+      "STD-REQ",
+      "STD-SAFETY"
+    ],
+    "files_touched": [
+      "docs/specs/feature-tie-capacity/units.json",
+      "docs/specs/feature-tie-capacity/decomposition.md"
+    ],
+    "summary": "PREPARE: loaded STD-GOV v1.1, STD-REQ v1.2, STD-SAFETY v3.1 (all from the brief); read .agents/skills/safety-critical-change/SKILL.md, DEMO_NOTES.md, the attempt-4 specification on agent/feature-tie-capacity/specify, and backend/app/{flisr,api,models}.py. Baseline on main @ 5f6b471: pytest backend -q 2 passed. EXECUTE: split REQ-TIECAP-1..23 into 4 units run one after another. U1 (wave 1): baseline characterization tests plus failing reproductions committed as strict xfail, against unmodified main; REQ-TIECAP-19 and -22. U2 (wave 2): models.py types; REQ-TIECAP-1 and -11. U3 (wave 3): planner plus endpoint across flisr.py, api.py and models.py; REQ-TIECAP-2..10, 12..18, 20, 23; protected path, two human reviewers. U4 (wave 4): the 500-case seeded safety invariant; REQ-TIECAP-21. Why U3 is one unit: REQ-TIECAP-15 and -16 each have both a build_plan clause and an HTTP clause, and the legacy tie_capacity_kw path has to move together with the new path. Otherwise U1 (which uses the legacy interface) breaks, or REQ-TIECAP-5's check of flisr.py:98 fails partway through. No production edit happens before U1, as the safety skill's steps 1-3 and STD-SAFETY-2/3 require. VERIFY: a script confirmed all 23 spec requirement ids sit in exactly one unit (no missing, duplicate or unknown ids), that all ids match the repo pattern, that every depends_on points to an earlier wave (so there is no cycle), and that no write boundaries overlap within a wave (each wave has one unit). DELIVER: artifacts committed to agent/feature-tie-capacity/decompose @ 99a85f1 with the AI-Governance trailer. No PR was opened, matching earlier stage outputs, and the repo has no ai-generated label. Compliance note: the platform adds a Co-Authored-By trailer with a personal name to every commit, which conflicts with STD-GOV-7. The agent cannot change its git identity, so this is flagged for the humans.",
+    "evidence": [
+      {
+        "kind": "standard",
+        "ref": "STD-GOV",
+        "detail": "STD-GOV-1: branch agent/feature-tie-capacity/decompose, no merge or approval. STD-GOV-2: AI-Governance trailer on commit 99a85f1. STD-GOV-6: every unit carries the two-reviewer rule because the change set touches protected backend/app/flisr.py. STD-GOV-7: the platform-added Co-Authored-By trailer with a personal name is flagged."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-REQ",
+        "detail": "STD-REQ-6: every unit inherits safety-critical. STD-REQ-7: spec section 3 exclusions (DEF-FLISR-7, SCADA adapter, shared capacity, partial pick-up, console etc.) are copied into U3/U4 scope_notes. STD-REQ-4: no gaps found, so no Q-DECOMP raised."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-SAFETY",
+        "detail": "STD-SAFETY-2/3: U1 pins behaviour and records failing reproductions before any production edit. STD-SAFETY-4: U3 makes the smallest fail-safe change. STD-SAFETY-5: U4 runs at least 500 seeded cases. STD-SAFETY-6: independent oracle per unit, 0.5 kW tolerance, per-unit waiver recorded. STD-SAFETY-7: no tool-certification credit claimed."
+      },
+      {
+        "kind": "file",
+        "ref": ".agents/skills/safety-critical-change/SKILL.md",
+        "detail": "Step order (baseline, pin, reproduce, fix, prove) drives the U1 -> U2 -> U3 -> U4 sequence; 'do not edit production code before step 3'."
+      },
+      {
+        "kind": "file",
+        "ref": "DEMO_NOTES.md",
+        "detail": "Read as an instruction file; it has no constraints that affect the decomposition."
+      },
+      {
+        "kind": "file",
+        "ref": "docs/specs/feature-tie-capacity/specification.md@d2fce1e",
+        "detail": "Input specification (attempt 4, REQ-TIECAP-1..23, no open questions)."
+      },
+      {
+        "kind": "file",
+        "ref": "backend/app/flisr.py:98",
+        "detail": "tie_capacity_kw.get(switch.mrid, 0.0): the legacy default whose removal ties REQ-TIECAP-5 and -16 to one unit (U3)."
+      },
+      {
+        "kind": "file",
+        "ref": "backend/app/api.py:45",
+        "detail": "The only production caller of build_plan, so the planner and endpoint change together in U3."
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend -q",
+        "detail": "Baseline on main @ 5f6b471: 2 passed."
+      },
+      {
+        "kind": "command",
+        "ref": "ruff check backend tools",
+        "detail": "Fails on main with 1 error (known UP017 in tools/). This stage changed no code; the failure is pre-existing and outside this stage."
+      },
+      {
+        "kind": "command",
+        "ref": "python partition check over docs/specs/feature-tie-capacity/units.json",
+        "detail": "spec reqs 23, missing [], dup [], unknown []; acyclic, every dependency in an earlier wave; waves {1:[U1],2:[U2],3:[U3],4:[U4]}, no overlap within a wave."
+      },
+      {
+        "kind": "commit",
+        "ref": "99a85f1f0af1a3bc4190d269c18acc63ef65956d",
+        "detail": "Decomposition artifacts on agent/feature-tie-capacity/decompose (based on the specify branch)."
+      },
+      {
+        "kind": "url",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/99a85f1f0af1a3bc4190d269c18acc63ef65956d/docs/specs/feature-tie-capacity/units.json"
+      },
+      {
+        "kind": "url",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/99a85f1f0af1a3bc4190d269c18acc63ef65956d/docs/specs/feature-tie-capacity/decomposition.md"
+      },
+      {
+        "kind": "note",
+        "ref": "no-pr",
+        "detail": "No draft PR opened: the stage output is artifacts.units, earlier stages pushed branches only, and the ai-generated label does not exist in the repo."
+      }
+    ],
+    "trace": [
+      {
+        "requirement_id": "REQ-TIECAP-19",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U1"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-22",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U1"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-1",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U2"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-11",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U2"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-2",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-3",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-4",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-5",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-6",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-7",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-8",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-9",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-10",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-12",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-13",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-14",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-15",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-16",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-17",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-18",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-20",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-23",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/units.json#U4"
+      }
+    ],
+    "artifacts": {
+      "units": "[\n  {\n    \"id\": \"U1\",\n    \"wave\": 1,\n    \"title\": \"Baseline: pin current FLISR behaviour and record failing reproductions on unmodified main\",\n    \"requirement_ids\": [\"REQ-TIECAP-19\", \"REQ-TIECAP-22\"],\n    \"depends_on\": [],\n    \"files\": [\n      \"backend/tests/test_flisr_tie_capacity_characterization.py\",\n      \"backend/tests/test_flisr_tie_capacity_repro.py\"\n    ],\n    \"safety\": \"safety-critical (inherited, STD-REQ-6). Test-only, but lands in the change set that touches protected backend/app/flisr.py: two human reviewers (STD-GOV-6, STD-SAFETY-1).\",\n    \"scope_notes\": [\n      \"Safety skill steps 1-3 (STD-SAFETY-2, STD-SAFETY-3). No production file may change in this unit; every test is written and run against main @ 5f6b471.\",\n      \"Characterization (REQ-TIECAP-22): @pytest.mark.characterization tests through the legacy tie_capacity_kw interface, restricted to inputs where every candidate tie has a finite, non-negative entry with L <= C or L > C + 0.5 kW. They pin isolation steps, restoration steps and their order, customers_restored, customers_remaining, transferred_load_kw. They do not pin notes text (REQ-TIECAP-12 changes it) and exclude C in (L, L + 0.5], missing entries, NaN/+-inf/negative (intended changes 1-3 of the specification).\",\n      \"Characterization inputs exclude faults on a section with a SCADA tie at either endpoint (DEF-FLISR-7 is handled incorrectly today; pinning it would mask or block that separate defect run, spec section 3).\",\n      \"REQ-TIECAP-19: pin the no-fault plan field-by-field (no isolation, no restoration, manual-patrol note, customers_remaining) and assert plan.model_dump().get('blocked_ties', []) == [] so the same test passes unchanged on main and after U2/U3.\",\n      \"Reproductions (STD-SAFETY-3), kept failing output for the PR: (a) shipped model, CB-1201 open, no capacity entry: plan carries no machine-readable reason for skipping TIE-1201-1405 (expects blocked_ties CAPACITY_UNKNOWN); (b) legacy tie_capacity_kw NaN and +inf: plan closes TIE-1201-1405 (expects no close step). Committed as pytest.mark.xfail(strict=True, reason='REPRO ...') so main stays green; U3 removes only the markers.\",\n      \"backend/tests/test_flisr.py is not in any unit: it must pass unchanged to the end of the run.\"\n    ],\n    \"oracle\": \"Characterization: the values measured on unmodified main are the oracle (re-run must be identical before and after U2-U4). Reproductions: operational expectation from REQ-TIECAP-5 and REQ-TIECAP-8 (no close step for a tie with missing or non-finite capacity), checked by observing the failure on main.\"\n  },\n  {\n    \"id\": \"U2\",\n    \"wave\": 2,\n    \"title\": \"Domain types: TieCapacity, BlockedTie and RestorationPlan.blocked_ties\",\n    \"requirement_ids\": [\"REQ-TIECAP-1\", \"REQ-TIECAP-11\"],\n    \"depends_on\": [\"U1\"],\n    \"files\": [\n      \"backend/app/models.py\",\n      \"backend/tests/test_flisr_tie_capacity_models.py\"\n    ],\n    \"safety\": \"safety-critical (inherited, STD-REQ-6). models.py is not a protected path, but the types gate which ties FLISR closes and ship in the protected-path change set: two human reviewers (STD-GOV-6, STD-SAFETY-1).\",\n    \"scope_notes\": [\n      \"Additive only: TieCapacity{kw, timestamp, quality} with extra fields forbidden; BlockedTie{tie_id, reason}; reason enum {CAPACITY_UNKNOWN, CAPACITY_STALE, CAPACITY_INVALID, CAPACITY_EXCEEDED}; RestorationPlan.blocked_ties default [].\",\n      \"Strictness per field, not model-wide ConfigDict(strict=True): measured on pydantic 2.14.1 / fastapi 0.143.1, model-wide strict makes FastAPI reject valid ISO-8601 datetime strings (spec section 4 design note). kw strict JSON number (string/bool/null rejected), NaN/+-inf/negative accepted; timestamp ISO-8601 string only, timezone-aware, JSON number and naive rejected; quality strict str; no clock comparison in the model.\",\n      \"No change to build_plan or api.py in this unit; U1 characterization must stay green.\"\n    ],\n    \"oracle\": \"Model unit tests per accept/reject class listed in REQ-TIECAP-1 ('yesterday', 1790000000, naive '2026-10-15T22:00:00', '2000', true, extra field -> reject; NaN, -1.0, +02:00 offset -> accept) validated both via model_validate_json and via a FastAPI TestClient echo route defined inside the test, so the HTTP (Python-mode) validation path is exercised; inspection of models.py; U1 suite re-run green.\"\n  },\n  {\n    \"id\": \"U3\",\n    \"wave\": 3,\n    \"title\": \"Planner and endpoint: build_plan tie-capacity evaluation, legacy compatibility and POST /flisr/plan validation\",\n    \"requirement_ids\": [\n      \"REQ-TIECAP-2\", \"REQ-TIECAP-3\", \"REQ-TIECAP-4\", \"REQ-TIECAP-5\", \"REQ-TIECAP-6\",\n      \"REQ-TIECAP-7\", \"REQ-TIECAP-8\", \"REQ-TIECAP-9\", \"REQ-TIECAP-10\", \"REQ-TIECAP-12\",\n      \"REQ-TIECAP-13\", \"REQ-TIECAP-14\", \"REQ-TIECAP-15\", \"REQ-TIECAP-16\", \"REQ-TIECAP-17\",\n      \"REQ-TIECAP-18\", \"REQ-TIECAP-20\", \"REQ-TIECAP-23\"\n    ],\n    \"depends_on\": [\"U2\"],\n    \"files\": [\n      \"backend/app/flisr.py\",\n      \"backend/app/api.py\",\n      \"backend/app/models.py\",\n      \"backend/tests/test_flisr_tie_capacity_planner.py\",\n      \"backend/tests/test_flisr_tie_capacity_api.py\",\n      \"backend/tests/test_flisr_tie_capacity_repro.py\"\n    ],\n    \"safety\": \"safety-critical (inherited, STD-REQ-6). Touches protected path backend/app/flisr.py: two human reviewers required irrespective of agent confidence (STD-GOV-6, STD-SAFETY-1).\",\n    \"scope_notes\": [\n      \"Why one unit for two modules: REQ-TIECAP-15 and REQ-TIECAP-16 each state a build_plan clause and an HTTP clause, and the legacy tie_capacity_kw path (REQ-TIECAP-16) must be migrated in the same step as the new tie_capacity path or the U1 characterization (which uses the legacy interface) breaks or REQ-TIECAP-5's inspection of flisr.py:98 fails in an intermediate state. Splitting would require a transiently non-conforming unit.\",\n      \"Smallest fail-safe change (STD-SAFETY-4): remove the 0.0 default at flisr.py:98; per-tie usability with precedence INVALID > UNKNOWN > STALE > EXCEEDED; close iff L <= C + 0.5 kW; as_of read once per call (REQ-TIECAP-20); blocked ties add only to customers_remaining (REQ-TIECAP-18); one note per blocked tie (REQ-TIECAP-12).\",\n      \"models.py is in scope only for response fields the Design stage places on RestorationPlan (as_of, deprecations, REQ-TIECAP-14/16) and for request types; the TieCapacity/BlockedTie definitions from U2 are not to be changed.\",\n      \"api.py: injectable server clock (spec section 4) for REQ-TIECAP-23 boundary tests; 422 before the planner runs for every malformed body (each 422 test asserts build_plan was not called); 200 with blocked_ties, never 409, for a blocked tie; OpenAPI description carries the deprecation and mutual-exclusion note (REQ-TIECAP-17).\",\n      \"Remove only the xfail markers in test_flisr_tie_capacity_repro.py; the repro tests must then pass unmodified otherwise.\",\n      \"Out of scope (spec section 3): DEF-FLISR-7 / _isolation_switches, locate_fault, SCADA adapter, shared alternate-feeder capacity, partial pick-up, console/**, state_estimator.py, agc.py, savecase.py, firmware/**, legacy/**.\"\n    ],\n    \"oracle\": \"Independent closed-form checks in the QA tests, not importing app.network or app.flisr helpers: QA-owned BFS over the test topology for the candidate node set and L (spec definitions), L <= C + 0.5 kW, age > 20 s, age < -2 s, quality == 'GOOD', math.isfinite(kw) and kw >= 0, the REQ-TIECAP-9 precedence function, and the as_of bound [server_now - 60 s, server_now + 2 s]. Shipped-model boundaries (L = 1490 kW): C = 1490.0 and 1489.5 close, 1489.4 CAPACITY_EXCEEDED; ages 19.999/20.000 fresh, 20.001 stale; -1.999/-2.000 fresh, -2.001 invalid; as_of -60.000/+2.000 accepted, -60.001/+2.001 -> 422. Tolerance 0.5 kW engineering units; per-unit waived by Q-SPEC-4 (record against STD-SAFETY-6). U1 characterization and backend/tests/test_flisr.py green unchanged.\"\n  },\n  {\n    \"id\": \"U4\",\n    \"wave\": 4,\n    \"title\": \"Safety invariant: no tie closed without usable capacity and L <= C + 0.5 kW, over >= 500 seeded cases\",\n    \"requirement_ids\": [\"REQ-TIECAP-21\"],\n    \"depends_on\": [\"U3\"],\n    \"files\": [\n      \"backend/tests/test_flisr_tie_capacity_invariant.py\"\n    ],\n    \"safety\": \"safety-critical (inherited, STD-REQ-6). Test-only; ships in the protected-path change set: two human reviewers (STD-GOV-6, STD-SAFETY-1).\",\n    \"scope_notes\": [\n      \"STD-SAFETY-5: at least 500 seeded random cases over radial and branched feeders with one or more SCADA ties; capacity maps covering missing, non-GOOD, stale, boundary age, future-dated, NaN/+-inf, negative, below/at/above L + 0.5 kW; injected as_of.\",\n      \"The seeded generator in backend/tests/rca_def_flisr_7_sweep.py (branch agent/rca-backfeed/explore, not on main) may be copied into this one file; it only places ties at the feeder tail, so the generator must also place ties elsewhere to exercise multi-tie per-tie blocking.\",\n      \"The invariant is about capacity gating only; it must neither assert nor exclude DEF-FLISR-7 back-feed (spec section 3). The oracle reproduces the specification's candidate-set definition, including today's pick-up semantics.\"\n    ],\n    \"oracle\": \"QA-owned BFS of REQ-TIECAP-3 plus closed-form usability and REQ-TIECAP-9 precedence, implemented in the test file without importing app.network or app.flisr helpers; seed and case count printed in the test output for the PR evidence.\"\n  }\n]\n",
+      "decomposition_md": "docs/specs/feature-tie-capacity/decomposition.md",
+      "phases": {
+        "prepare": "STD-GOV, STD-REQ, STD-SAFETY loaded; repo instruction files read; baseline 2 passed",
+        "execute": "4 units, 4 sequential waves",
+        "verify": "partition, acyclicity and intra-wave overlap checks passed",
+        "deliver": "PASS, artifacts on branch agent/feature-tie-capacity/decompose"
+      }
+    }
+  }
+}
