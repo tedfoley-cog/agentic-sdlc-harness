@@ -48,8 +48,14 @@ def check_model_logic_separation(files: list[DiffFile], model_globs: list[str]) 
                                      "text": text.strip(),
                                      "fix": "Models carry data only; put behaviour in a service/function module."})
         else:
+            pending_decorator = False
             for no, text in f.added_lines:
-                if MODEL_DECL.match(text) and not text.lstrip().startswith("@"):
+                if text.strip().startswith("@dataclass"):
+                    pending_decorator = True
+                    continue
+                is_decl = MODEL_DECL.match(text) or (pending_decorator and text.lstrip().startswith("class "))
+                pending_decorator = False
+                if is_decl:
                     findings.append({"file": f.path, "line": no, "rule": "model-in-logic-file",
                                      "text": text.strip(),
                                      "fix": "Declare data models in the designated models module, not next to logic."})

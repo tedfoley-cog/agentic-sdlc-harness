@@ -1,0 +1,6 @@
+{
+  "name": "agentic-sdlc",
+  "version": "0.1.0",
+  "description": "Stage skills for the agentic SDLC harness: Specify, Decompose, Design, Architect, Coding, QA, Integrate, Document, Trace, Release, and the RCA chain Explore, Evaluate, Review, Fix. Each skill follows prepare/execute/verify/deliver and returns a structured verdict with evidence.",
+  "skills": "skills"
+}
