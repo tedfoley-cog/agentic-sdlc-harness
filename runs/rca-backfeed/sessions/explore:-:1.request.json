@@ -1,0 +1,160 @@
+{
+  "prompt": "# Agentic SDLC stage brief \u2014 EXPLORE (run rca-backfeed, attempt 1)\n\nRole: Investigator. Reproduce the defect and gather evidence for a root-cause hypothesis.\n\n## Contract\nWork in four phases and report each in your final output: **prepare** (load the governing standards listed below and confirm each by id; if one is missing, stop with BLOCKED), **execute**, **verify** (re-check your own output against the standards and the repo contract), **deliver** (structured verdict with evidence).\n\nAllowed verdicts for this stage: PASS, BLOCKED, INSUFFICIENT_EVIDENCE. Every verdict needs `evidence[]` entries that point at files, tests, commands, commits, PRs or standard clauses you actually used or produced.\nGaps, contradictions or missing acceptance criteria in your inputs are reported as `questions[]` with stable ids (`Q-<STAGE>-<n>`) and verdict BLOCKED. Never fill a gap with an assumption.\nYou never merge, approve, close a gate, or move a ticket past ready-for-review. Draft PRs only; branches start with `agent/`; every commit carries the trailer `AI-Governance: run=rca-backfeed stage=explore agent=devin model=normal`; PRs carry the `ai-generated` label.\n\n## Access and boundaries\nTarget repository: `tedfoley-cog/adms-test-automation-demo` (default branch `main`). Safety classification: **safety-critical**.\nFiles you may change: ['**']. Files you must not change: ['(none)'].\nCommands \u2014 build: `npm --prefix console run build`; test: `pytest backend -q`; lint: `ruff check backend tools`.\nRequirement ids match `(?:REQ|DEF)-[A-Z]+-\\d{1,3}`; reference them verbatim.\nProtected paths (two human reviewers): ['backend/app/flisr.py', 'firmware/src/**'].\nRepo instruction files to read first: ['.agents/skills/safety-critical-change/SKILL.md', 'DEMO_NOTES.md'].\nLayer visibility: {\"models\": [\"backend/app/models.py\"], \"logic\": [\"backend/app/flisr.py\", \"backend/app/state_estimation.py\", \"backend/app/agc.py\"], \"api\": [\"backend/app/main.py\"], \"ui\": [\"console/**\"], \"visibility\": {\"api\": [\"logic\", \"models\"], \"logic\": [\"models\"], \"ui\": [\"api\"]}}.\n\n## Governing standards (loaded at runtime \u2014 confirm each id in `standards_loaded`)\n\n### STD-GOV \u2014 STD-GOV \u2014 AI governance and delivery standard\n\n# STD-GOV \u2014 AI governance and delivery standard\nVersion: 1.1\n\n- **STD-GOV-1**: Agents work on branches prefixed `agent/` and open draft pull requests only. Marking ready-for-review is the last agent action; approving, merging and moving tickets past ready-for-review are human actions.\n- **STD-GOV-2**: Every commit carries `AI-Governance: run=<run-id> stage=<stage> agent=<agent> model=<mode>`; every PR carries the `ai-generated` label and a body with requirement ids, evidence and the trace table.\n- **STD-GOV-3**: Human gate decisions are taken in a system of record where only a human account can act (GitHub label event / PR review). Decisions by bot accounts are ignored. Agents never infer a decision from silence.\n- **STD-GOV-4**: The audit log is append-only and hash-chained; it records agent, run id, stage, brief, model, timestamps, artifacts read and produced, verdicts, gate decisions and the human decision-maker.\n- **STD-GOV-5**: Feedback loops are bounded by the repo contract; on reaching the limit the run escalates to NEEDS-HUMAN with the full loop history.\n- **STD-GOV-6**: Protected paths require the configured number of human reviewers irrespective of agent confidence; safety-critical classification implies at least two.\n- **STD-GOV-7**: Customer identifiers, personal names and credentials never appear in briefs, logs or PRs.\n\n### STD-RCA \u2014 STD-RCA \u2014 Root-cause analysis standard\n\n# STD-RCA \u2014 Root-cause analysis standard\nVersion: 1.2\n\n- **STD-RCA-1**: Explore produces a single falsifiable hypothesis and an evidence package: reproduction steps, failing test, observed vs expected, relevant code excerpts with file:line, and the data that rules out the main alternatives.\n- **STD-RCA-2**: Evaluate judges the hypothesis from the evidence package only, without codebase access. It returns CONFIRMED, REFUTED (with the specific objection) or INSUFFICIENT_EVIDENCE (with the exact missing item).\n- **STD-RCA-3**: A refutation in round one starts a new exploration round with the objections as constraints. At most two rounds; an unconfirmed hypothesis after round two is published as a RETRACTION, never as a weak finding.\n- **STD-RCA-4**: Review decides whether the confirmed root cause is safe to act on: blast radius, affected requirement ids, whether a fail-safe fix exists, and whether the change is safety-critical (two reviewers).\n- **STD-RCA-5**: Fix follows STD-SAFETY-3/4: failing test first, smallest fail-safe fix, invariant demonstrated.\n- **STD-RCA-6**: The PR body contains Defect, Root cause, Fix, Evidence and Blast radius sections.\n\n### STD-SAFETY \u2014 STD-SAFETY \u2014 Safety-related change standard\n\n# STD-SAFETY \u2014 Safety-related change standard\nVersion: 3.1\n\n- **STD-SAFETY-1**: A change touching protection, control or isolation logic is safety-critical regardless of size and requires two human reviewers before merge (IEC 61508-3 independence of verification).\n- **STD-SAFETY-2**: Current behaviour is pinned with characterization tests before any change so regressions are visible as test failures, not as field events.\n- **STD-SAFETY-3**: A defect is reproduced with a failing test before it is fixed. If it cannot be reproduced, the stage stops with INSUFFICIENT_EVIDENCE rather than applying a speculative fix.\n- **STD-SAFETY-4**: The fix is the smallest change that makes the failing test pass while keeping the characterization tests green; fail-safe (refuse / block / hold) is preferred over \"best effort\".\n- **STD-SAFETY-5**: A safety invariant is stated and demonstrated over seeded inputs (at least 500 where a generator exists) \u2014 for example \"a de-energised fault section is never back-fed during restoration\" or \"the differential element never operates below the restraint characteristic\".\n- **STD-SAFETY-6**: Operate boundaries are compared against an independent closed-form oracle, with tolerance stated in per-unit and in engineering units (IEC 60255-187-1 accuracy classes).\n- **STD-SAFETY-7**: The harness does not claim tool certification credit. Each run produces a tool-classification argument (IEC 61508-3 T1/T2/T3) as a finding for the assessor.\n- **STD-SAFETY-8**: Agents never access production systems, production secrets or field devices.\n\n## Source requirement\n\n# DEF-FLISR-7 \u2014 restoration back-fed a de-energised section\n\nDuring drill 14 the restoration plan closed a tie switch that re-energised the faulted section.\nExpected: the faulted section stays isolated. Observed: `plan_restoration` returned a close action\non the tie adjacent to the faulted section. Reproduce with the drill-14 savecase in `backend/tests/data`.\n\n## Stage skill\n\n# Stage skill contract (applies to every stage)\n\n1. **prepare** \u2014 Load every governing standard listed in the brief and record their ids in\n   `standards_loaded`. If one is missing or unreadable, stop: verdict `BLOCKED`, question\n   `Q-<STAGE>-STD`, no further work. Read the repo contract and the instruction files it names.\n2. **execute** \u2014 Do only this stage's work, inside the file boundaries in the brief. Anything\n   outside the brief is reported, not done.\n3. **verify** \u2014 Re-check your own output against each standard clause you loaded; cite the\n   clause ids in `evidence[]`. Run the repo's lint/test commands yourself when you changed code.\n4. **deliver** \u2014 Return the structured verdict. Allowed verdicts are listed in the brief; every\n   claim has an `evidence[]` entry (file, test, command output, commit, PR, standard clause).\n\nRules that never bend: gaps become `questions[]` + `BLOCKED` (no assumptions); draft PRs\nonly; branches start with the agent prefix; the `AI-Governance:` trailer is on every commit;\nthe `ai-generated` label is on every PR; you never approve, merge, or move a ticket past\nready-for-review; missing input is never silently treated as zero.\n\n\n---\nname: explore\ndescription: Reproduces a reported defect, gathers evidence and states one falsifiable root-cause hypothesis with an evidence package the Evaluate stage can judge without code access. Used first in the RCA workflow and again with the evaluator's objections as constraints.\n---\n\n# Explore\n\nFollows the four-phase contract in `CONTRACT.md`. Allowed verdicts: PASS, BLOCKED, INSUFFICIENT_EVIDENCE.\n\n## Prepare\nLoad the governing standards named in the brief (ids in `standards_loaded`); stop with `BLOCKED` if any is missing. Read the repo contract and its instruction files.\n\n## Execute\n1. Reproduce: write the smallest failing test that demonstrates the defect (STD-SAFETY-3). If it cannot be reproduced, return INSUFFICIENT_EVIDENCE with what you tried.\n2. Localise: code excerpts with file:line, the data path, and what rules out the main alternatives (STD-RCA-1).\n3. State one hypothesis in one sentence. If feedback from Evaluate is present, each objection is a constraint \u2014 address it explicitly.\n4. Do not fix anything. Commit the failing test on `agent/<run-id>/explore` only if the brief allows test files.\n\n## Deliver\n`artifacts.hypothesis` (string) and `artifacts.evidence_package` (markdown: reproduction, failing test output, excerpts, alternatives ruled out). `PASS` / `BLOCKED` / `INSUFFICIENT_EVIDENCE`.\n\n## Deliver\nFinish by calling provide_structured_output with an object matching the schema you were given: `verdict`, `summary`, `evidence[]`, and where relevant `questions[]`, `trace[]` (requirement_id/kind/ref), `files_touched[]`, `branch`, `pr_url`, `standards_loaded[]`, `artifacts{}` (your stage's named outputs as markdown or JSON strings), `model`.\n",
+  "title": "[rca-backfeed] explore  #1",
+  "repos": [
+    "tedfoley-cog/adms-test-automation-demo"
+  ],
+  "devin_mode": "normal",
+  "structured_output_schema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+      "verdict",
+      "summary",
+      "evidence"
+    ],
+    "properties": {
+      "verdict": {
+        "type": "string",
+        "enum": [
+          "PASS",
+          "FAIL",
+          "BLOCKED",
+          "CONFIRMED",
+          "VIOLATION",
+          "NEEDS-HUMAN",
+          "REFUTED",
+          "INSUFFICIENT_EVIDENCE",
+          "RETRACTION"
+        ]
+      },
+      "summary": {
+        "type": "string",
+        "minLength": 1
+      },
+      "evidence": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "kind",
+            "ref"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "file",
+                "test",
+                "command",
+                "pr",
+                "commit",
+                "url",
+                "standard",
+                "requirement",
+                "artifact",
+                "session",
+                "note"
+              ]
+            },
+            "ref": {
+              "type": "string"
+            },
+            "detail": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "questions": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "id",
+            "question"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^Q-[A-Z0-9-]+$"
+            },
+            "question": {
+              "type": "string"
+            },
+            "blocking_units": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "artifacts": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "trace": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "requirement_id",
+            "kind",
+            "ref"
+          ],
+          "properties": {
+            "requirement_id": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "design",
+                "code",
+                "test",
+                "pr",
+                "doc"
+              ]
+            },
+            "ref": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "standards_loaded": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "files_touched": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "branch": {
+        "type": "string"
+      },
+      "pr_url": {
+        "type": "string"
+      },
+      "session_url": {
+        "type": "string"
+      },
+      "model": {
+        "type": "string"
+      }
+    }
+  },
+  "structured_output_required": true,
+  "tags": [
+    "agentic-sdlc",
+    "rca-backfeed",
+    "explore"
+  ],
+  "max_acu_limit": 15
+}

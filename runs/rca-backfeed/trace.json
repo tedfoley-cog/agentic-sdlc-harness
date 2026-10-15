@@ -1,0 +1,26 @@
+{
+  "requirements": {
+    "DEF-FLISR-7": "# DEF-FLISR-7 \u2014 restoration back-fed a de-energised section"
+  },
+  "rows": [],
+  "coverage": {
+    "requirements": 1,
+    "with_design": 0,
+    "with_code": 0,
+    "with_test": 0,
+    "with_pr": 0,
+    "test_coverage": 0.0,
+    "orphans": [
+      "DEF-FLISR-7"
+    ],
+    "matrix": {
+      "DEF-FLISR-7": {
+        "design": [],
+        "code": [],
+        "test": [],
+        "pr": [],
+        "doc": []
+      }
+    }
+  }
+}

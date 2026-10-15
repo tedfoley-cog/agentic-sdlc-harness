@@ -1,0 +1,67 @@
+# Repo contract for the public ADMS fixture (tedfoley-cog/adms-test-automation-demo).
+# Everything the harness knows about a target repo is in this file; swap it to point at another repo.
+repo: tedfoley-cog/adms-test-automation-demo
+default_branch: main
+commands:
+  build: npm --prefix console run build
+  test: pytest backend -q
+  lint: ruff check backend tools
+requirement_id_pattern: '(?:REQ|DEF)-[A-Z]+-\d{1,3}'
+safety_classification: safety-critical          # FLISR isolates and restores feeders
+protected_paths:
+  - pattern: backend/app/flisr.py
+    reviewers: 2
+    reason: isolation / restoration logic
+  - pattern: firmware/src/**
+    reviewers: 2
+    reason: protection firmware
+standards:
+  provider: markdown                             # or: confluence (CONFLUENCE_BASE_URL / CONFLUENCE_TOKEN env)
+  location: standards
+  required: [STD-GOV, STD-SAFETY]
+  by_stage:
+    specify: [STD-REQ]
+    design: [STD-ARCH]
+    architect: [STD-ARCH]
+    coding: [STD-CODE]
+    fix: [STD-CODE]
+    qa: [STD-QA]
+    document: [STD-DOC]
+    explore: [STD-RCA]
+    evaluate: [STD-RCA]
+    review: [STD-RCA]
+instructions:
+  - .agents/skills/safety-critical-change/SKILL.md
+  - DEMO_NOTES.md
+boundaries:
+  coding:
+    allowed: [backend/app/flisr.py, backend/tests/**]
+    forbidden: [backend/app/models.py, firmware/**, legacy/**]
+  fix:
+    allowed: [backend/app/flisr.py, backend/tests/**]
+    forbidden: [backend/app/models.py, firmware/**, legacy/**]
+  document:
+    allowed: [docs/**, README.md]
+layers:
+  models: [backend/app/models.py]
+  logic: [backend/app/flisr.py, backend/app/state_estimation.py, backend/app/agc.py]
+  api: [backend/app/main.py]
+  ui: [console/**]
+  visibility: { api: [logic, models], logic: [models], ui: [api] }
+loops: { architect: 2, qa: 2, rca: 2 }
+models:
+  default: normal
+  coding: normal
+  qa: ultra          # QA must differ from coding (enforced)
+  evaluate: ultra
+gates:
+  provider: file     # dry run: GitHub gate would (correctly) ignore the only account available, devin-ai-integration[bot]; decisions recorded as explicit stand-ins
+  repo: tedfoley-cog/adms-test-automation-demo
+  approve_label: gate:approved
+  reject_label: gate:rejected
+  min_reviewers: 1
+governance: { branch_prefix: agent/, draft_only: true, pr_label: ai-generated, trailer: AI-Governance }
+checks: { model_globs: ['**/models.py'] }
+rca: { fix_files: [backend/app/flisr.py, backend/tests/**] }
+release: { enabled: false }
+limits: { max_acu_per_stage: 15 }

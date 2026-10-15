@@ -1,0 +1,43 @@
+{
+  "run_id": "feature-tie-capacity",
+  "workflow": "feature",
+  "requirement": "# Change request: respect tie-switch capacity during FLISR restoration\n\nRestoration plans produced by `backend/app/flisr.py::locate_fault` / the restoration planner must\nnot transfer more load onto a tie switch than its rated capacity. When the tie capacity is not\nknown the plan must say so instead of restoring. Telemetry for tie capacity arrives from the SCADA\nscan every 10 s.\n",
+  "requirement_ref": "examples/targets/adms/requirements/REQ-tie-capacity.md",
+  "plan": [
+    "specify",
+    "gate:after-specify",
+    "decompose",
+    "design-architect-loop",
+    "gate:after-architect",
+    "coding-waves",
+    "integrate",
+    "document",
+    "trace",
+    "gate:before-merge",
+    "release",
+    "finish"
+  ],
+  "cursor": 0,
+  "attempts": {
+    "specify:-": 0
+  },
+  "artifacts": {},
+  "units": [],
+  "waves_done": [],
+  "questions": [],
+  "answers": [],
+  "loops": {},
+  "gates": {},
+  "status": "running",
+  "story_points": 1.0,
+  "prs": [],
+  "branches": [],
+  "verify_results": {},
+  "paused_on": {
+    "reason": "awaiting-session",
+    "stage": "specify",
+    "unit": "-",
+    "attempt": 1,
+    "request": "sessions/specify:-:1.request.json"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "run_id": "rca-backfeed",
+  "workflow": "rca",
+  "requirement": "# DEF-FLISR-7 \u2014 restoration back-fed a de-energised section\n\nDuring drill 14 the restoration plan closed a tie switch that re-energised the faulted section.\nExpected: the faulted section stays isolated. Observed: `plan_restoration` returned a close action\non the tie adjacent to the faulted section. Reproduce with the drill-14 savecase in `backend/tests/data`.\n",
+  "requirement_ref": "examples/targets/adms/defects/DEF-FLISR-7.md",
+  "plan": [
+    "explore-evaluate-loop",
+    "review",
+    "gate:after-review",
+    "fix-wave",
+    "integrate",
+    "document",
+    "trace",
+    "gate:before-merge",
+    "finish"
+  ],
+  "cursor": 0,
+  "attempts": {
+    "explore:-": 0
+  },
+  "artifacts": {},
+  "units": [],
+  "waves_done": [],
+  "questions": [],
+  "answers": [],
+  "loops": {},
+  "gates": {},
+  "status": "running",
+  "story_points": 1.0,
+  "prs": [],
+  "branches": [],
+  "verify_results": {},
+  "paused_on": {
+    "reason": "awaiting-session",
+    "stage": "explore",
+    "unit": "-",
+    "attempt": 1,
+    "request": "sessions/explore:-:1.request.json"
+  }
+}

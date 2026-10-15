@@ -1,0 +1,14 @@
+{
+  "requirements": {},
+  "rows": [],
+  "coverage": {
+    "requirements": 0,
+    "with_design": 0,
+    "with_code": 0,
+    "with_test": 0,
+    "with_pr": 0,
+    "test_coverage": 0.0,
+    "orphans": [],
+    "matrix": {}
+  }
+}
