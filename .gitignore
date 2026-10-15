@@ -8,3 +8,4 @@ console/public/runs/
 console/test-results/
 playwright-report/
 test-results/
+runs/*/worktrees/
