@@ -1,0 +1,10 @@
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+node_modules/
+console/dist/
+console/public/runs/
+console/test-results/
+playwright-report/
+test-results/

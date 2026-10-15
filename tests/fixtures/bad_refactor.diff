@@ -1,0 +1,10 @@
+diff --git a/backend/app/flisr.py b/backend/app/flisr.py
+--- a/backend/app/flisr.py
++++ b/backend/app/flisr.py
+@@ -40,6 +40,5 @@ def plan_restoration(feeder, telemetry):
+-    capacity = telemetry.get("tie_capacity_kw")
+-    if capacity is None:
+-        raise FlisrError("tie capacity unknown; refusing restoration")
++    capacity = telemetry.get("tie_capacity_kw", 0)
+     load = telemetry.get("load_kw") or 0
+     return capacity >= load

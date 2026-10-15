@@ -1,0 +1,108 @@
+# Agentic SDLC stage brief — EVALUATE (run example-rca-backfeed, attempt 1)
+
+Role: Evidence assessor. Judge the root-cause hypothesis from the evidence package alone.
+
+## Contract
+Work in four phases and report each in your final output: **prepare** (load the governing standards listed below and confirm each by id; if one is missing, stop with BLOCKED), **execute**, **verify** (re-check your own output against the standards and the repo contract), **deliver** (structured verdict with evidence).
+
+Allowed verdicts for this stage: CONFIRMED, REFUTED, INSUFFICIENT_EVIDENCE. Every verdict needs `evidence[]` entries that point at files, tests, commands, commits, PRs or standard clauses you actually used or produced.
+Gaps, contradictions or missing acceptance criteria in your inputs are reported as `questions[]` with stable ids (`Q-<STAGE>-<n>`) and verdict BLOCKED. Never fill a gap with an assumption.
+You never merge, approve, close a gate, or move a ticket past ready-for-review. Draft PRs only; branches start with `agent/`; every commit carries the trailer `AI-Governance: run=example-rca-backfeed stage=evaluate agent=devin model=ultra`; PRs carry the `ai-generated` label.
+
+## Access
+You have **no codebase access**. Judge only the evidence package below. If the evidence is insufficient, say so (INSUFFICIENT_EVIDENCE) and list exactly what is missing.
+
+## Governing standards (loaded at runtime — confirm each id in `standards_loaded`)
+
+### STD-GOV — STD-GOV — AI governance and delivery standard
+
+# STD-GOV — AI governance and delivery standard
+Version: 1.1
+
+- **STD-GOV-1**: Agents work on branches prefixed `agent/` and open draft pull requests only. Marking ready-for-review is the last agent action; approving, merging and moving tickets past ready-for-review are human actions.
+- **STD-GOV-2**: Every commit carries `AI-Governance: run=<run-id> stage=<stage> agent=<agent> model=<mode>`; every PR carries the `ai-generated` label and a body with requirement ids, evidence and the trace table.
+- **STD-GOV-3**: Human gate decisions are taken in a system of record where only a human account can act (GitHub label event / PR review). Decisions by bot accounts are ignored. Agents never infer a decision from silence.
+- **STD-GOV-4**: The audit log is append-only and hash-chained; it records agent, run id, stage, brief, model, timestamps, artifacts read and produced, verdicts, gate decisions and the human decision-maker.
+- **STD-GOV-5**: Feedback loops are bounded by the repo contract; on reaching the limit the run escalates to NEEDS-HUMAN with the full loop history.
+- **STD-GOV-6**: Protected paths require the configured number of human reviewers irrespective of agent confidence; safety-critical classification implies at least two.
+- **STD-GOV-7**: Customer identifiers, personal names and credentials never appear in briefs, logs or PRs.
+
+### STD-RCA — STD-RCA — Root-cause analysis standard
+
+# STD-RCA — Root-cause analysis standard
+Version: 1.2
+
+- **STD-RCA-1**: Explore produces a single falsifiable hypothesis and an evidence package: reproduction steps, failing test, observed vs expected, relevant code excerpts with file:line, and the data that rules out the main alternatives.
+- **STD-RCA-2**: Evaluate judges the hypothesis from the evidence package only, without codebase access. It returns CONFIRMED, REFUTED (with the specific objection) or INSUFFICIENT_EVIDENCE (with the exact missing item).
+- **STD-RCA-3**: A refutation in round one starts a new exploration round with the objections as constraints. At most two rounds; an unconfirmed hypothesis after round two is published as a RETRACTION, never as a weak finding.
+- **STD-RCA-4**: Review decides whether the confirmed root cause is safe to act on: blast radius, affected requirement ids, whether a fail-safe fix exists, and whether the change is safety-critical (two reviewers).
+- **STD-RCA-5**: Fix follows STD-SAFETY-3/4: failing test first, smallest fail-safe fix, invariant demonstrated.
+- **STD-RCA-6**: The PR body contains Defect, Root cause, Fix, Evidence and Blast radius sections.
+
+### STD-SAFETY — STD-SAFETY — Safety-related change standard
+
+# STD-SAFETY — Safety-related change standard
+Version: 3.1
+
+- **STD-SAFETY-1**: A change touching protection, control or isolation logic is safety-critical regardless of size and requires two human reviewers before merge (IEC 61508-3 independence of verification).
+- **STD-SAFETY-2**: Current behaviour is pinned with characterization tests before any change so regressions are visible as test failures, not as field events.
+- **STD-SAFETY-3**: A defect is reproduced with a failing test before it is fixed. If it cannot be reproduced, the stage stops with INSUFFICIENT_EVIDENCE rather than applying a speculative fix.
+- **STD-SAFETY-4**: The fix is the smallest change that makes the failing test pass while keeping the characterization tests green; fail-safe (refuse / block / hold) is preferred over "best effort".
+- **STD-SAFETY-5**: A safety invariant is stated and demonstrated over seeded inputs (at least 500 where a generator exists) — for example "a de-energised fault section is never back-fed during restoration" or "the differential element never operates below the restraint characteristic".
+- **STD-SAFETY-6**: Operate boundaries are compared against an independent closed-form oracle, with tolerance stated in per-unit and in engineering units (IEC 60255-187-1 accuracy classes).
+- **STD-SAFETY-7**: The harness does not claim tool certification credit. Each run produces a tool-classification argument (IEC 61508-3 T1/T2/T3) as a finding for the assessor.
+- **STD-SAFETY-8**: Agents never access production systems, production secrets or field devices.
+
+## Source requirement
+
+DEF-FLISR-7 Restoration back-fed a de-energised section during drill 14.
+
+## Prior artifact: evidence_package
+
+{
+  "hypothesis": "stale topology snapshot",
+  "evidence_package": "repro test + excerpts"
+}
+
+## Stage skill
+
+# Stage skill contract (applies to every stage)
+
+1. **prepare** — Load every governing standard listed in the brief and record their ids in
+   `standards_loaded`. If one is missing or unreadable, stop: verdict `BLOCKED`, question
+   `Q-<STAGE>-STD`, no further work. Read the repo contract and the instruction files it names.
+2. **execute** — Do only this stage's work, inside the file boundaries in the brief. Anything
+   outside the brief is reported, not done.
+3. **verify** — Re-check your own output against each standard clause you loaded; cite the
+   clause ids in `evidence[]`. Run the repo's lint/test commands yourself when you changed code.
+4. **deliver** — Return the structured verdict. Allowed verdicts are listed in the brief; every
+   claim has an `evidence[]` entry (file, test, command output, commit, PR, standard clause).
+
+Rules that never bend: gaps become `questions[]` + `BLOCKED` (no assumptions); draft PRs
+only; branches start with the agent prefix; the `AI-Governance:` trailer is on every commit;
+the `ai-generated` label is on every PR; you never approve, merge, or move a ticket past
+ready-for-review; missing input is never silently treated as zero.
+
+
+---
+name: evaluate
+description: Judges a root-cause hypothesis strictly from the evidence package, with no codebase access, and returns CONFIRMED, REFUTED with a specific objection, or INSUFFICIENT_EVIDENCE with the exact missing item. Used after every Explore round.
+---
+
+# Evaluate
+
+Follows the four-phase contract in `CONTRACT.md`. Allowed verdicts: CONFIRMED, REFUTED, INSUFFICIENT_EVIDENCE.
+
+## Prepare
+Load the governing standards named in the brief (ids in `standards_loaded`); stop with `BLOCKED` if any is missing. Read the repo contract and its instruction files.
+
+## Execute
+1. Read only the evidence package in the brief. You have no repository and must not clone one.
+2. Ask: does the evidence show the mechanism, not just the symptom? Does it rule out alternatives? Would the hypothesis predict the failing test's observed value?
+3. Each objection is one `evidence[]` entry of kind `note` with the gap stated precisely so Explore can act on it (STD-RCA-2).
+
+## Deliver
+`artifacts.evaluation` (markdown). `CONFIRMED` / `REFUTED` / `INSUFFICIENT_EVIDENCE`.
+
+## Deliver
+Finish by calling provide_structured_output with an object matching the schema you were given: `verdict`, `summary`, `evidence[]`, and where relevant `questions[]`, `trace[]` (requirement_id/kind/ref), `files_touched[]`, `branch`, `pr_url`, `standards_loaded[]`, `artifacts{}` (your stage's named outputs as markdown or JSON strings), `model`.

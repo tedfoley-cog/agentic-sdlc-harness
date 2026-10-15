@@ -1,0 +1,129 @@
+{
+  "run_id": "example-rca-backfeed",
+  "workflow": "rca",
+  "requirement": "DEF-FLISR-7 Restoration back-fed a de-energised section during drill 14.",
+  "requirement_ref": "examples/targets/adms/defects/DEF-FLISR-7.md",
+  "plan": [
+    "explore-evaluate-loop",
+    "review",
+    "gate:after-review",
+    "fix-wave",
+    "integrate",
+    "document",
+    "trace",
+    "gate:before-merge",
+    "finish"
+  ],
+  "cursor": 8,
+  "attempts": {
+    "explore:-": 2,
+    "evaluate:-": 2,
+    "review:-": 1,
+    "fix:fix": 1,
+    "qa:fix": 1,
+    "integrate:-": 1,
+    "document:-": 1
+  },
+  "artifacts": {
+    "explore.hypothesis": "snapshot ordering",
+    "explore.evidence_package": "repro + ordering trace",
+    "evidence_package": {
+      "hypothesis": "snapshot ordering",
+      "evidence_package": "repro + ordering trace"
+    },
+    "root_cause": {
+      "hypothesis": "snapshot ordering",
+      "evaluation": "Ordering trace demonstrates the mechanism and excludes telemetry lag."
+    },
+    "review.review": "...",
+    "review": "...",
+    "integrate": "PR ready for review.",
+    "document": "Release note added."
+  },
+  "units": [
+    {
+      "id": "fix",
+      "title": "Apply the reviewed root-cause fix",
+      "files": [
+        "backend/app/flisr.py",
+        "backend/tests/**"
+      ],
+      "depends_on": []
+    }
+  ],
+  "waves_done": [],
+  "questions": [],
+  "answers": [],
+  "loops": {},
+  "gates": {
+    "after-review": {
+      "ref": "/home/ubuntu/repos/agentic-sdlc-harness/runs/example-rca-backfeed/gates/after-review.md",
+      "opened": "2026-10-15T22:31:24Z",
+      "status": "approved",
+      "actor": "protection-reviewer",
+      "decided": "2026-10-15T22:31:24Z"
+    },
+    "before-merge": {
+      "ref": "/home/ubuntu/repos/agentic-sdlc-harness/runs/example-rca-backfeed/gates/before-merge.md",
+      "opened": "2026-10-15T22:31:24Z",
+      "status": "approved",
+      "actor": "ops-lead",
+      "decided": "2026-10-15T22:31:24Z"
+    }
+  },
+  "status": "ready-to-merge",
+  "story_points": 2,
+  "prs": [
+    "https://github.com/example-org/product-repo/pull/102"
+  ],
+  "branches": [
+    "agent/example/fix"
+  ],
+  "verify_results": {
+    "fix:0": {
+      "verdict": "PASS",
+      "checks": [
+        {
+          "name": "model_logic_separation",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        },
+        {
+          "name": "removed_error_handling",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        },
+        {
+          "name": "missing_input_as_zero",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        },
+        {
+          "name": "scope",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        },
+        {
+          "name": "governance",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        }
+      ],
+      "commands": {},
+      "branch": "agent/example/fix",
+      "files_in_diff": []
+    }
+  },
+  "paused_on": {
+    "reason": "gate-waiting",
+    "gate": "before-merge",
+    "ref": "/home/ubuntu/repos/agentic-sdlc-harness/runs/example-rca-backfeed/gates/before-merge.md",
+    "reviewers": 0,
+    "reviewers_required": 2
+  }
+}

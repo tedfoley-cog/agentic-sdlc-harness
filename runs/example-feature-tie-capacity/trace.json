@@ -1,0 +1,161 @@
+{
+  "requirements": {
+    "REQ-FLISR-101": "REQ-FLISR-101 ...",
+    "REQ-FLISR-102": "REQ-FLISR-102 ...",
+    "REQ-FLISR-103": "REQ-FLISR-103 ..."
+  },
+  "rows": [
+    {
+      "requirement_id": "REQ-FLISR-101",
+      "kind": "design",
+      "ref": "D-FLISR-1",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-FLISR-102",
+      "kind": "design",
+      "ref": "D-FLISR-1",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-FLISR-103",
+      "kind": "design",
+      "ref": "D-FLISR-1",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-FLISR-101",
+      "kind": "code",
+      "ref": "backend/app/flisr.py::tie_capacity",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-FLISR-101",
+      "kind": "test",
+      "ref": "test_flisr_capacity.py::test_req_flisr_101",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-FLISR-102",
+      "kind": "code",
+      "ref": "backend/app/flisr.py::plan_restoration",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-FLISR-102",
+      "kind": "test",
+      "ref": "test_flisr_capacity.py::test_req_flisr_102",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-FLISR-103",
+      "kind": "code",
+      "ref": "backend/app/flisr.py::plan_restoration",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-FLISR-103",
+      "kind": "test",
+      "ref": "test_flisr_stale.py::test_req_flisr_103",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-FLISR-101",
+      "kind": "pr",
+      "ref": "https://github.com/example-org/product-repo/pull/101",
+      "stage": "integrate"
+    },
+    {
+      "requirement_id": "REQ-FLISR-102",
+      "kind": "pr",
+      "ref": "https://github.com/example-org/product-repo/pull/101",
+      "stage": "integrate"
+    },
+    {
+      "requirement_id": "REQ-FLISR-103",
+      "kind": "pr",
+      "ref": "https://github.com/example-org/product-repo/pull/101",
+      "stage": "integrate"
+    },
+    {
+      "requirement_id": "REQ-FLISR-101",
+      "kind": "doc",
+      "ref": "docs/flisr.md",
+      "stage": "document"
+    },
+    {
+      "requirement_id": "REQ-FLISR-102",
+      "kind": "doc",
+      "ref": "docs/flisr.md",
+      "stage": "document"
+    },
+    {
+      "requirement_id": "REQ-FLISR-103",
+      "kind": "doc",
+      "ref": "docs/flisr.md",
+      "stage": "document"
+    }
+  ],
+  "coverage": {
+    "requirements": 3,
+    "with_design": 3,
+    "with_code": 3,
+    "with_test": 3,
+    "with_pr": 3,
+    "test_coverage": 1.0,
+    "orphans": [],
+    "matrix": {
+      "REQ-FLISR-101": {
+        "design": [
+          "D-FLISR-1"
+        ],
+        "code": [
+          "backend/app/flisr.py::tie_capacity"
+        ],
+        "test": [
+          "test_flisr_capacity.py::test_req_flisr_101"
+        ],
+        "pr": [
+          "https://github.com/example-org/product-repo/pull/101"
+        ],
+        "doc": [
+          "docs/flisr.md"
+        ]
+      },
+      "REQ-FLISR-102": {
+        "design": [
+          "D-FLISR-1"
+        ],
+        "code": [
+          "backend/app/flisr.py::plan_restoration"
+        ],
+        "test": [
+          "test_flisr_capacity.py::test_req_flisr_102"
+        ],
+        "pr": [
+          "https://github.com/example-org/product-repo/pull/101"
+        ],
+        "doc": [
+          "docs/flisr.md"
+        ]
+      },
+      "REQ-FLISR-103": {
+        "design": [
+          "D-FLISR-1"
+        ],
+        "code": [
+          "backend/app/flisr.py::plan_restoration"
+        ],
+        "test": [
+          "test_flisr_stale.py::test_req_flisr_103"
+        ],
+        "pr": [
+          "https://github.com/example-org/product-repo/pull/101"
+        ],
+        "doc": [
+          "docs/flisr.md"
+        ]
+      }
+    }
+  }
+}

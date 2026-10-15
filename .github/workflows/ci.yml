@@ -1,0 +1,35 @@
+name: ci
+on:
+  push:
+  pull_request:
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install -e '.[dev]'
+      - run: ruff check harness tests tools
+      - run: pytest -q
+      - name: deterministic checks self-test on a known-bad diff
+        run: |
+          harness check --diff tests/fixtures/bad_refactor.diff --brief-files backend/app/flisr.py > /tmp/check.json || true
+          python -c "import json; r=json.load(open('/tmp/check.json')); assert any(x['verdict']=='FAIL' for x in r), r; print('checks fire as expected')"
+      - name: audit replay of the committed worked examples
+        run: for d in runs/*/; do harness replay "$(basename "$d")" > /dev/null && echo "chain ok: $d"; done
+  console:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22', cache: npm, cache-dependency-path: console/package-lock.json }
+      - run: npm --prefix console ci
+      - run: npm --prefix console run typecheck
+      - run: npm --prefix console run build
+      - run: npx --prefix console playwright install --with-deps chromium
+      - run: npx --prefix console playwright test
+        env: { CI: '1' }
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: playwright-report, path: playwright-report, retention-days: 7 }

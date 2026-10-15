@@ -1,0 +1,49 @@
+{
+  "requirements": {
+    "DEF-FLISR-7": "DEF-FLISR-7 Restoration back-fed a de-energised section during drill 14."
+  },
+  "rows": [
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "code",
+      "ref": "backend/app/flisr.py::plan_restoration",
+      "stage": "fix"
+    },
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "test",
+      "ref": "test_flisr.py::test_def_flisr_7_no_backfeed",
+      "stage": "fix"
+    },
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "pr",
+      "ref": "https://github.com/example-org/product-repo/pull/102",
+      "stage": "integrate"
+    }
+  ],
+  "coverage": {
+    "requirements": 1,
+    "with_design": 0,
+    "with_code": 1,
+    "with_test": 1,
+    "with_pr": 1,
+    "test_coverage": 1.0,
+    "orphans": [],
+    "matrix": {
+      "DEF-FLISR-7": {
+        "design": [],
+        "code": [
+          "backend/app/flisr.py::plan_restoration"
+        ],
+        "test": [
+          "test_flisr.py::test_def_flisr_7_no_backfeed"
+        ],
+        "pr": [
+          "https://github.com/example-org/product-repo/pull/102"
+        ],
+        "doc": []
+      }
+    }
+  }
+}

@@ -1,0 +1,313 @@
+{
+  "run_id": "example-feature-tie-capacity",
+  "workflow": "feature",
+  "requirement": "REQ-FLISR-101 ...\nREQ-FLISR-102 ...\nREQ-FLISR-103 ...",
+  "requirement_ref": "examples/targets/adms/requirements/REQ-tie-capacity.md",
+  "plan": [
+    "specify",
+    "gate:after-specify",
+    "decompose",
+    "design-architect-loop",
+    "gate:after-architect",
+    "coding-waves",
+    "integrate",
+    "document",
+    "trace",
+    "gate:before-merge",
+    "release",
+    "finish"
+  ],
+  "cursor": 11,
+  "attempts": {
+    "specify:-": 2,
+    "decompose:-": 1,
+    "design:-": 2,
+    "architect:-": 2,
+    "coding:U1": 2,
+    "qa:U1": 2,
+    "coding:U2": 1,
+    "qa:U2": 1,
+    "integrate:-": 1,
+    "document:-": 1
+  },
+  "artifacts": {
+    "specify.specification": "REQ-FLISR-101 ...\nREQ-FLISR-102 ...\nREQ-FLISR-103 ...",
+    "specification": "REQ-FLISR-101 ...\nREQ-FLISR-102 ...\nREQ-FLISR-103 ...",
+    "decompose.units": [
+      {
+        "id": "U1",
+        "title": "Capacity model + guard",
+        "depends_on": [],
+        "files": [
+          "backend/app/flisr.py",
+          "backend/tests/test_flisr_capacity.py"
+        ],
+        "requirement_ids": [
+          "REQ-FLISR-101",
+          "REQ-FLISR-102"
+        ]
+      },
+      {
+        "id": "U2",
+        "title": "Stale telemetry refusal",
+        "depends_on": [
+          "U1"
+        ],
+        "files": [
+          "backend/app/flisr.py",
+          "backend/tests/test_flisr_stale.py"
+        ],
+        "requirement_ids": [
+          "REQ-FLISR-103"
+        ]
+      }
+    ],
+    "units": [
+      {
+        "id": "U1",
+        "title": "Capacity model + guard",
+        "depends_on": [],
+        "files": [
+          "backend/app/flisr.py",
+          "backend/tests/test_flisr_capacity.py"
+        ],
+        "requirement_ids": [
+          "REQ-FLISR-101",
+          "REQ-FLISR-102"
+        ]
+      },
+      {
+        "id": "U2",
+        "title": "Stale telemetry refusal",
+        "depends_on": [
+          "U1"
+        ],
+        "files": [
+          "backend/app/flisr.py",
+          "backend/tests/test_flisr_stale.py"
+        ],
+        "requirement_ids": [
+          "REQ-FLISR-103"
+        ]
+      }
+    ],
+    "design.design": "v2",
+    "design": "v2",
+    "architect.review": "ok",
+    "architecture_review": "ok",
+    "qa.U1.qa_report": "...",
+    "qa.U2.qa_report": "...",
+    "integrate": "Units merged on agent/example/integration; suite green; PR ready for review.",
+    "document": "Operator guide updated with stale-telemetry behaviour."
+  },
+  "units": [
+    {
+      "id": "U1",
+      "title": "Capacity model + guard",
+      "depends_on": [],
+      "files": [
+        "backend/app/flisr.py",
+        "backend/tests/test_flisr_capacity.py"
+      ],
+      "requirement_ids": [
+        "REQ-FLISR-101",
+        "REQ-FLISR-102"
+      ]
+    },
+    {
+      "id": "U2",
+      "title": "Stale telemetry refusal",
+      "depends_on": [
+        "U1"
+      ],
+      "files": [
+        "backend/app/flisr.py",
+        "backend/tests/test_flisr_stale.py"
+      ],
+      "requirement_ids": [
+        "REQ-FLISR-103"
+      ]
+    }
+  ],
+  "waves_done": [
+    "U1",
+    "U2"
+  ],
+  "questions": [
+    {
+      "id": "Q-SPEC-1",
+      "question": "When tie capacity is stale (>30 s), refuse restoration or hold last value?",
+      "blocking_units": [
+        "U2"
+      ],
+      "stage": "specify",
+      "status": "answered",
+      "answer": "Refuse restoration and raise an operator alarm; never hold last value.",
+      "by": "ops-lead"
+    }
+  ],
+  "answers": [
+    {
+      "id": "Q-SPEC-1",
+      "answer": "Refuse restoration and raise an operator alarm; never hold last value.",
+      "by": "ops-lead"
+    }
+  ],
+  "loops": {},
+  "gates": {
+    "after-specify": {
+      "ref": "/home/ubuntu/repos/agentic-sdlc-harness/runs/example-feature-tie-capacity/gates/after-specify.md",
+      "opened": "2026-10-15T22:31:24Z",
+      "status": "approved",
+      "actor": "ops-lead",
+      "decided": "2026-10-15T22:31:24Z"
+    },
+    "after-architect": {
+      "ref": "/home/ubuntu/repos/agentic-sdlc-harness/runs/example-feature-tie-capacity/gates/after-architect.md",
+      "opened": "2026-10-15T22:31:24Z",
+      "status": "approved",
+      "actor": "principal-engineer",
+      "decided": "2026-10-15T22:31:24Z"
+    },
+    "before-merge": {
+      "ref": "/home/ubuntu/repos/agentic-sdlc-harness/runs/example-feature-tie-capacity/gates/before-merge.md",
+      "opened": "2026-10-15T22:31:24Z",
+      "status": "approved",
+      "actor": "protection-reviewer",
+      "decided": "2026-10-15T22:31:24Z"
+    }
+  },
+  "status": "ready-to-merge",
+  "story_points": 3,
+  "prs": [
+    "https://github.com/example-org/product-repo/pull/101"
+  ],
+  "branches": [
+    "agent/example/U1",
+    "agent/example/U2",
+    "agent/example/integration"
+  ],
+  "verify_results": {
+    "U1:1": {
+      "verdict": "PASS",
+      "checks": [
+        {
+          "name": "model_logic_separation",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        },
+        {
+          "name": "removed_error_handling",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        },
+        {
+          "name": "missing_input_as_zero",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        },
+        {
+          "name": "scope",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        },
+        {
+          "name": "governance",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        }
+      ],
+      "commands": {},
+      "branch": "agent/example/U1",
+      "files_in_diff": []
+    },
+    "U1:2": {
+      "verdict": "PASS",
+      "checks": [
+        {
+          "name": "model_logic_separation",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        },
+        {
+          "name": "removed_error_handling",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        },
+        {
+          "name": "missing_input_as_zero",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        },
+        {
+          "name": "scope",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        },
+        {
+          "name": "governance",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        }
+      ],
+      "commands": {},
+      "branch": "agent/example/U1",
+      "files_in_diff": []
+    },
+    "U2:1": {
+      "verdict": "PASS",
+      "checks": [
+        {
+          "name": "model_logic_separation",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        },
+        {
+          "name": "removed_error_handling",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        },
+        {
+          "name": "missing_input_as_zero",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        },
+        {
+          "name": "scope",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        },
+        {
+          "name": "governance",
+          "verdict": "PASS",
+          "findings": [],
+          "detail": "no findings"
+        }
+      ],
+      "commands": {},
+      "branch": "agent/example/U2",
+      "files_in_diff": []
+    }
+  },
+  "paused_on": {
+    "reason": "gate-waiting",
+    "gate": "before-merge",
+    "ref": "/home/ubuntu/repos/agentic-sdlc-harness/runs/example-feature-tie-capacity/gates/before-merge.md",
+    "reviewers": 0,
+    "reviewers_required": 2
+  }
+}

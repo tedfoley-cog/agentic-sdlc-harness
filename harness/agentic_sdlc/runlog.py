@@ -15,6 +15,17 @@ def now() -> str:
     return datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
+def _normalize(value: Any) -> Any:
+    """Canonical form shared with the console's browser-side verifier: integral floats become ints."""
+    if isinstance(value, float) and value.is_integer():
+        return int(value)
+    if isinstance(value, dict):
+        return {k: _normalize(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_normalize(v) for v in value]
+    return value
+
+
 class RunLog:
     def __init__(self, path: str | Path):
         self.path = Path(path)
@@ -30,7 +41,7 @@ class RunLog:
         return last
 
     def append(self, event: str, **fields: Any) -> dict[str, Any]:
-        record = {"seq": self.count(), "ts": now(), "event": event, **fields, "prev": self._last_hash}
+        record = _normalize({"seq": self.count(), "ts": now(), "event": event, **fields, "prev": self._last_hash})
         payload = json.dumps(record, sort_keys=True, separators=(",", ":"))
         record["hash"] = hashlib.sha256(payload.encode()).hexdigest()
         with self.path.open("a") as fh:
