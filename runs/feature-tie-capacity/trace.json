@@ -301,6 +301,144 @@
       "kind": "design",
       "ref": "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.server_now, api._check_as_of_bound",
       "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-1",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `models.TieCapacity`, `IsoAwareDatetime`; test: U2 models test, both JSON and TestClient paths",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-2",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `flisr.build_plan` signature, `as_of` resolution; test: planner test: UTC vs `+02:00` identical plan; naive \u2192 `ValueError`; None \u2192 UTC now",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-3",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `flisr.tie_capacity_verdict` (close branch); constants `models.TIE_CAPACITY_TOLERANCE_KW`; test: planner boundaries \u00a76.2 vs independent `oracle_reason` / `oracle_candidate_nodes` / `oracle_load_kw` (\u00a76.3); O1, P1, P2",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-4",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` \u2192 EXCEEDED; tie loop; test: planner test 1489.4; oracle",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-5",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` (None / non-GOOD); loop with no default; test: planner: missing key, None, `{}`, `\"BAD\"`, `\"SUSPECT\"`, `\"good\"`, `\"\"`; inspection of `flisr.py` (no `0.0` default); U1 repro (a)",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-6",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` (`age > TIE_CAPACITY_MAX_AGE`); test: planner ages 19.999 / 20.000 / 20.001 s vs `oracle_reason`; P1",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-7",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` (`age < -TIE_CAPACITY_MAX_LEAD`); test: planner ages \u22121.999 / \u22122.000 / \u22122.001 s vs `oracle_reason`; P1",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-8",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` (finite, \u2265 0); test: planner NaN, \u00b1inf, \u22121.0, 0.0, \u22120.0; API raw JSON `NaN`/`Infinity`/`-Infinity`/`-1` \u2192 200 INVALID; U1 repro (b)",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-9",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` statement order; `TieBlockReason` order; test: planner: every combination of {invalid kw, future > 2 s, non-GOOD, stale, exceeded} vs `oracle_reason`",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-10",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: tie loop (per-tie, isolation untouched); test: planner two-tie generated topology",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-11",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `models.BlockedTie`, `TieBlockReason`, `RestorationPlan.blocked_ties`; test: U2 schema test; planner content and order",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-12",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `flisr._blocked_note` (limits formatted from `models.py` constants); test: planner: note per reason, L/C at 0.1 kW, age; P2 (no literal limits in the note code)",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-13",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `api.FlisrRequest`, `flisr_plan`; test: API: 422 list in spec, each asserting planner not called; blocked tie \u2192 200",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-14",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `RestorationPlan.as_of`; `build_plan` UTC normalisation; `flisr_plan` as_of resolution; test: API: `+01:00` echoed as `22:00:00Z`; absent \u2192 instant within send/receive window (parsed comparison)",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-15",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `FlisrRequest._mutually_exclusive`; `build_plan` ValueError; test: API both present (incl. `{}`) \u2192 422; planner both \u2192 ValueError",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-16",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `flisr._legacy_to_tie_capacity`; `RestorationPlan.deprecations`; test: planner + API legacy-only parity with GOOD/as_of; `deprecations` asserted both ways",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-17",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `flisr_plan` route `description`; test: API: inspect `app.openapi()[\"paths\"][\"/flisr/plan\"][\"post\"][\"description\"]`",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-18",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: tie loop accounting; test: planner vs oracle sums",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-19",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `build_plan` no-fault early return; test: U1 characterization (unchanged after U2/U3)",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-20",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `build_plan` reads clock once at entry; test: planner: monkeypatched clock counts one read; inspection",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-21",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` + tie loop; test: U4 invariant \u2265 500 seeded cases, generator places ties at any node (not tail-only); oracle restated in the invariant file (\u00a76.3 waiver), O1",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-22",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: unchanged isolation/restoration code paths; test: U1 characterization pinned on `main` @ 5f6b471",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-23",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `api.server_now`, `_check_as_of_bound` (`models.AS_OF_MAX_LAG` / `AS_OF_MAX_LEAD`), `IsoAwareDatetime`; test: API with overridden clock: \u00a76.2 bounds vs `oracle_as_of_ok`, naive, `\"yesterday\"`, `1790000000` \u2192 422, planner not called; O1, P1, P2",
+      "stage": "design"
     }
   ],
   "coverage": {
@@ -317,7 +455,8 @@
       "REQ-TIECAP-23": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.server_now, api._check_as_of_bound"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.server_now, api._check_as_of_bound",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `api.server_now`, `_check_as_of_bound` (`models.AS_OF_MAX_LAG` / `AS_OF_MAX_LEAD`), `IsoAwareDatetime`; test: API with overridden clock: \u00a76.2 bounds vs `oracle_as_of_ok`, naive, `\"yesterday\"`, `1790000000` \u2192 422, planner not called; O1, P1, P2"
         ],
         "code": [],
         "test": [],
@@ -327,7 +466,8 @@
       "REQ-TIECAP-8": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict finite and >= 0"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict finite and >= 0",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` (finite, \u2265 0); test: planner NaN, \u00b1inf, \u22121.0, 0.0, \u22120.0; API raw JSON `NaN`/`Infinity`/`-Infinity`/`-1` \u2192 200 INVALID; U1 repro (b)"
         ],
         "code": [],
         "test": [],
@@ -337,7 +477,8 @@
       "REQ-TIECAP-1": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U2",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 models.TieCapacity, models.IsoAwareDatetime"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 models.TieCapacity, models.IsoAwareDatetime",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `models.TieCapacity`, `IsoAwareDatetime`; test: U2 models test, both JSON and TestClient paths"
         ],
         "code": [],
         "test": [],
@@ -347,7 +488,8 @@
       "REQ-TIECAP-13": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.FlisrRequest, api.flisr_plan"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.FlisrRequest, api.flisr_plan",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `api.FlisrRequest`, `flisr_plan`; test: API: 422 list in spec, each asserting planner not called; blocked tie \u2192 200"
         ],
         "code": [],
         "test": [],
@@ -357,7 +499,8 @@
       "REQ-TIECAP-2": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan signature and as_of resolution"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan signature and as_of resolution",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `flisr.build_plan` signature, `as_of` resolution; test: planner test: UTC vs `+02:00` identical plan; naive \u2192 `ValueError`; None \u2192 UTC now"
         ],
         "code": [],
         "test": [],
@@ -367,7 +510,8 @@
       "REQ-TIECAP-5": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict missing/non-GOOD; no default at flisr.py:98"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict missing/non-GOOD; no default at flisr.py:98",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` (None / non-GOOD); loop with no default; test: planner: missing key, None, `{}`, `\"BAD\"`, `\"SUSPECT\"`, `\"good\"`, `\"\"`; inspection of `flisr.py` (no `0.0` default); U1 repro (a)"
         ],
         "code": [],
         "test": [],
@@ -377,7 +521,8 @@
       "REQ-TIECAP-3": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict close branch"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict close branch",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `flisr.tie_capacity_verdict` (close branch); constants `models.TIE_CAPACITY_TOLERANCE_KW`; test: planner boundaries \u00a76.2 vs independent `oracle_reason` / `oracle_candidate_nodes` / `oracle_load_kw` (\u00a76.3); O1, P1, P2"
         ],
         "code": [],
         "test": [],
@@ -387,7 +532,8 @@
       "REQ-TIECAP-4": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict CAPACITY_EXCEEDED + tie loop"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict CAPACITY_EXCEEDED + tie loop",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` \u2192 EXCEEDED; tie loop; test: planner test 1489.4; oracle"
         ],
         "code": [],
         "test": [],
@@ -397,7 +543,8 @@
       "REQ-TIECAP-6": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict age > TIE_CAPACITY_MAX_AGE"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict age > TIE_CAPACITY_MAX_AGE",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` (`age > TIE_CAPACITY_MAX_AGE`); test: planner ages 19.999 / 20.000 / 20.001 s vs `oracle_reason`; P1"
         ],
         "code": [],
         "test": [],
@@ -407,7 +554,8 @@
       "REQ-TIECAP-7": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict age < -TIE_CAPACITY_MAX_LEAD"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict age < -TIE_CAPACITY_MAX_LEAD",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` (`age < -TIE_CAPACITY_MAX_LEAD`); test: planner ages \u22121.999 / \u22122.000 / \u22122.001 s vs `oracle_reason`; P1"
         ],
         "code": [],
         "test": [],
@@ -417,7 +565,8 @@
       "REQ-TIECAP-9": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict statement order / TieBlockReason"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict statement order / TieBlockReason",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` statement order; `TieBlockReason` order; test: planner: every combination of {invalid kw, future > 2 s, non-GOOD, stale, exceeded} vs `oracle_reason`"
         ],
         "code": [],
         "test": [],
@@ -427,7 +576,8 @@
       "REQ-TIECAP-10": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan per-tie loop"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan per-tie loop",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: tie loop (per-tie, isolation untouched); test: planner two-tie generated topology"
         ],
         "code": [],
         "test": [],
@@ -437,7 +587,8 @@
       "REQ-TIECAP-11": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U2",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 models.BlockedTie, TieBlockReason, RestorationPlan.blocked_ties"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 models.BlockedTie, TieBlockReason, RestorationPlan.blocked_ties",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `models.BlockedTie`, `TieBlockReason`, `RestorationPlan.blocked_ties`; test: U2 schema test; planner content and order"
         ],
         "code": [],
         "test": [],
@@ -447,7 +598,8 @@
       "REQ-TIECAP-12": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr._blocked_note"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr._blocked_note",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `flisr._blocked_note` (limits formatted from `models.py` constants); test: planner: note per reason, L/C at 0.1 kW, age; P2 (no literal limits in the note code)"
         ],
         "code": [],
         "test": [],
@@ -457,7 +609,8 @@
       "REQ-TIECAP-14": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 models.RestorationPlan.as_of; build_plan UTC normalisation"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 models.RestorationPlan.as_of; build_plan UTC normalisation",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `RestorationPlan.as_of`; `build_plan` UTC normalisation; `flisr_plan` as_of resolution; test: API: `+01:00` echoed as `22:00:00Z`; absent \u2192 instant within send/receive window (parsed comparison)"
         ],
         "code": [],
         "test": [],
@@ -467,7 +620,8 @@
       "REQ-TIECAP-15": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.FlisrRequest._mutually_exclusive; build_plan ValueError"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.FlisrRequest._mutually_exclusive; build_plan ValueError",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `FlisrRequest._mutually_exclusive`; `build_plan` ValueError; test: API both present (incl. `{}`) \u2192 422; planner both \u2192 ValueError"
         ],
         "code": [],
         "test": [],
@@ -477,7 +631,8 @@
       "REQ-TIECAP-16": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr._legacy_to_tie_capacity; RestorationPlan.deprecations"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr._legacy_to_tie_capacity; RestorationPlan.deprecations",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `flisr._legacy_to_tie_capacity`; `RestorationPlan.deprecations`; test: planner + API legacy-only parity with GOOD/as_of; `deprecations` asserted both ways"
         ],
         "code": [],
         "test": [],
@@ -487,7 +642,8 @@
       "REQ-TIECAP-17": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.flisr_plan route description"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.flisr_plan route description",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `flisr_plan` route `description`; test: API: inspect `app.openapi()[\"paths\"][\"/flisr/plan\"][\"post\"][\"description\"]`"
         ],
         "code": [],
         "test": [],
@@ -497,7 +653,8 @@
       "REQ-TIECAP-18": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan tie-loop accounting"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan tie-loop accounting",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: tie loop accounting; test: planner vs oracle sums"
         ],
         "code": [],
         "test": [],
@@ -507,7 +664,8 @@
       "REQ-TIECAP-19": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U1",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan no-fault early return (unchanged)"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan no-fault early return (unchanged)",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `build_plan` no-fault early return; test: U1 characterization (unchanged after U2/U3)"
         ],
         "code": [],
         "test": [],
@@ -517,7 +675,8 @@
       "REQ-TIECAP-20": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan single clock read"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan single clock read",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `build_plan` reads clock once at entry; test: planner: monkeypatched clock counts one read; inspection"
         ],
         "code": [],
         "test": [],
@@ -527,7 +686,8 @@
       "REQ-TIECAP-21": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U4",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 tie_capacity_verdict + tie loop; U4 invariant"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 tie_capacity_verdict + tie loop; U4 invariant",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` + tie loop; test: U4 invariant \u2265 500 seeded cases, generator places ties at any node (not tail-only); oracle restated in the invariant file (\u00a76.3 waiver), O1"
         ],
         "code": [],
         "test": [],
@@ -537,7 +697,8 @@
       "REQ-TIECAP-22": {
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U1",
-          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 unchanged isolation/restoration paths; U1 characterization"
+          "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 unchanged isolation/restoration paths; U1 characterization",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: unchanged isolation/restoration code paths; test: U1 characterization pinned on `main` @ 5f6b471"
         ],
         "code": [],
         "test": [],
