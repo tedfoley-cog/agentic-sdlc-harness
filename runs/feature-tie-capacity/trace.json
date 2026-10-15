@@ -763,6 +763,144 @@
       "kind": "doc",
       "ref": "docs/specs/feature-tie-capacity/architecture-review.md@b897964",
       "stage": "architect"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-1",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-2",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-3",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-4",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-5",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-6",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-7",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-8",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-9",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-10",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-11",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-12",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-13",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-14",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-15",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-16",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-17",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-18",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-19",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-20",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-21",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-22",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-23",
+      "kind": "design",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+      "stage": "design"
     }
   ],
   "coverage": {
@@ -782,7 +920,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.server_now, api._check_as_of_bound",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `api.server_now`, `_check_as_of_bound` (`models.AS_OF_MAX_LAG` / `AS_OF_MAX_LEAD`), `IsoAwareDatetime`; test: API with overridden clock: \u00a76.2 bounds vs `oracle_as_of_ok`, naive, `\"yesterday\"`, `1790000000` \u2192 422, planner not called; O1, P1, P2",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-23: \u00a75 server_now, _check_as_of_bound",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -795,7 +934,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict finite and >= 0",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` (finite, \u2265 0); test: planner NaN, \u00b1inf, \u22121.0, 0.0, \u22120.0; API raw JSON `NaN`/`Infinity`/`-Infinity`/`-1` \u2192 200 INVALID; U1 repro (b)",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-8: \u00a73 verdict _not_finite_nonneg(kw)",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -808,7 +948,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 models.TieCapacity, models.IsoAwareDatetime",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `models.TieCapacity`, `IsoAwareDatetime`; test: U2 models test, both JSON and TestClient paths",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-1: \u00a72 models.TieCapacity, IsoAwareDatetime",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -821,7 +962,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.FlisrRequest, api.flisr_plan",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `api.FlisrRequest`, `flisr_plan`; test: API: 422 list in spec, each asserting planner not called; blocked tie \u2192 200",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-13: \u00a75 FlisrRequest, flisr_plan",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -834,7 +976,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan signature and as_of resolution",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `flisr.build_plan` signature, `as_of` resolution; test: planner test: UTC vs `+02:00` identical plan; naive \u2192 `ValueError`; None \u2192 UTC now",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-2: \u00a74 build_plan signature/as_of; \u00a73 verdict as_of precondition",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -847,7 +990,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict missing/non-GOOD; no default at flisr.py:98",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` (None / non-GOOD); loop with no default; test: planner: missing key, None, `{}`, `\"BAD\"`, `\"SUSPECT\"`, `\"good\"`, `\"\"`; inspection of `flisr.py` (no `0.0` default); U1 repro (a)",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-5: \u00a73 verdict None/non-GOOD; \u00a74 loop without default",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -862,7 +1006,8 @@
           "docs/specs/feature-tie-capacity/architecture-review.md#a-1",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-3: \u00a73 tie_capacity_verdict close branch + L precondition; \u00a74 FlisrError on out-of-range L",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row, \u00a73, \u00a74 section-load precondition (Q-DESIGN-2)",
-          "design.md \u00a73 tie_capacity_verdict (A-1 resolved)"
+          "design.md \u00a73 tie_capacity_verdict (A-1 resolved)",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -875,7 +1020,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict CAPACITY_EXCEEDED + tie loop",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` \u2192 EXCEEDED; tie loop; test: planner test 1489.4; oracle",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-4: \u00a73 verdict EXCEEDED; \u00a74 tie loop",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -888,7 +1034,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict age > TIE_CAPACITY_MAX_AGE",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` (`age > TIE_CAPACITY_MAX_AGE`); test: planner ages 19.999 / 20.000 / 20.001 s vs `oracle_reason`; P1",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-6: \u00a73 verdict age > TIE_CAPACITY_MAX_AGE",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -901,7 +1048,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict age < -TIE_CAPACITY_MAX_LEAD",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` (`age < -TIE_CAPACITY_MAX_LEAD`); test: planner ages \u22121.999 / \u22122.000 / \u22122.001 s vs `oracle_reason`; P1",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-7: \u00a73 verdict age < -TIE_CAPACITY_MAX_LEAD",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -914,7 +1062,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict statement order / TieBlockReason",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` statement order; `TieBlockReason` order; test: planner: every combination of {invalid kw, future > 2 s, non-GOOD, stale, exceeded} vs `oracle_reason`",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-9: \u00a73 verdict statement order; TieBlockReason order",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row (amended Q-DESIGN-3), \u00a72 TieBlockReason, \u00a74 loop"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row (amended Q-DESIGN-3), \u00a72 TieBlockReason, \u00a74 loop",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -927,7 +1076,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan per-tie loop",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: tie loop (per-tie, isolation untouched); test: planner two-tie generated topology",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-10: \u00a74 tie loop per-tie",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -941,7 +1091,8 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `models.BlockedTie`, `TieBlockReason`, `RestorationPlan.blocked_ties`; test: U2 schema test; planner content and order",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-11: \u00a72 BlockedTie, TieBlockReason, RestorationPlan.blocked_ties",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row (amended Q-DESIGN-3), \u00a72 TieBlockReason",
-          "units.json U2 vs design.md \u00a72 (A-4.2)"
+          "units.json U2 vs design.md \u00a72 (A-4.2)",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -954,7 +1105,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr._blocked_note",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `flisr._blocked_note` (limits formatted from `models.py` constants); test: planner: note per reason, L/C at 0.1 kW, age; P2 (no literal limits in the note code)",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-12: \u00a74 _blocked_note from models constants",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -967,7 +1119,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 models.RestorationPlan.as_of; build_plan UTC normalisation",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `RestorationPlan.as_of`; `build_plan` UTC normalisation; `flisr_plan` as_of resolution; test: API: `+01:00` echoed as `22:00:00Z`; absent \u2192 instant within send/receive window (parsed comparison)",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-14: \u00a72 RestorationPlan.as_of; \u00a75 as_of resolution",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -980,7 +1133,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.FlisrRequest._mutually_exclusive; build_plan ValueError",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `FlisrRequest._mutually_exclusive`; `build_plan` ValueError; test: API both present (incl. `{}`) \u2192 422; planner both \u2192 ValueError",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-15: \u00a75 _mutually_exclusive; \u00a74 ValueError",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -993,7 +1147,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr._legacy_to_tie_capacity; RestorationPlan.deprecations",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `flisr._legacy_to_tie_capacity`; `RestorationPlan.deprecations`; test: planner + API legacy-only parity with GOOD/as_of; `deprecations` asserted both ways",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-16: \u00a74 _legacy_to_tie_capacity (TIE_CAPACITY_GOOD_QUALITY); RestorationPlan.deprecations",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -1006,7 +1161,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 api.flisr_plan route description",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `flisr_plan` route `description`; test: API: inspect `app.openapi()[\"paths\"][\"/flisr/plan\"][\"post\"][\"description\"]`",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-17: \u00a75 route description",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -1020,7 +1176,8 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: tie loop accounting; test: planner vs oracle sums",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-18: \u00a74 tie loop accounting",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
-          "design.md \u00a74, \u00a77 (A-2)"
+          "design.md \u00a74, \u00a77 (A-2)",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -1033,7 +1190,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan no-fault early return (unchanged)",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `build_plan` no-fault early return; test: U1 characterization (unchanged after U2/U3)",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-19: \u00a74 no-fault early return",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -1046,7 +1204,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan single clock read",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `build_plan` reads clock once at entry; test: planner: monkeypatched clock counts one read; inspection",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-20: \u00a74 clock read once",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -1061,7 +1220,8 @@
           "docs/specs/feature-tie-capacity/architecture-review.md#a-1",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-21: \u00a73 verdict + \u00a74 loop + L precondition; U4 invariant (open: Q-DESIGN-3)",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row (amended Q-DESIGN-2/3), \u00a79, \u00a76.1 U4",
-          "design.md \u00a74, \u00a76.1, \u00a79; specification.md amended REQ-TIECAP-21 (A-3)"
+          "design.md \u00a74, \u00a76.1, \u00a79; specification.md amended REQ-TIECAP-21 (A-3)",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
@@ -1077,7 +1237,8 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: unchanged isolation/restoration code paths; test: U1 characterization pinned on `main` @ 5f6b471",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-22: unchanged isolation/restoration paths; U1 characterization",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row (amended Q-DESIGN-3), \u00a76.1 U1",
-          "specification.md amended REQ-TIECAP-22; design.md \u00a76.1 (A-4)"
+          "specification.md amended REQ-TIECAP-22; design.md \u00a76.1 (A-4)",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
         ],
         "code": [],
         "test": [],
