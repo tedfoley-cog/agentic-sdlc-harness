@@ -1,0 +1,211 @@
+{
+  "session_id": "b5d437867604427c8de1c2a6c01c8ecf",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/b5d437867604427c8de1c2a6c01c8ecf",
+  "status": "waiting_for_user",
+  "devin_mode": "normal",
+  "acus": 2.413562913486767,
+  "structured_output": {
+    "verdict": "PASS",
+    "summary": "Design attempt 6 resolves Architect finding A-5. In the \u00a74 pseudocode, the Q-DESIGN-2 section-load check now runs for every candidate tie before the DEF-FLISR-7 guard. The guard's continue comes after that check and before the L/capacity evaluation. \u00a77 REQ-TIECAP-9, \u00a78 STD-ARCH-5, \u00a79 Q-DESIGN-3 and \u00a710.1 O-2 state the same order. In units.json, the stale U3 precedence note and the U4 'neither assert nor exclude' note are marked SUPERSEDED, each followed by a replacement note. U1 is pinned to base 20d2a30. All 23 requirements are mapped and no new question is open. Commit 8d49338 is on draft PR #15 (label ai-generated). Later stages need two human reviewers.",
+    "branch": "agent/feature-tie-capacity/design",
+    "pr_url": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/15",
+    "model": "devin normal",
+    "session_url": "https://devin-gtm.devinenterprise.com/sessions/b5d437867604427c8de1c2a6c01c8ecf",
+    "standards_loaded": [
+      "STD-ARCH",
+      "STD-GOV",
+      "STD-SAFETY"
+    ],
+    "files_touched": [
+      "docs/specs/feature-tie-capacity/design.md",
+      "docs/specs/feature-tie-capacity/units.json"
+    ],
+    "trace": [
+      {
+        "requirement_id": "REQ-TIECAP-1",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-2",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-3",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-4",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-5",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-6",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-7",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-8",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-9",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-10",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-11",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-12",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-13",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-14",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-15",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-16",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-17",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-18",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-19",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-20",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-22",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-23",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338"
+      }
+    ],
+    "evidence": [
+      {
+        "kind": "commit",
+        "ref": "8d49338e67661e09f6b9296cb71b34cc849c56cd",
+        "detail": "Design attempt 6, with the AI-Governance trailer. The platform also adds a Co-Authored-By trailer with a personal name; this is reported as compliance note O-C (STD-GOV-7)"
+      },
+      {
+        "kind": "file",
+        "ref": "docs/specs/feature-tie-capacity/design.md",
+        "detail": "\u00a74 order: empty-candidate skip, then section-load check (FlisrError), then DEF-FLISR-7 guard (FAULTED_SECTION; continue), then L precondition, then tie_capacity_verdict. \u00a77, \u00a78, \u00a79 and \u00a710.1 O-2 match. \u00a710.3 lists the A-5 changes"
+      },
+      {
+        "kind": "file",
+        "ref": "docs/specs/feature-tie-capacity/units.json",
+        "detail": "U3 and U4 stale notes are marked [SUPERSEDED by Design attempt 6 amendment, A-5], each followed by a replacement. U1 is pinned to 20d2a30. python -m json.tool passes"
+      },
+      {
+        "kind": "command",
+        "ref": "throw-away worktree @ 20d2a30: section-load check placed before the guard",
+        "detail": "NaN, +inf, -inf or -120 kW on the faulted candidate section gives FlisrError. With valid loads the held-tie plan is unchanged. Base suite: 13 passed. The worktree was then removed"
+      },
+      {
+        "kind": "command",
+        "ref": "cd backend && python -m pytest -q; ruff check .",
+        "detail": "2 passed; All checks passed (no application code changed)"
+      },
+      {
+        "kind": "command",
+        "ref": "for i in 1..23: grep REQ-TIECAP-$i design.md; git diff --check",
+        "detail": "no requirement missing; no whitespace errors"
+      },
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/15",
+        "detail": "draft=true, labels=[ai-generated], head=8d49338. Not approved or merged"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-ARCH 2.0",
+        "detail": "ARCH-1..8 re-checked. The layer map ui\u2192api\u2192logic\u2192models is unchanged. The STD-ARCH-2/STD-SAFETY-6 oracle waiver is kept"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-GOV 1.1",
+        "detail": "Draft PR, agent/ branch, governance trailer, ai-generated label, two human reviewers for flisr.py"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-SAFETY 3.1",
+        "detail": "Baseline first, then reproduction, then the smallest fail-safe change. 500+ seeded invariant cases planned in U4. DEF-FLISR-7 guard kept"
+      },
+      {
+        "kind": "note",
+        "ref": "Architect review e2339d5 finding A-5",
+        "detail": "A-5(a) and A-5(b) addressed. Earlier wording appears only in the \u00a710.3 history table, which describes the corrected violation"
+      }
+    ],
+    "artifacts": {
+      "design": {
+        "path": "docs/specs/feature-tie-capacity/design.md",
+        "commit": "8d49338e67661e09f6b9296cb71b34cc849c56cd",
+        "attempt": 6,
+        "base": "20d2a303c9548f9f7170cb3dfef1487fb7e9a009",
+        "resolves": [
+          "A-5"
+        ],
+        "units": "docs/specs/feature-tie-capacity/units.json"
+      }
+    },
+    "questions": []
+  }
+}
