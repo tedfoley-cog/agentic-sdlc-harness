@@ -200,6 +200,30 @@
       "kind": "pr",
       "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/14",
       "stage": "integrate"
+    },
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "doc",
+      "ref": "docs/flisr/restoration-back-feed-guard.md",
+      "stage": "document"
+    },
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "doc",
+      "ref": "README.md#operator-notes",
+      "stage": "document"
+    },
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "code",
+      "ref": "backend/app/flisr.py:97-107",
+      "stage": "document"
+    },
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "pr",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/14",
+      "stage": "document"
     }
   ],
   "coverage": {
@@ -226,7 +250,8 @@
           "backend/app/flisr.py:42",
           "backend/app/api.py:40-49",
           "backend/app/flisr.py (build_plan restoration loop guard, commit 20d2a30)",
-          "backend/app/flisr.py:97-107 (commit 20d2a30)"
+          "backend/app/flisr.py:97-107 (commit 20d2a30)",
+          "backend/app/flisr.py:97-107"
         ],
         "test": [
           "backend/tests/test_flisr_def_flisr_7.py",
@@ -251,9 +276,13 @@
         "pr": [
           "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/14",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/14"
         ],
-        "doc": []
+        "doc": [
+          "docs/flisr/restoration-back-feed-guard.md",
+          "README.md#operator-notes"
+        ]
       }
     }
   }
