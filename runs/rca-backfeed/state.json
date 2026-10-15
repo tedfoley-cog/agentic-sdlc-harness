@@ -14,10 +14,11 @@
     "gate:before-merge",
     "finish"
   ],
-  "cursor": 0,
+  "cursor": 1,
   "attempts": {
     "explore:-": 2,
-    "evaluate:-": 0
+    "evaluate:-": 0,
+    "review:-": 0
   },
   "artifacts": {
     "explore.hypothesis": "build_plan (backend/app/flisr.py) never treats a tie switch as a boundary of the faulted section: _isolation_switches skips ties (flisr.py:42) and the restoration loop (flisr.py:91-122, via _nodes_restored_by flisr.py:136-151) never removes the faulted section's nodes from a tie's pick-up set, so when the faulted section's downstream end is a tie (SEC-1201-04 / TIE-1201-1405) that section is itself the tie's restoration candidate and the tie is closed whenever tie capacity >= the faulted section's load (1490 kW).",
@@ -28,6 +29,10 @@
     "evidence_package": {
       "hypothesis": "build_plan (backend/app/flisr.py) never treats a tie switch as a boundary of the faulted section: _isolation_switches skips ties (flisr.py:42) and the restoration loop (flisr.py:91-122, via _nodes_restored_by flisr.py:136-151) never removes the faulted section's nodes from a tie's pick-up set, so when the faulted section's downstream end is a tie (SEC-1201-04 / TIE-1201-1405) that section is itself the tie's restoration candidate and the tie is closed whenever tie capacity >= the faulted section's load (1490 kW).",
       "evidence_package": "# DEF-FLISR-7 evidence package (run rca-backfeed, explore, attempt 2)\n\nBranch `agent/rca-backfeed/explore` @ c43f8c42a2142b0043a5da5bf125e59258866547 (parent a6c2139 from attempt 1). No production code changed.\n\n## Inputs (from recorded human answers)\n- Q-EXPLORE-1: FDR-1201 scenario stands in for drill 14 (fault SEC-1201-04, lockout CB-1201, tie TIE-1201-1405).\n- Q-EXPLORE-2: function under test is `app.flisr.build_plan`, called from `POST /flisr/plan` (backend/app/api.py:40-49).\n- Q-EXPLORE-4: `ruff check backend tools` fails on main in tools/build_coverage_report.py (UP017), an existing exception; touched files linted with `ruff check backend` (clean).\n\n## FDR-1201 topology (backend/data/feeder_model.json)\n```\nSRC-1201 -[CB-1201 breaker]- BUS-1201 -(SEC-1201-01)- N-1201-1 -[REC-1201-1]- N-1201-1A -(SEC-1201-02)- N-1201-2\n -[SEC-SW-1201-1]- N-1201-2A -(SEC-1201-03)- N-1201-3 -[REC-1201-2]- N-1201-3A -(SEC-1201-04)- N-1201-4 -[TIE-1201-1405 tie, NO]- ALT-1405\n```\nSEC-1201-04: 341 customers, 1490 kW. Only tie on the feeder is TIE-1201-1405 and it is directly on SEC-1201-04's downstream node N-1201-4.\n\n## Reproduction\n1. Load FDR-1201; set fault_indicator True on SEC-1201-01..03, False on SEC-1201-04 (locate_fault -> SEC-1201-04); set CB-1201.open = True (lockout). The shipped model has CB-1201 closed, so the API returns 409 unless lockout is set.\n2. `build_plan(feeder, \"CB-1201\", {\"TIE-1201-1405\": 2000.0})`, directly and through `POST /flisr/plan` (TestClient, `api.load_network` monkeypatched to return the modified model).\n3. Apply the plan's isolation + restoration steps and compute energised nodes from SRC-1201 and ALT-1405.\n\nCommand: `pytest backend -q` -> `2 failed, 2 passed`. Both failures are the new DEF-FLISR-7 tests; the 2 existing tests in backend/tests/test_flisr.py still pass.\n\n### Failing test output\n```\nbackend/tests/test_flisr_def_flisr_7.py:22: AssertionError: plan re-energises SEC-1201-04: restoration=[('CB-1201', 'close'), ('TIE-1201-1405', 'close')]\n  assert not ({'N-1201-3A', 'N-1201-4'} & {'ALT-1405', 'BUS-1201', 'N-1201-1', 'N-1201-1A', 'N-1201-2', 'N-1201-2A', ...})\nbackend/tests/test_flisr_def_flisr_7.py:52: AssertionError: POST /flisr/plan closes TIE-1201-1405 onto SEC-1201-04: {... 'restoration': [CB-1201 close, TIE-1201-1405 close 'back-feed 3 nodes from alternate source'], 'customers_restored': 341, 'customers_remaining': 341, 'transferred_load_kw': 1490.0}\n```\n\n### Observed vs expected\n| | Observed | Expected |\n|---|---|---|\n| faulted_section | SEC-1201-04 | SEC-1201-04 |\n| isolation | REC-1201-2 open (upstream only) | SEC-1201-04 bounded on both ends: REC-1201-2 open and TIE-1201-1405 kept open |\n| restoration | CB-1201 close, **TIE-1201-1405 close** | CB-1201 close only (nothing healthy downstream of SEC-1201-04 to restore) |\n| SEC-1201-04 after plan | energised from ALT-1405 | de-energised |\n| customers_restored / remaining | 341 / 341 (the same 341 customers counted both ways) | 0 / 341 |\n| transferred_load_kw | 1490 (the faulted section's own load) | 0 |\n\n## Code excerpts\n- flisr.py:41-43 \u2014 ties are dropped before isolation is considered:\n  `for switch in feeder.switches:` / `if not switch.scada_controllable or switch.kind.value == \"tie\": continue`\n- flisr.py:44-59 \u2014 isolation only looks for a switch whose to_node == section.from_node (upstream) or from_node == section.to_node (downstream). For SEC-1201-04 the only downstream match is TIE-1201-1405 (from_node N-1201-4), which was skipped at line 42, so isolation = [REC-1201-2]. No error is raised because `steps` is non-empty (line 60).\n- flisr.py:91-122 \u2014 every SCADA tie is a restoration candidate; the only gate is `transferred > available` (line 99). Nothing compares candidate_nodes with the faulted section.\n- flisr.py:141-151 `_nodes_restored_by` \u2014 opens isolated switches, closes the tie, returns `energised_nodes(from tie.from_node) - energised_nodes(from source)`. With REC-1201-2 open, the tie's island is {N-1201-4, N-1201-3A, ALT-1405} = both ends of SEC-1201-04. The faulted section is not subtracted.\n- flisr.py:145-146 \u2014 the tie is forced closed after the isolated switches are opened, so even a tie listed in isolation would be re-closed in the what-if.\n- network.py:90-91 `load_on_nodes` \u2014 the 1490 kW \"transferred\" is SEC-1201-04's own load (to_node N-1201-4 in the candidate set).\n\n## Alternatives ruled out (diagnostic: `PYTHONPATH=backend python backend/tests/rca_def_flisr_7_sweep.py`)\nA. FDR-1201, every locatable faulted section x tie capacity:\n```\nfaulted     | cap_kw | isolation                      | restoration                      | tie_candidates                          | back_fed\nSEC-1201-02 | 0/1489/1490 | REC-1201-1, SEC-SW-1201-1 | CB close                         | ALT, N-2A, N-3, N-3A, N-4               | False\nSEC-1201-02 | 2000   | REC-1201-1, SEC-SW-1201-1      | CB close, TIE close              | ALT, N-2A, N-3, N-3A, N-4               | False\nSEC-1201-03 | 0/1489 | REC-1201-2, SEC-SW-1201-1      | CB close                         | ALT, N-3A, N-4                          | False\nSEC-1201-03 | 1490/2000 | REC-1201-2, SEC-SW-1201-1   | CB close, TIE close              | ALT, N-3A, N-4                          | False\nSEC-1201-04 | 0/1489 | REC-1201-2                     | CB close                         | ALT, N-3A, N-4                          | False\nSEC-1201-04 | 1490/2000 | REC-1201-2                  | CB close, TIE close              | ALT, N-3A, N-4                          | True\n```\n- **Fault mislocation (locate_fault)** \u2014 ruled out: faulted_section is SEC-1201-04 as the stand-in scenario specifies; the bad step is the tie close, not the location.\n- **Lockout re-close (CB-1201) back-feeds** \u2014 ruled out: with tie capacity 0/1489 the plan still closes CB-1201 and SEC-1201-04 stays dead (REC-1201-2 holds it).\n- **Capacity check wrong** \u2014 ruled out as cause: 1490 vs 1489 is the exact threshold of SEC-1201-04's load, so the check works as written; capacity is the *only* gate, which is the defect.\n- **Tie restoration is wrong in general** \u2014 ruled out: closing the same tie for faults on SEC-1201-02/03 never back-feeds, because a non-tie switch bounds those sections downstream.\n- **Only the tie skip at flisr.py:42** \u2014 ruled out as a sufficient explanation (part B counterfactual, monkeypatched in the script, no production edit): adding TIE-1201-1405 to isolation gives isolation [REC-1201-2 open, TIE-1201-1405 open] but restoration still contains TIE-1201-1405 close and back_fed = True, because flisr.py:145-146 re-closes it and lines 91-122 never exclude faulted nodes. Both halves are in the hypothesis.\n\nC. Seeded radial feeders with a tail tie (random.Random(7), 500 cases, 2-8 sections, capacity 0-6000 kW):\n```\nfaulted_adjacent_to_tie | tie_closed | back_fed | cases\nFalse | False | False | 131\nFalse | True  | False | 177\nTrue  | False | False | 42\nTrue  | True  | True  | 150\n```\nBack-feed happens in exactly the cases where the faulted section's downstream node is the tie and the tie is closed (150/150), and never otherwise (0/350). That fits the hypothesis and nothing broader.\n\n## Falsifiable predictions\n1. Any feeder whose faulted section ends at a SCADA tie with capacity >= that section's load gets a plan that closes the tie onto it (sweep C: 150/150).\n2. A fault on a section with a non-tie downstream switch is never back-fed by build_plan (sweep A and C: 0/350).\n3. Setting the tie capacity below the faulted section's load suppresses the close (sweep A, 1489 kW).\nAny counterexample to 1 or 2 refutes the hypothesis.\n\n## Out of scope / for later stages\n- Not fixed (explore stage). Fix stage per STD-SAFETY-3/4: both tests above must pass, existing tests unchanged, and a safety invariant over at least 500 seeded inputs (the sweep generator can be reused).\n- Blast radius hint for Review: only plans whose faulted section is next to a tie change; the shipped default (fault SEC-1201-03) is unaffected.\n- `backend/app/flisr.py` is a protected path (two human reviewers, STD-GOV-6 / STD-SAFETY-1).\n"
+    },
+    "root_cause": {
+      "hypothesis": "build_plan (backend/app/flisr.py) never treats a tie switch as a boundary of the faulted section: _isolation_switches skips ties (flisr.py:42) and the restoration loop (flisr.py:91-122, via _nodes_restored_by flisr.py:136-151) never removes the faulted section's nodes from a tie's pick-up set, so when the faulted section's downstream end is a tie (SEC-1201-04 / TIE-1201-1405) that section is itself the tie's restoration candidate and the tie is closed whenever tie capacity >= the faulted section's load (1490 kW).",
+      "evaluation": "# DEF-FLISR-7 \u2014 Evaluate (run rca-backfeed, attempt 1)\n\n## Prepare\nStandards loaded from the brief: STD-GOV v1.1, STD-RCA v1.2, STD-SAFETY v3.1. All three present and readable.\nRepo contract: not included in the brief and the brief forbids codebase access, so it was not read. The verdict below does not depend on it (noted, not blocking).\n\n## Verdict: CONFIRMED\n\nHypothesis under test: `build_plan` never treats a tie switch as a boundary of the faulted section \u2014 (a) `_isolation_switches` skips ties (flisr.py:42), and (b) the restoration loop (flisr.py:91-122 via `_nodes_restored_by` flisr.py:136-151) never removes the faulted section's nodes from a tie's pick-up set \u2014 so when the faulted section's downstream end is a tie, the tie is closed onto it whenever tie capacity >= that section's load.\n\n### Does the evidence show the mechanism, not just the symptom?\nYes. Three observed numbers in the failing output are only explainable by the faulted section itself being the tie's pick-up set:\n- `customers_restored` == `customers_remaining` == 341 (SEC-1201-04's own customer count, counted both as lost and as restored);\n- `transferred_load_kw` == 1490.0 == SEC-1201-04's load (network.py:90-91 `load_on_nodes`, to_node N-1201-4 in the candidate set);\n- \"back-feed 3 nodes\" == the island {N-1201-4, N-1201-3A, ALT-1405} = both ends of SEC-1201-04 plus the alternate source, exactly what `_nodes_restored_by` returns with REC-1201-2 open and the tie closed.\nThe sweep A threshold (1489 kW -> no close, 1490 kW -> close) shows capacity is the only gate and that the gated quantity is the faulted section's load.\n\n### Does it rule out alternatives?\nYes, with data rather than argument:\n- Mislocation: faulted_section is SEC-1201-04 in every run.\n- CB-1201 reclose as the back-feed path: at 0/1489 kW the plan still closes CB-1201 and SEC-1201-04 stays dead (REC-1201-2 holds it).\n- Capacity check defect: 1489/1490 behaves exactly as written.\n- Tie restoration wrong in general: the same tie closed for SEC-1201-02/03 faults never back-feeds (sweep A, 0 cases).\n- Tie-skip at line 42 alone: the monkeypatched counterfactual (tie added to isolation) still yields TIE close + back_fed=True because flisr.py:145-146 re-closes the tie in the what-if and 91-122 never exclude faulted nodes. This establishes that both halves of the hypothesis are necessary \u2014 important for Fix.\n- Sweep C (500 seeded feeders): back-feed in 150/150 cases where faulted section ends at the tie and the tie is closed; 0/350 otherwise. A single-cause hypothesis predicts exactly this partition.\n\n### Would the hypothesis predict the failing test's observed value?\nYes. Predicted plan for SEC-1201-04 fault with 2000 kW tie capacity: isolation [REC-1201-2], restoration [CB-1201 close, TIE-1201-1405 close], SEC-1201-04 nodes {N-1201-3A, N-1201-4} energised. That is the recorded assertion failure, both direct and via POST /flisr/plan.\n\n### Falsifiability\nThree concrete predictions are stated with the counterexample condition; predictions 1-3 are each exercised by sweep A or C.\n\n## Checks against standards\n- STD-RCA-1: single hypothesis, reproduction steps, failing tests (2) with output, observed-vs-expected table, file:line excerpts, alternative-ruling data \u2014 all present.\n- STD-RCA-2: judged from the package only; no repository used.\n- STD-SAFETY-3: defect reproduced by failing tests before any fix; no production code changed in Explore.\n- STD-GOV-7: no customer identifiers, personal names or credentials in the package.\n\n## Non-blocking notes for the next stages\n1. Code excerpts: only flisr.py:42 is quoted verbatim; lines 44-59, 91-122, 141-151 and network.py:90-91 are paraphrased with file:line. The behavioural evidence (341/341, 1490 kW, 1489/1490 threshold, counterfactual B) independently establishes the mechanism, so this does not weaken the verdict, but Review should spot-check those ranges when it has codebase access.\n2. For Fix (STD-SAFETY-4): counterfactual B shows that adding ties to isolation is not sufficient; the restoration candidate set must exclude the faulted section's nodes (or the tie whose from_node/to_node is on the faulted section must be refused). The fail-safe direction is \"refuse the tie close\", not \"best-effort re-route\".\n3. The \"Expected\" column's \"TIE-1201-1405 kept open\" is a fix design choice, not evidence; it was not used in the judgement.\n4. `backend/app/flisr.py` is a protected, safety-critical path: two human reviewers (STD-GOV-6, STD-SAFETY-1).\n5. Invariant for STD-SAFETY-5 is already stated in the package: \"a de-energised fault section is never back-fed during restoration\"; the sweep C generator (random.Random(7), 500 cases) can be reused.\n"
     }
   },
   "units": [],
@@ -112,9 +117,467 @@
   "verify_results": {},
   "paused_on": {
     "reason": "awaiting-session",
-    "stage": "evaluate",
+    "stage": "review",
     "unit": "-",
     "attempt": 1,
-    "request": "sessions/evaluate:-:1.request.json"
+    "request": "sessions/review:-:1.request.json"
+  },
+  "results": {
+    "evaluate:-:1": {
+      "verdict": "CONFIRMED",
+      "summary": "DEF-FLISR-7 hypothesis CONFIRMED from the evidence package alone: build_plan treats no tie as a faulted-section boundary (tie skipped in isolation at flisr.py:42; restoration candidate set never excludes faulted nodes, flisr.py:91-122/141-151). Mechanism is shown, not just symptom: customers_restored == customers_remaining == 341 and transferred_load_kw == 1490 are SEC-1201-04's own figures; 1489/1490 kW threshold proves capacity is the only gate; counterfactual B proves the tie-skip alone is not the cause; 500-case sweep partitions back-feed exactly on 'faulted section ends at tie AND tie closed' (150/150 vs 0/350). Alternatives (mislocation, CB reclose, capacity bug, tie restoration in general) ruled out with data. Non-blocking notes: most code excerpts are paraphrased with file:line rather than quoted; Fix must address the restoration candidate set, not only isolation.",
+      "evidence": [
+        {
+          "kind": "standard",
+          "ref": "STD-GOV v1.1",
+          "detail": "Loaded from brief; STD-GOV-7 checked (no identifiers/credentials in package); STD-GOV-6 noted for protected path backend/app/flisr.py."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-RCA v1.2",
+          "detail": "Loaded from brief. STD-RCA-1 package completeness checked (hypothesis, repro, failing test, observed/expected, file:line excerpts, alternatives). STD-RCA-2 followed: judged without codebase access."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-SAFETY v3.1",
+          "detail": "Loaded from brief. STD-SAFETY-3 satisfied by Explore (failing tests before fix, no production change). STD-SAFETY-1/4/5 notes passed to Review/Fix."
+        },
+        {
+          "kind": "requirement",
+          "ref": "DEF-FLISR-7",
+          "detail": "Source defect; stand-in scenario FDR-1201 (fault SEC-1201-04, lockout CB-1201, tie TIE-1201-1405) per recorded answer Q-EXPLORE-1; function app.flisr.build_plan per Q-EXPLORE-2."
+        },
+        {
+          "kind": "commit",
+          "ref": "c43f8c42a2142b0043a5da5bf125e59258866547",
+          "detail": "Evidence package revision on agent/rca-backfeed/explore (as stated in the package; not independently verified \u2014 no repo access)."
+        },
+        {
+          "kind": "test",
+          "ref": "backend/tests/test_flisr_def_flisr_7.py:22",
+          "detail": "Failing: restoration=[('CB-1201','close'),('TIE-1201-1405','close')]; SEC-1201-04 nodes {N-1201-3A, N-1201-4} energised after plan. Matches hypothesis prediction exactly."
+        },
+        {
+          "kind": "test",
+          "ref": "backend/tests/test_flisr_def_flisr_7.py:52",
+          "detail": "Failing via POST /flisr/plan: customers_restored=341 == customers_remaining=341, transferred_load_kw=1490.0 == SEC-1201-04 load. Only explainable if the faulted section is the tie's pick-up set."
+        },
+        {
+          "kind": "command",
+          "ref": "pytest backend -q -> 2 failed, 2 passed",
+          "detail": "Both failures are the new DEF-FLISR-7 tests; existing tests unchanged (STD-SAFETY-3)."
+        },
+        {
+          "kind": "command",
+          "ref": "PYTHONPATH=backend python backend/tests/rca_def_flisr_7_sweep.py",
+          "detail": "Sweep A: SEC-1201-04 back-fed only at capacity >= 1490 kW (1489 -> no close); SEC-1201-02/03 never back-fed. Counterfactual B: tie in isolation still re-closed (flisr.py:145-146) -> tie-skip alone insufficient. Sweep C: 500 seeded feeders, back_fed iff faulted-adjacent-to-tie AND tie closed (150/150 vs 0/350)."
+        },
+        {
+          "kind": "file",
+          "ref": "backend/app/flisr.py:41-43",
+          "detail": "Quoted: ties skipped in _isolation_switches (`if not switch.scada_controllable or switch.kind.value == \"tie\": continue`)."
+        },
+        {
+          "kind": "file",
+          "ref": "backend/app/flisr.py:91-122, 141-151",
+          "detail": "Described (paraphrased with file:line): every SCADA tie is a restoration candidate gated only by capacity; _nodes_restored_by returns tie island minus source-energised nodes without subtracting the faulted section."
+        },
+        {
+          "kind": "file",
+          "ref": "backend/app/network.py:90-91",
+          "detail": "load_on_nodes counts section load at to_node; N-1201-4 in candidate set yields the 1490 kW 'transferred' figure."
+        },
+        {
+          "kind": "note",
+          "ref": "non-blocking: excerpt quotation depth",
+          "detail": "Only flisr.py:42 is quoted verbatim; other ranges are paraphrased. Verdict rests on behavioural evidence (341/341, 1490 kW, 1489/1490 threshold, counterfactual B, sweep C), so this is a spot-check item for Review, not an objection."
+        },
+        {
+          "kind": "note",
+          "ref": "for Fix (STD-SAFETY-4)",
+          "detail": "Counterfactual B shows adding ties to isolation is not sufficient; the restoration step must refuse a tie whose pick-up set contains the faulted section's nodes. Fail-safe = refuse the close."
+        },
+        {
+          "kind": "note",
+          "ref": "repo contract not read",
+          "detail": "Brief grants no codebase access and does not inline the repo contract; evaluation does not depend on it."
+        }
+      ],
+      "artifacts": {
+        "evaluation": "# DEF-FLISR-7 \u2014 Evaluate (run rca-backfeed, attempt 1)\n\n## Prepare\nStandards loaded from the brief: STD-GOV v1.1, STD-RCA v1.2, STD-SAFETY v3.1. All three present and readable.\nRepo contract: not included in the brief and the brief forbids codebase access, so it was not read. The verdict below does not depend on it (noted, not blocking).\n\n## Verdict: CONFIRMED\n\nHypothesis under test: `build_plan` never treats a tie switch as a boundary of the faulted section \u2014 (a) `_isolation_switches` skips ties (flisr.py:42), and (b) the restoration loop (flisr.py:91-122 via `_nodes_restored_by` flisr.py:136-151) never removes the faulted section's nodes from a tie's pick-up set \u2014 so when the faulted section's downstream end is a tie, the tie is closed onto it whenever tie capacity >= that section's load.\n\n### Does the evidence show the mechanism, not just the symptom?\nYes. Three observed numbers in the failing output are only explainable by the faulted section itself being the tie's pick-up set:\n- `customers_restored` == `customers_remaining` == 341 (SEC-1201-04's own customer count, counted both as lost and as restored);\n- `transferred_load_kw` == 1490.0 == SEC-1201-04's load (network.py:90-91 `load_on_nodes`, to_node N-1201-4 in the candidate set);\n- \"back-feed 3 nodes\" == the island {N-1201-4, N-1201-3A, ALT-1405} = both ends of SEC-1201-04 plus the alternate source, exactly what `_nodes_restored_by` returns with REC-1201-2 open and the tie closed.\nThe sweep A threshold (1489 kW -> no close, 1490 kW -> close) shows capacity is the only gate and that the gated quantity is the faulted section's load.\n\n### Does it rule out alternatives?\nYes, with data rather than argument:\n- Mislocation: faulted_section is SEC-1201-04 in every run.\n- CB-1201 reclose as the back-feed path: at 0/1489 kW the plan still closes CB-1201 and SEC-1201-04 stays dead (REC-1201-2 holds it).\n- Capacity check defect: 1489/1490 behaves exactly as written.\n- Tie restoration wrong in general: the same tie closed for SEC-1201-02/03 faults never back-feeds (sweep A, 0 cases).\n- Tie-skip at line 42 alone: the monkeypatched counterfactual (tie added to isolation) still yields TIE close + back_fed=True because flisr.py:145-146 re-closes the tie in the what-if and 91-122 never exclude faulted nodes. This establishes that both halves of the hypothesis are necessary \u2014 important for Fix.\n- Sweep C (500 seeded feeders): back-feed in 150/150 cases where faulted section ends at the tie and the tie is closed; 0/350 otherwise. A single-cause hypothesis predicts exactly this partition.\n\n### Would the hypothesis predict the failing test's observed value?\nYes. Predicted plan for SEC-1201-04 fault with 2000 kW tie capacity: isolation [REC-1201-2], restoration [CB-1201 close, TIE-1201-1405 close], SEC-1201-04 nodes {N-1201-3A, N-1201-4} energised. That is the recorded assertion failure, both direct and via POST /flisr/plan.\n\n### Falsifiability\nThree concrete predictions are stated with the counterexample condition; predictions 1-3 are each exercised by sweep A or C.\n\n## Checks against standards\n- STD-RCA-1: single hypothesis, reproduction steps, failing tests (2) with output, observed-vs-expected table, file:line excerpts, alternative-ruling data \u2014 all present.\n- STD-RCA-2: judged from the package only; no repository used.\n- STD-SAFETY-3: defect reproduced by failing tests before any fix; no production code changed in Explore.\n- STD-GOV-7: no customer identifiers, personal names or credentials in the package.\n\n## Non-blocking notes for the next stages\n1. Code excerpts: only flisr.py:42 is quoted verbatim; lines 44-59, 91-122, 141-151 and network.py:90-91 are paraphrased with file:line. The behavioural evidence (341/341, 1490 kW, 1489/1490 threshold, counterfactual B) independently establishes the mechanism, so this does not weaken the verdict, but Review should spot-check those ranges when it has codebase access.\n2. For Fix (STD-SAFETY-4): counterfactual B shows that adding ties to isolation is not sufficient; the restoration candidate set must exclude the faulted section's nodes (or the tie whose from_node/to_node is on the faulted section must be refused). The fail-safe direction is \"refuse the tie close\", not \"best-effort re-route\".\n3. The \"Expected\" column's \"TIE-1201-1405 kept open\" is a fix design choice, not evidence; it was not used in the judgement.\n4. `backend/app/flisr.py` is a protected, safety-critical path: two human reviewers (STD-GOV-6, STD-SAFETY-1).\n5. Invariant for STD-SAFETY-5 is already stated in the package: \"a de-energised fault section is never back-fed during restoration\"; the sweep C generator (random.Random(7), 500 cases) can be reused.\n"
+      },
+      "trace": [
+        {
+          "requirement_id": "DEF-FLISR-7",
+          "kind": "test",
+          "ref": "backend/tests/test_flisr_def_flisr_7.py:22"
+        },
+        {
+          "requirement_id": "DEF-FLISR-7",
+          "kind": "test",
+          "ref": "backend/tests/test_flisr_def_flisr_7.py:52"
+        },
+        {
+          "requirement_id": "DEF-FLISR-7",
+          "kind": "code",
+          "ref": "backend/app/flisr.py:41-43"
+        },
+        {
+          "requirement_id": "DEF-FLISR-7",
+          "kind": "code",
+          "ref": "backend/app/flisr.py:91-122"
+        },
+        {
+          "requirement_id": "DEF-FLISR-7",
+          "kind": "code",
+          "ref": "backend/app/flisr.py:141-151"
+        },
+        {
+          "requirement_id": "DEF-FLISR-7",
+          "kind": "code",
+          "ref": "backend/app/network.py:90-91"
+        },
+        {
+          "requirement_id": "DEF-FLISR-7",
+          "kind": "doc",
+          "ref": "artifacts.evaluation"
+        }
+      ],
+      "standards_loaded": [
+        "STD-GOV",
+        "STD-RCA",
+        "STD-SAFETY"
+      ],
+      "branch": "agent/rca-backfeed/explore",
+      "session_url": "https://devin-gtm.devinenterprise.com/sessions/f974b8a669de4f9686a59fb12732a86e",
+      "model": "ultra"
+    },
+    "explore:-:1": {
+      "verdict": "BLOCKED",
+      "summary": "PREPARE: loaded STD-GOV, STD-RCA, STD-SAFETY, the safety-critical-change SKILL.md and DEMO_NOTES.md. EXECUTE: the brief's required input is missing. There is no drill-14 savecase, and backend/tests/data does not exist on any branch. The function plan_restoration also does not exist; the entry point is build_plan via POST /flisr/plan. Without that input I cannot say the reproduction is drill 14 unless I assume it, so the verdict is BLOCKED. On the shipped FDR-1201 model, a fault on the tail section SEC-1201-04 does reproduce the DEF-FLISR-7 behaviour: build_plan returns 'close TIE-1201-1405' and re-energises the faulted section. That failing test is committed at a6c2139 on agent/rca-backfeed/explore. A seeded sweep (600 feeders) gives a back-feed in 168/168 tie-adjacent faults, 0/279 non-adjacent faults, and correct location in 447/447 cases. Runtime counterfactuals show that removing the tie skip at :42 alone does not fix it; it must be combined with excluding isolation-point ties from restoration. No production code was changed. VERIFY: checked against STD-RCA-1, STD-SAFETY-3/7/8 and STD-GOV-1/2/7. pytest: 1 new test fails as intended, 2 existing tests pass. ruff check backend passes; tools/ has an existing UP017 failure on main. DELIVER: a candidate hypothesis and evidence package are attached. Confirming them against drill 14 needs answers to Q-EXPLORE-1 and Q-EXPLORE-2.",
+      "evidence": [
+        {
+          "kind": "standard",
+          "ref": "STD-RCA-1",
+          "detail": "Hypothesis + reproduction, failing test, observed vs expected, file:line excerpts and alternatives-ruled-out data in artifacts.evidence_package"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-SAFETY-3",
+          "detail": "Defect reproduced as a failing test before any fix; no fix applied"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-SAFETY-7",
+          "detail": "Tool classification finding: pytest + seeded sweep = IEC 61508-3 T2; no certification credit claimed"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-SAFETY-8",
+          "detail": "Only local repo model data used; no production systems, secrets or field devices"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-GOV-1",
+          "detail": "Branch agent/rca-backfeed/explore; no PR opened, nothing merged"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-GOV-2",
+          "detail": "Commit a6c2139 carries 'AI-Governance: run=rca-backfeed stage=explore agent=devin model=normal'"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-GOV-7",
+          "detail": "No customer identifiers, personal names or credentials in artifacts"
+        },
+        {
+          "kind": "requirement",
+          "ref": "DEF-FLISR-7",
+          "detail": "Drill-14 savecase referenced in the requirement is absent (Q-EXPLORE-1)"
+        },
+        {
+          "kind": "command",
+          "ref": "ls backend/tests/data; git ls-tree -r on all remote branches | grep -iE 'tests/data|drill|savecase'",
+          "detail": "No backend/tests/data and no drill-14 file on any branch; the only savecase is legacy/habitat/savecases/rtnet_ems_0742.export (EMS/AGC, not FLISR)"
+        },
+        {
+          "kind": "test",
+          "ref": "backend/tests/test_flisr_def_flisr_7.py::test_def_flisr_7_tie_does_not_back_feed_faulted_tail_section",
+          "detail": "FAILS: plan re-energises SEC-1201-04: restoration=[('CB-1201','close'),('TIE-1201-1405','close')]"
+        },
+        {
+          "kind": "command",
+          "ref": "pytest backend -q",
+          "detail": "1 failed (new repro), 2 passed (existing)"
+        },
+        {
+          "kind": "command",
+          "ref": "ruff check backend",
+          "detail": "All checks passed. 'ruff check backend tools' fails on main with an existing UP017 at tools/build_coverage_report.py:183 (Q-EXPLORE-4)"
+        },
+        {
+          "kind": "commit",
+          "ref": "a6c2139bf23fb76eb15ba98201c07237471def05",
+          "detail": "Failing reproduction committed and pushed to agent/rca-backfeed/explore"
+        },
+        {
+          "kind": "file",
+          "ref": "backend/app/flisr.py:41-43",
+          "detail": "_isolation_switches skips tie switches"
+        },
+        {
+          "kind": "file",
+          "ref": "backend/app/flisr.py:91-122",
+          "detail": "Restoration loop closes any SCADA tie whose candidate node set is non-empty; never checks the faulted section or whether the tie is an isolation point"
+        },
+        {
+          "kind": "file",
+          "ref": "backend/app/flisr.py:142-151",
+          "detail": "Working copy re-closes the tie even if it is in isolated_switches (:145 overrides :143); returns from_tie - from_source only"
+        },
+        {
+          "kind": "file",
+          "ref": "backend/app/api.py:40-45",
+          "detail": "POST /flisr/plan -> flisr.build_plan; no plan_restoration exists"
+        },
+        {
+          "kind": "command",
+          "ref": "PYTHONPATH=backend python ~/rca/sweep.py (random.Random(7), 600 feeders)",
+          "detail": "adjacent-to-tie: 168/168 BACKFED; not adjacent: 0/279; located correctly 447/447; 153 no-indication (manual patrol)"
+        },
+        {
+          "kind": "command",
+          "ref": "PYTHONPATH=backend python ~/rca/counterfactual.py ~/rca/sweep.py",
+          "detail": "B (tie skip at :42 removed only): still 168/168 back-fed, and the plan both opens and closes TIE-1201-1405. C (B + isolation-point ties excluded from restoration): 0/168 back-fed, non-adjacent cases unchanged"
+        },
+        {
+          "kind": "artifact",
+          "ref": "/home/ubuntu/rca/evidence_package.md",
+          "detail": "Full evidence package"
+        }
+      ],
+      "questions": [
+        {
+          "id": "Q-EXPLORE-1",
+          "question": "The drill-14 savecase named in DEF-FLISR-7 ('backend/tests/data') is not in the repo; the directory does not exist on main or any remote branch. Please supply the savecase, or confirm in writing that the shipped FDR-1201 scenario (fault on SEC-1201-04, lockout CB-1201, tie TIE-1201-1405) may stand in for drill 14.",
+          "blocking_units": [
+            "explore",
+            "evaluate"
+          ]
+        },
+        {
+          "id": "Q-EXPLORE-2",
+          "question": "DEF-FLISR-7 names the function 'plan_restoration', which does not exist. The restoration planner is app.flisr.build_plan (backend/app/flisr.py:65), called from POST /flisr/plan (backend/app/api.py:40-45). Confirm build_plan is the function under investigation.",
+          "blocking_units": [
+            "explore"
+          ]
+        },
+        {
+          "id": "Q-EXPLORE-3",
+          "question": "The repo contract's layer map lists backend/app/state_estimation.py and backend/app/main.py; the actual files are backend/app/state_estimator.py and backend/app/api.py. Should the contract be corrected before Review/Fix use it for blast radius and layer checks?",
+          "blocking_units": [
+            "review"
+          ]
+        },
+        {
+          "id": "Q-EXPLORE-4",
+          "question": "The contract lint command 'ruff check backend tools' fails on main because of an existing UP017 in tools/build_coverage_report.py:183, which this stage did not touch. Should later stages treat this as an existing exception, or should it be fixed in a separate change?",
+          "blocking_units": [
+            "fix"
+          ]
+        }
+      ],
+      "artifacts": {
+        "hypothesis": "build_plan (backend/app/flisr.py:65) back-feeds the faulted section whenever that section's downstream boundary is a tie switch. _isolation_switches skips ties (flisr.py:42), and the restoration loop (flisr.py:91-122) uses _nodes_restored_by (flisr.py:136-151), which only subtracts nodes fed from the feeder's own source and never the faulted section. So closing that tie re-energises the faulted section. Falsifiable prediction: a back-feed happens if and only if the located faulted section is next to a tie.",
+        "evidence_package": "# DEF-FLISR-7 \u2014 Explore evidence package (run rca-backfeed, round 1)\n\n**Status: BLOCKED.** The required input (the drill-14 savecase in `backend/tests/data`) does not exist. The defect *class* reproduces on the shipped network model. Whether that is the same failure seen in drill 14 has not been shown (see questions).\n\n## Hypothesis (one, falsifiable)\n`build_plan` (backend/app/flisr.py:65) back-feeds the faulted section whenever that section's downstream boundary is a tie switch. Two things combine to cause it. First, `_isolation_switches` never opens a tie (`switch.kind.value == \"tie\"` \u2192 `continue`, flisr.py:42). Second, the restoration loop (flisr.py:91-122) picks nodes through `_nodes_restored_by` (flisr.py:136-151), which only subtracts nodes still fed from the feeder's own source and never subtracts the faulted section. So the tie's \"restored\" node set contains the faulted section, and a `close` on that tie is emitted.\n**Prediction:** a back-feed happens if and only if the located faulted section is the one next to a tie. It never happens for any other faulted section, and location is not at fault.\n\n## Reproduction\n1. `pip install -e './backend[dev]'` (already installed).\n2. Shipped model `backend/data/feeder_model.json`, feeder FDR-1201: radial CB-1201 \u2192 SEC-01 \u2192 REC-1201-1 \u2192 SEC-02 \u2192 SEC-SW-1201-1 \u2192 SEC-03 \u2192 REC-1201-2 \u2192 SEC-04 (N-1201-3A\u2192N-1201-4) \u2192 TIE-1201-1405 (normally open) \u2192 ALT-1405.\n3. Set fault indicators on SEC-1201-01..03 (fault beyond them = SEC-1201-04), lockout CB-1201 open, tie capacity 2000 kW.\n4. `pytest backend/tests/test_flisr_def_flisr_7.py -q` (branch `agent/rca-backfeed/explore`, commit a6c2139).\n\n## Failing test output\n```\nE       AssertionError: plan re-energises SEC-1201-04: restoration=[('CB-1201', 'close'), ('TIE-1201-1405', 'close')]\nE       assert not ({'N-1201-3A', 'N-1201-4'} & {'ALT-1405', 'BUS-1201', 'N-1201-1', 'N-1201-1A', 'N-1201-2', 'N-1201-2A', ...})\nbackend/tests/test_flisr_def_flisr_7.py:22: AssertionError\n1 failed, 2 passed   (full suite: existing 2 tests still pass)\n```\n\n## Observed vs expected\n| | Expected | Observed (`build_plan` output) |\n|---|---|---|\n| faulted_section | SEC-1201-04 | SEC-1201-04 (correct) |\n| isolation | REC-1201-2 open **and** TIE-1201-1405 held open | only REC-1201-2 open |\n| restoration | CB-1201 close only; tie not closed | CB-1201 close, **TIE-1201-1405 close** (\"back-feed 3 nodes from alternate source\") |\n| customers | restored 0 from tie, remaining 341 | restored 341 **and** remaining 341 (faulted customers counted as restored too) |\n| transferred_load_kw | 0 | 1490 (the faulted section's own load) |\n\n## Code excerpts\n- flisr.py:41-43 \u2014 isolation skips ties:\n  `for switch in feeder.switches: if not switch.scada_controllable or switch.kind.value == \"tie\": continue`\n- flisr.py:85-86 \u2014 `plan.isolation = _isolation_switches(...)`; `isolated_mrids = {...}`\n- flisr.py:91-96 \u2014 restoration iterates every SCADA tie; `candidate_nodes = _nodes_restored_by(feeder, switch.mrid, isolated_mrids)`. There is no check against the faulted section, and no check of whether the tie itself is an isolation point.\n- flisr.py:142-146 \u2014 in the working copy, `if switch.mrid in isolated_switches: switch.open = True` and then `if switch.mrid == tie_mrid: switch.open = False`. The second line overrides the first, so a tie listed as an isolation point is still closed.\n- flisr.py:148-151 \u2014 `return from_tie - from_source`. Only nodes fed from the own source are removed. The faulted section's nodes (N-1201-3A, N-1201-4) are cut off from the source by REC-1201-2, so they stay in the set.\n- Entry point: api.py:40-45 `POST /flisr/plan` \u2192 `flisr.build_plan`. No function named `plan_restoration` exists.\n\n## Alternatives ruled out (seeded sweep `~/rca/sweep.py`, `random.Random(7)`, 600 radial feeders of 2-7 sections, tie at the tail, fault on a random section)\n| Alternative | Data | Verdict |\n|---|---|---|\n| Wrong fault location (`locate_fault`) | located correctly 447/447 cases with indications (153 had no indication \u2192 manual patrol, no plan) | ruled out |\n| General restoration bug (any fault gets back-fed) | not adjacent to the tie: 0/279 back-fed | ruled out |\n| Tie capacity / transfer check | capacity set to 1e9 in the sweep and 2000 kW (> 1490 kW) in the repro; the check is about load, not topology | not a factor |\n| Fixing isolation alone (removing the tie skip at :42) | runtime monkeypatch B: still 168/168 back-fed; the plan becomes self-contradictory: isolation `TIE open`, restoration `TIE close` (because of :145 overriding :143) | ruled out as sole cause; both :42 and :91-151 are involved |\n| Both parts together | monkeypatch C (ties opened for isolation **and** a tie that is an isolation point is never a restoration candidate): 0/168 back-fed, 0/279 non-adjacent changed | consistent with the hypothesis |\n| Prediction \"iff adjacent to the tie\" | adjacent: 168/168 back-fed; not adjacent: 0/279 | holds on 447/447 |\n\nThe monkeypatches were runtime-only experiments (`~/rca/counterfactual.py`). No production code was changed.\n\n## Not established\n- That drill 14 is this scenario. The savecase is missing, so drill 14's topology, indicators and tie are unknown. A different drill-14 cause (e.g. a meshed or branched topology, a non-SCADA boundary switch, or wrong indications) cannot be excluded.\n\n## Findings for the assessor\n- STD-SAFETY-7 tool classification: pytest plus the seeded sweep are a T2 tool under IEC 61508-3 (verification tools whose errors could fail to reveal a defect but cannot inject one into the executable). No certification credit is claimed.\n- Baseline `ruff check backend tools` fails on `main` with an existing UP017 in tools/build_coverage_report.py:183, which this stage did not touch. `ruff check backend/tests` passes on the new test.\n- Repo contract mismatch: the layer map lists `backend/app/state_estimation.py` and `backend/app/main.py`, but the actual files are `state_estimator.py` and `api.py`.\n",
+        "stage_phases": "prepare: STD-GOV v1.1, STD-RCA v1.2 and STD-SAFETY v3.1 loaded from the brief; .agents/skills/safety-critical-change/SKILL.md and DEMO_NOTES.md read. execute: reproduction on the shipped model, localisation, sweep, counterfactuals; drill-14 input missing. verify: clauses STD-RCA-1, STD-SAFETY-3/7/8 and STD-GOV-1/2/7 checked; pytest and ruff run. deliver: BLOCKED pending Q-EXPLORE-1..4.",
+        "tool_classification": "IEC 61508-3 T2 (pytest, seeded sweep script): could fail to reveal a defect, cannot introduce one into the executable code."
+      },
+      "trace": [
+        {
+          "requirement_id": "DEF-FLISR-7",
+          "kind": "test",
+          "ref": "backend/tests/test_flisr_def_flisr_7.py"
+        },
+        {
+          "requirement_id": "DEF-FLISR-7",
+          "kind": "code",
+          "ref": "backend/app/flisr.py:42"
+        },
+        {
+          "requirement_id": "DEF-FLISR-7",
+          "kind": "code",
+          "ref": "backend/app/flisr.py:91-151"
+        }
+      ],
+      "standards_loaded": [
+        "STD-GOV",
+        "STD-RCA",
+        "STD-SAFETY"
+      ],
+      "files_touched": [
+        "backend/tests/test_flisr_def_flisr_7.py"
+      ],
+      "branch": "agent/rca-backfeed/explore",
+      "session_url": "https://devin-gtm.devinenterprise.com/sessions/bd6d99c3c7c140bfbffd2c308d4b28f7",
+      "model": "normal"
+    },
+    "explore:-:2": {
+      "verdict": "PASS",
+      "summary": "DEF-FLISR-7 reproduced on the FDR-1201 stand-in (Q-EXPLORE-1), both directly through app.flisr.build_plan and through POST /flisr/plan (Q-EXPLORE-2): with CB-1201 in lockout and the fault on SEC-1201-04, the plan isolates only REC-1201-2 and then closes TIE-1201-1405, which re-energises SEC-1201-04 from ALT-1405. Hypothesis: build_plan never treats a tie as a boundary of the faulted section. It skips ties during isolation (flisr.py:42), and its restoration step (flisr.py:91-122/136-151) never removes the faulted section from the tie's pick-up set, so the tie closes whenever capacity >= 1490 kW. Two failing tests and a diagnostic sweep (FDR-1201 cases plus 500 seeded feeders) were pushed to agent/rca-backfeed/explore. No production code was changed and no PR was opened, because this stage only explores. Phases: prepare (STD-GOV, STD-RCA and STD-SAFETY loaded, plus SKILL.md and DEMO_NOTES.md), execute (reproduce and localise), verify (pytest: 2 failed as intended, 2 passed; ruff check backend clean; console build ok), deliver (this verdict).",
+      "evidence": [
+        {
+          "kind": "standard",
+          "ref": "STD-RCA-1",
+          "detail": "One falsifiable hypothesis. Evidence package has reproduction, failing test output, observed vs expected, file:line excerpts and alternatives ruled out (artifacts.evidence_package)."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-SAFETY-3",
+          "detail": "Defect reproduced with failing tests before any fix. No fix applied."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-SAFETY-2",
+          "detail": "Existing FLISR tests (backend/tests/test_flisr.py, 2 tests) still pass on unmodified code. Characterization tests are for the Fix stage."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-SAFETY-7",
+          "detail": "Tool-classification argument in artifacts.tool_classification."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-SAFETY-8",
+          "detail": "Only local repo code and the shipped model were used. No production systems or field devices."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-GOV-1",
+          "detail": "Work is on branch agent/rca-backfeed/explore. No PR was opened, no merge, no approval."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-GOV-2",
+          "detail": "Both commits (a6c2139, c43f8c4) carry 'AI-Governance: run=rca-backfeed stage=explore agent=devin model=normal'. No PR exists, so no label applies yet."
+        },
+        {
+          "kind": "note",
+          "ref": "STD-GOV-7",
+          "detail": "Compliance finding, not blocking: the platform adds a 'Co-Authored-By:' trailer with a personal git username and email to every commit (a6c2139, c43f8c4). STD-GOV-7 lists briefs, logs and PRs, not commits. Config-level identity changes are outside what this agent may do, so a human should decide whether that trailer is acceptable on agent/ branches."
+        },
+        {
+          "kind": "command",
+          "ref": "pytest backend -q",
+          "detail": "2 failed, 2 passed. Both failures are the DEF-FLISR-7 tests (test_flisr_def_flisr_7.py:22 and :52). TIE-1201-1405 closed onto SEC-1201-04."
+        },
+        {
+          "kind": "command",
+          "ref": "PYTHONPATH=backend python backend/tests/rca_def_flisr_7_sweep.py",
+          "detail": "A: back-feed only for SEC-1201-04 with capacity >= 1490 kW. B: adding the tie to isolation alone still back-feeds. C: 500 seeded feeders give back_fed 150/150 when the fault is next to the tie and the tie is closed, and 0/350 otherwise."
+        },
+        {
+          "kind": "command",
+          "ref": "ruff check backend",
+          "detail": "All checks passed. 'ruff check backend tools' fails only on the existing UP017 in tools/build_coverage_report.py, which is the exception recorded under Q-EXPLORE-4."
+        },
+        {
+          "kind": "command",
+          "ref": "npm --prefix console run build",
+          "detail": "Built OK (no console changes)."
+        },
+        {
+          "kind": "file",
+          "ref": "backend/app/flisr.py:41-43",
+          "detail": "Tie switches are skipped during isolation."
+        },
+        {
+          "kind": "file",
+          "ref": "backend/app/flisr.py:91-122",
+          "detail": "Restoration over ties is gated only by capacity (line 99). The faulted section is never excluded."
+        },
+        {
+          "kind": "file",
+          "ref": "backend/app/flisr.py:141-151",
+          "detail": "_nodes_restored_by forces the tie closed and returns the tie island, which includes SEC-1201-04's nodes."
+        },
+        {
+          "kind": "file",
+          "ref": "backend/data/feeder_model.json",
+          "detail": "FDR-1201 topology: TIE-1201-1405 from N-1201-4 (end of SEC-1201-04) to ALT-1405. SEC-1201-04 has 341 customers and 1490 kW."
+        },
+        {
+          "kind": "commit",
+          "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/commit/c43f8c42a2142b0043a5da5bf125e59258866547",
+          "detail": "API-level reproduction plus diagnostic sweep."
+        },
+        {
+          "kind": "commit",
+          "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/commit/a6c2139bf23fb76eb15ba98201c07237471def05",
+          "detail": "Attempt-1 direct build_plan reproduction (kept)."
+        },
+        {
+          "kind": "requirement",
+          "ref": "DEF-FLISR-7",
+          "detail": "Read with the answers to Q-EXPLORE-1 through Q-EXPLORE-4."
+        },
+        {
+          "kind": "file",
+          "ref": ".agents/skills/safety-critical-change/SKILL.md",
+          "detail": "Followed step 3 (reproduce). Steps 4-6 belong to the Fix stage."
+        }
+      ],
+      "artifacts": {
+        "hypothesis": "build_plan (backend/app/flisr.py) never treats a tie switch as a boundary of the faulted section: _isolation_switches skips ties (flisr.py:42) and the restoration loop (flisr.py:91-122, via _nodes_restored_by flisr.py:136-151) never removes the faulted section's nodes from a tie's pick-up set, so when the faulted section's downstream end is a tie (SEC-1201-04 / TIE-1201-1405) that section is itself the tie's restoration candidate and the tie is closed whenever tie capacity >= the faulted section's load (1490 kW).",
+        "evidence_package": "# DEF-FLISR-7 evidence package (run rca-backfeed, explore, attempt 2)\n\nBranch `agent/rca-backfeed/explore` @ c43f8c42a2142b0043a5da5bf125e59258866547 (parent a6c2139 from attempt 1). No production code changed.\n\n## Inputs (from recorded human answers)\n- Q-EXPLORE-1: FDR-1201 scenario stands in for drill 14 (fault SEC-1201-04, lockout CB-1201, tie TIE-1201-1405).\n- Q-EXPLORE-2: function under test is `app.flisr.build_plan`, called from `POST /flisr/plan` (backend/app/api.py:40-49).\n- Q-EXPLORE-4: `ruff check backend tools` fails on main in tools/build_coverage_report.py (UP017), an existing exception; touched files linted with `ruff check backend` (clean).\n\n## FDR-1201 topology (backend/data/feeder_model.json)\n```\nSRC-1201 -[CB-1201 breaker]- BUS-1201 -(SEC-1201-01)- N-1201-1 -[REC-1201-1]- N-1201-1A -(SEC-1201-02)- N-1201-2\n -[SEC-SW-1201-1]- N-1201-2A -(SEC-1201-03)- N-1201-3 -[REC-1201-2]- N-1201-3A -(SEC-1201-04)- N-1201-4 -[TIE-1201-1405 tie, NO]- ALT-1405\n```\nSEC-1201-04: 341 customers, 1490 kW. Only tie on the feeder is TIE-1201-1405 and it is directly on SEC-1201-04's downstream node N-1201-4.\n\n## Reproduction\n1. Load FDR-1201; set fault_indicator True on SEC-1201-01..03, False on SEC-1201-04 (locate_fault -> SEC-1201-04); set CB-1201.open = True (lockout). The shipped model has CB-1201 closed, so the API returns 409 unless lockout is set.\n2. `build_plan(feeder, \"CB-1201\", {\"TIE-1201-1405\": 2000.0})`, directly and through `POST /flisr/plan` (TestClient, `api.load_network` monkeypatched to return the modified model).\n3. Apply the plan's isolation + restoration steps and compute energised nodes from SRC-1201 and ALT-1405.\n\nCommand: `pytest backend -q` -> `2 failed, 2 passed`. Both failures are the new DEF-FLISR-7 tests; the 2 existing tests in backend/tests/test_flisr.py still pass.\n\n### Failing test output\n```\nbackend/tests/test_flisr_def_flisr_7.py:22: AssertionError: plan re-energises SEC-1201-04: restoration=[('CB-1201', 'close'), ('TIE-1201-1405', 'close')]\n  assert not ({'N-1201-3A', 'N-1201-4'} & {'ALT-1405', 'BUS-1201', 'N-1201-1', 'N-1201-1A', 'N-1201-2', 'N-1201-2A', ...})\nbackend/tests/test_flisr_def_flisr_7.py:52: AssertionError: POST /flisr/plan closes TIE-1201-1405 onto SEC-1201-04: {... 'restoration': [CB-1201 close, TIE-1201-1405 close 'back-feed 3 nodes from alternate source'], 'customers_restored': 341, 'customers_remaining': 341, 'transferred_load_kw': 1490.0}\n```\n\n### Observed vs expected\n| | Observed | Expected |\n|---|---|---|\n| faulted_section | SEC-1201-04 | SEC-1201-04 |\n| isolation | REC-1201-2 open (upstream only) | SEC-1201-04 bounded on both ends: REC-1201-2 open and TIE-1201-1405 kept open |\n| restoration | CB-1201 close, **TIE-1201-1405 close** | CB-1201 close only (nothing healthy downstream of SEC-1201-04 to restore) |\n| SEC-1201-04 after plan | energised from ALT-1405 | de-energised |\n| customers_restored / remaining | 341 / 341 (the same 341 customers counted both ways) | 0 / 341 |\n| transferred_load_kw | 1490 (the faulted section's own load) | 0 |\n\n## Code excerpts\n- flisr.py:41-43 \u2014 ties are dropped before isolation is considered:\n  `for switch in feeder.switches:` / `if not switch.scada_controllable or switch.kind.value == \"tie\": continue`\n- flisr.py:44-59 \u2014 isolation only looks for a switch whose to_node == section.from_node (upstream) or from_node == section.to_node (downstream). For SEC-1201-04 the only downstream match is TIE-1201-1405 (from_node N-1201-4), which was skipped at line 42, so isolation = [REC-1201-2]. No error is raised because `steps` is non-empty (line 60).\n- flisr.py:91-122 \u2014 every SCADA tie is a restoration candidate; the only gate is `transferred > available` (line 99). Nothing compares candidate_nodes with the faulted section.\n- flisr.py:141-151 `_nodes_restored_by` \u2014 opens isolated switches, closes the tie, returns `energised_nodes(from tie.from_node) - energised_nodes(from source)`. With REC-1201-2 open, the tie's island is {N-1201-4, N-1201-3A, ALT-1405} = both ends of SEC-1201-04. The faulted section is not subtracted.\n- flisr.py:145-146 \u2014 the tie is forced closed after the isolated switches are opened, so even a tie listed in isolation would be re-closed in the what-if.\n- network.py:90-91 `load_on_nodes` \u2014 the 1490 kW \"transferred\" is SEC-1201-04's own load (to_node N-1201-4 in the candidate set).\n\n## Alternatives ruled out (diagnostic: `PYTHONPATH=backend python backend/tests/rca_def_flisr_7_sweep.py`)\nA. FDR-1201, every locatable faulted section x tie capacity:\n```\nfaulted     | cap_kw | isolation                      | restoration                      | tie_candidates                          | back_fed\nSEC-1201-02 | 0/1489/1490 | REC-1201-1, SEC-SW-1201-1 | CB close                         | ALT, N-2A, N-3, N-3A, N-4               | False\nSEC-1201-02 | 2000   | REC-1201-1, SEC-SW-1201-1      | CB close, TIE close              | ALT, N-2A, N-3, N-3A, N-4               | False\nSEC-1201-03 | 0/1489 | REC-1201-2, SEC-SW-1201-1      | CB close                         | ALT, N-3A, N-4                          | False\nSEC-1201-03 | 1490/2000 | REC-1201-2, SEC-SW-1201-1   | CB close, TIE close              | ALT, N-3A, N-4                          | False\nSEC-1201-04 | 0/1489 | REC-1201-2                     | CB close                         | ALT, N-3A, N-4                          | False\nSEC-1201-04 | 1490/2000 | REC-1201-2                  | CB close, TIE close              | ALT, N-3A, N-4                          | True\n```\n- **Fault mislocation (locate_fault)** \u2014 ruled out: faulted_section is SEC-1201-04 as the stand-in scenario specifies; the bad step is the tie close, not the location.\n- **Lockout re-close (CB-1201) back-feeds** \u2014 ruled out: with tie capacity 0/1489 the plan still closes CB-1201 and SEC-1201-04 stays dead (REC-1201-2 holds it).\n- **Capacity check wrong** \u2014 ruled out as cause: 1490 vs 1489 is the exact threshold of SEC-1201-04's load, so the check works as written; capacity is the *only* gate, which is the defect.\n- **Tie restoration is wrong in general** \u2014 ruled out: closing the same tie for faults on SEC-1201-02/03 never back-feeds, because a non-tie switch bounds those sections downstream.\n- **Only the tie skip at flisr.py:42** \u2014 ruled out as a sufficient explanation (part B counterfactual, monkeypatched in the script, no production edit): adding TIE-1201-1405 to isolation gives isolation [REC-1201-2 open, TIE-1201-1405 open] but restoration still contains TIE-1201-1405 close and back_fed = True, because flisr.py:145-146 re-closes it and lines 91-122 never exclude faulted nodes. Both halves are in the hypothesis.\n\nC. Seeded radial feeders with a tail tie (random.Random(7), 500 cases, 2-8 sections, capacity 0-6000 kW):\n```\nfaulted_adjacent_to_tie | tie_closed | back_fed | cases\nFalse | False | False | 131\nFalse | True  | False | 177\nTrue  | False | False | 42\nTrue  | True  | True  | 150\n```\nBack-feed happens in exactly the cases where the faulted section's downstream node is the tie and the tie is closed (150/150), and never otherwise (0/350). That fits the hypothesis and nothing broader.\n\n## Falsifiable predictions\n1. Any feeder whose faulted section ends at a SCADA tie with capacity >= that section's load gets a plan that closes the tie onto it (sweep C: 150/150).\n2. A fault on a section with a non-tie downstream switch is never back-fed by build_plan (sweep A and C: 0/350).\n3. Setting the tie capacity below the faulted section's load suppresses the close (sweep A, 1489 kW).\nAny counterexample to 1 or 2 refutes the hypothesis.\n\n## Out of scope / for later stages\n- Not fixed (explore stage). Fix stage per STD-SAFETY-3/4: both tests above must pass, existing tests unchanged, and a safety invariant over at least 500 seeded inputs (the sweep generator can be reused).\n- Blast radius hint for Review: only plans whose faulted section is next to a tie change; the shipped default (fault SEC-1201-03) is unaffected.\n- `backend/app/flisr.py` is a protected path (two human reviewers, STD-GOV-6 / STD-SAFETY-1).\n",
+        "tool_classification": "STD-SAFETY-7 tool-classification argument (finding for the assessor, no certification credit claimed): pytest/coverage, ruff and the diagnostic sweep script only check the code, they don't generate code that goes into the product, so they are T2 (IEC 61508-3 7.4.4): a fault in them could hide a defect but can't create one. The agent (Devin) wrote both the test and the diagnostic code; its output is test evidence that a human checks, not product code, so for this stage it also counts as T2. Independence of verification still comes from the Evaluate stage and the two human reviewers.",
+        "phases": "prepare: standards STD-GOV v1.1, STD-RCA v1.2, STD-SAFETY v3.1 loaded from the brief; SKILL.md and DEMO_NOTES.md read. execute: reproduced and localised. verify: clauses checked above; tests and lint run. deliver: PASS."
+      },
+      "trace": [
+        {
+          "requirement_id": "DEF-FLISR-7",
+          "kind": "test",
+          "ref": "backend/tests/test_flisr_def_flisr_7.py::test_def_flisr_7_tie_does_not_back_feed_faulted_tail_section"
+        },
+        {
+          "requirement_id": "DEF-FLISR-7",
+          "kind": "test",
+          "ref": "backend/tests/test_flisr_def_flisr_7.py::test_def_flisr_7_post_flisr_plan_closes_tie_onto_faulted_section"
+        },
+        {
+          "requirement_id": "DEF-FLISR-7",
+          "kind": "code",
+          "ref": "backend/app/flisr.py:42"
+        },
+        {
+          "requirement_id": "DEF-FLISR-7",
+          "kind": "code",
+          "ref": "backend/app/flisr.py:91-122"
+        },
+        {
+          "requirement_id": "DEF-FLISR-7",
+          "kind": "code",
+          "ref": "backend/app/flisr.py:136-151"
+        },
+        {
+          "requirement_id": "DEF-FLISR-7",
+          "kind": "code",
+          "ref": "backend/app/api.py:40-49"
+        }
+      ],
+      "standards_loaded": [
+        "STD-GOV",
+        "STD-RCA",
+        "STD-SAFETY"
+      ],
+      "files_touched": [
+        "backend/tests/test_flisr_def_flisr_7.py",
+        "backend/tests/rca_def_flisr_7_sweep.py"
+      ],
+      "branch": "agent/rca-backfeed/explore",
+      "session_url": "https://devin-gtm.devinenterprise.com/sessions/5c803a1d8b7941c1867779cf641993f7",
+      "model": "normal"
+    }
   }
 }

@@ -19,10 +19,12 @@
   ],
   "cursor": 0,
   "attempts": {
-    "specify:-": 2
+    "specify:-": 3
   },
   "artifacts": {
-    "specify.specification": "# Specification \u2014 FLISR restoration respects tie-switch capacity\n\nRun: `feature-tie-capacity` \u00b7 Stage: SPECIFY \u00b7 Attempt: 2 \u00b7 Status: **BLOCKED** (open questions Q-SPEC-9, Q-SPEC-10, Q-SPEC-11)\n\n## 0. Source, inputs and classification\n\n- Source: change request \"respect tie-switch capacity during FLISR restoration\" plus human answers Q-SPEC-1..Q-SPEC-8 (ops-lead-standin).\n- Safety classification (STD-REQ-6): **safety-critical** (IEC 61508-3 context). The change alters which tie switches FLISR commands closed. Every unit derived from this specification inherits the classification. `backend/app/flisr.py` is a protected path and needs two human reviewers (STD-GOV-6, STD-SAFETY-1).\n- Scope (Q-SPEC-8): `build_plan` in `backend/app/flisr.py`, `POST /flisr/plan` in `backend/app/api.py`, and new types in `backend/app/models.py`.\n\n### Current behaviour (baseline, `main` @ 5f6b471)\n\n- `build_plan(feeder, lockout_switch_mrid, tie_capacity_kw: dict[str, float] | None)`. A tie with no entry reads as `0.0` kW (`flisr.py:98`, `tie_capacity_kw.get(switch.mrid, 0.0)`). That is an implicit \"treat as zero\", which STD-REQ-3 forbids.\n- A tie is skipped when `transferred > available` (strict). Equality closes. There is no tolerance.\n- On the shipped model with `CB-1201` open and no capacity supplied, the plan isolates `SEC-1201-03` (opens `SEC-SW-1201-1` and `REC-1201-2`), re-closes `CB-1201` and skips `TIE-1201-1405` with the note `\"Hollow Creek tie to 1405 skipped: 1490 kW exceeds 0 kW available capacity\"`. The results are `customers_remaining = 437` and `customers_restored = 0`.\n- There is no timestamp, no quality and no machine-readable reason for a skipped tie.\n\n### Definitions\n\n- **Tie**: a `Switch` with `kind == tie` and `scada_controllable == True` for which `_nodes_restored_by` returns a non-empty candidate node set. Other ties are out of scope (see \u00a73). Today they are skipped silently, and that does not change.\n- **L (transferred load)**: the sum of `Section.load_kw` over the sections whose `to_node` is in the tie's candidate node set. Unit kW. Range L \u2265 0.\n- **C (tie capacity)**: the alternate feeder's spare capacity as delivered by the SCADA scan every 10 s. Unit kW, on the same basis as `load_kw`. No unit conversion and no per-unit base (Q-SPEC-1). It is not a nameplate rating.\n- **Tolerance \u03c4**: 0.5 kW. This is the only tolerance and no other safety margin applies (Q-SPEC-1, Q-SPEC-4). Per-unit statement waived by human answer Q-SPEC-4.\n- **t_eval**: the instant against which a capacity value's age is judged. Its source is open (Q-SPEC-10).\n- **age**: `t_eval \u2212 TieCapacity.timestamp`, in seconds.\n- **Usable capacity**: an entry that is present, has `quality == \"GOOD\"` and `age \u2264 20 s` (Q-SPEC-2), and is not invalid (definition open, Q-SPEC-9).\n\n## 1. Requirements\n\n| ID | Requirement (one testable statement) | Inputs \u2192 outputs | Missing / late / invalid behaviour | Verification (oracle) | Depends on open Q |\n|---|---|---|---|---|---|\n| REQ-TIECAP-1 | `backend/app/models.py` shall define a Pydantic model `TieCapacity` with the fields `kw: float` (kW, same basis as `Section.load_kw`), `timestamp: datetime` and `quality: str`. | \u2014 \u2192 type | A field that is missing from a `TieCapacity` fails model validation. Value validity is covered by REQ-TIECAP-8. | Test: construction and validation unit tests; inspection of `models.py`. | \u2014 |\n| REQ-TIECAP-2 | `flisr.build_plan` shall accept `tie_capacity: dict[str, TieCapacity] \\| None`, keyed by tie switch mRID. | feeder, lockout mRID, tie_capacity \u2192 `RestorationPlan` | `None` or `{}` means no tie has a known capacity, so every tie falls under REQ-TIECAP-5. | Test. | \u2014 |\n| REQ-TIECAP-3 | For a tie with usable capacity C, `build_plan` shall emit a `close` restoration step for that tie **if and only if** `L \u2264 C + 0.5 kW`. | L, C \u2192 close step present / absent | If C is not usable, REQ-TIECAP-5..8 apply and the tie is never closed. | Test against an independent closed-form oracle: the QA test computes L itself with a BFS over the test topology (not `network.load_on_nodes` or `_nodes_restored_by`) and evaluates `L_oracle \u2264 C + 0.5`. Boundary cases on the shipped model (L = 1490 kW): C = 1490.0 closes, C = 1489.5 closes (L = C + \u03c4), C = 1489.4 does not close (blocked as CAPACITY_EXCEEDED). Tolerance 0.5 kW engineering units; per-unit waived (Q-SPEC-4). | \u2014 |\n| REQ-TIECAP-4 | For a tie with usable capacity and `L > C + 0.5 kW`, `build_plan` shall emit no step for that tie and shall record `BlockedTie(tie_id=<mRID>, reason=CAPACITY_EXCEEDED)`. It shall not pick up part of the load (Q-SPEC-6). | L, C \u2192 blocked_ties entry | \u2014 | Test (same oracle as REQ-TIECAP-3). | \u2014 |\n| REQ-TIECAP-5 | For a tie with no entry in `tie_capacity` (including `tie_capacity` None or empty), `build_plan` shall emit no step for that tie and shall record `BlockedTie(reason=CAPACITY_UNKNOWN)`. The missing value shall never be read as 0 kW or any other value. | absent entry \u2192 blocked_ties entry | Missing \u2192 refuse for that tie only. | Test: missing key and `None`; inspection that no default capacity value remains (`flisr.py:98`). | \u2014 |\n| REQ-TIECAP-6 | For a tie whose entry has `age > 20 s`, `build_plan` shall not use the value, shall emit no step for that tie and shall record `BlockedTie(reason=CAPACITY_STALE)`. An entry with `age \u2264 20 s` (so exactly 20 s is still fresh) is usable if REQ-TIECAP-7 and REQ-TIECAP-8 are also met. | timestamp, t_eval \u2192 usable / blocked | Late \u2192 refuse for that tie. A future timestamp (age < 0) and a timezone-naive timestamp are undefined (Q-SPEC-10). | Test with an injected t_eval: ages 19.999 s, 20.000 s (usable), 20.001 s (stale). Oracle: closed-form `age > 20`. | Q-SPEC-10 |\n| REQ-TIECAP-7 | For a tie whose entry has `quality != \"GOOD\"` (exact match), `build_plan` shall not use the value, shall emit no step for that tie and shall record a `BlockedTie`. Which reason code applies (CAPACITY_UNKNOWN or CAPACITY_INVALID), and which reason wins when several conditions hold at once, is open. | quality \u2192 usable / blocked | Bad or uncertain quality \u2192 refuse for that tie (Q-SPEC-2). | Test. | Q-SPEC-9 |\n| REQ-TIECAP-8 | For a tie whose entry holds an invalid value, `build_plan` shall emit no step for that tie and shall record `BlockedTie(reason=CAPACITY_INVALID)`. What counts as invalid (NaN, \u00b1inf, negative kW, \u2026) is open, and so is whether malformed HTTP input is a 422 or a per-tie CAPACITY_INVALID. | kw \u2192 usable / blocked | Invalid \u2192 refuse for that tie. Never clamp and never substitute a value. | Test. | Q-SPEC-9 |\n| REQ-TIECAP-9 | A blocked tie shall not change the plan's isolation steps, the lockout re-close step, or how any other tie is evaluated (per-tie blocking, Q-SPEC-5). | per-tie inputs \u2192 plan | \u2014 | Test: a two-tie generated topology with one tie usable and one blocked. Compare isolation and the other tie's step against the same plan built without the blocked tie's problem. | \u2014 |\n| REQ-TIECAP-10 | `RestorationPlan` shall gain `blocked_ties: list[BlockedTie]`, where `BlockedTie{tie_id: str, reason}` and `reason` \u2208 {CAPACITY_UNKNOWN, CAPACITY_STALE, CAPACITY_INVALID, CAPACITY_EXCEEDED}. It holds exactly one entry per blocked tie and is empty when no tie is blocked. | \u2014 \u2192 plan field | \u2014 | Test (schema plus content). Inspection of `models.py`. | \u2014 |\n| REQ-TIECAP-11 | For each blocked tie, `RestorationPlan.notes` shall contain one operator-readable entry naming the tie (`Switch.name`) and the reason. For CAPACITY_EXCEEDED it shall also give L and C in kW, and for CAPACITY_STALE the age in seconds. | blocked tie \u2192 note | \u2014 | Test (content asserted per reason). | \u2014 |\n| REQ-TIECAP-12 | For a blocked tie, `build_plan` shall add the customers of the candidate sections to `customers_remaining` and shall add nothing to `customers_restored` or `transferred_load_kw`. For a closed tie the accounting stays as it is today. | plan totals | \u2014 | Test. Oracle: independent sums over the test topology. | \u2014 |\n| REQ-TIECAP-13 | `POST /flisr/plan` shall accept a `tie_capacity` object mapping tie mRID \u2192 `TieCapacity`. When one or more ties are blocked it shall return HTTP 200 with the plan, including `blocked_ties`. It shall not return 409 for a blocked tie (Q-SPEC-5). The existing 404 (unknown feeder) and 409 (`FlisrError`) behaviour stays the same. | HTTP body \u2192 HTTP status + plan | Malformed `TieCapacity`: open (Q-SPEC-9 d). | Test (FastAPI `TestClient`). | Q-SPEC-9 (malformed only) |\n| REQ-TIECAP-14 | For one release, `build_plan` and `POST /flisr/plan` shall still accept the legacy `dict[str, float]`. Each value shall be treated as `TieCapacity(kw=value, timestamp=t_eval, quality=\"GOOD\")`, and the caller shall get a deprecation note (Q-SPEC-3). The body field shape, what happens when both forms are supplied, and where the deprecation note goes are open. | legacy map \u2192 same decisions as REQ-TIECAP-3..12 | A tie missing from the legacy map \u2192 CAPACITY_UNKNOWN (REQ-TIECAP-5). An invalid legacy value is handled per Q-SPEC-9. | Test. | Q-SPEC-9, Q-SPEC-11 |\n| REQ-TIECAP-15 | When no fault indication is present (`faulted_section is None`), the plan shall be as it is today (no isolation, no restoration, manual-patrol note) with `blocked_ties` empty. | \u2014 | \u2014 | Test (characterization). | \u2014 |\n| REQ-TIECAP-16 | t_eval shall be taken once per `build_plan` call, so every tie in one plan is judged against the same instant. | \u2014 | Source of t_eval (wall clock or injected) and the reference timezone are open. | Test and inspection. | Q-SPEC-10 |\n| REQ-TIECAP-17 | Safety invariant: no plan shall contain a `close` step for a tie unless that tie's capacity is usable and `L \u2264 C + 0.5 kW`. Every tie of the kind defined in \u00a70 that is not closed shall appear exactly once in `blocked_ties`. | generated feeders + capacity maps \u2192 plans | Covers missing, stale, bad-quality and invalid entries. | Test (STD-SAFETY-5): at least 500 seeded `random` cases over radial and branched topologies with one or more ties, and capacity entries drawn across the missing / stale / boundary-age / non-GOOD / invalid / below / at / above `L + \u03c4` classes. The QA-owned BFS oracle of REQ-TIECAP-3 recomputes L. | Q-SPEC-9, Q-SPEC-10 (for the invalid and future-time classes) |\n| REQ-TIECAP-18 | For inputs where every tie has usable capacity and `L \u2264 C` or `L > C + 0.5 kW`, the isolation steps, the restoration steps and their order, `customers_restored`, `customers_remaining` and `transferred_load_kw` shall equal the values on `main` @ 5f6b471. | \u2014 | \u2014 | Test: `@pytest.mark.characterization` tests pinned on unmodified code before any change (STD-SAFETY-2). | \u2014 |\n\n### Intended behaviour changes (blast radius)\n\n1. A tie with no capacity entry used to be skipped with a \"0 kW available\" note. It is now blocked with reason CAPACITY_UNKNOWN (REQ-TIECAP-5). The step and the accounting are the same; the note text and `blocked_ties` are new.\n2. `C < L \u2264 C + 0.5 kW` used to skip the tie and now closes it (REQ-TIECAP-3, Q-SPEC-1/Q-SPEC-4). This is the **only** change that makes the planner more permissive. Reviewers should confirm it was intended.\n3. A value that is stale or not GOOD used to be impossible to express. It now blocks the tie.\n4. The `RestorationPlan` schema gains `blocked_ties`, an additive field.\n\n## 2. Open questions (STD-REQ-4) \u2014 not resolved by assumption\n\n- **Q-SPEC-9: when CAPACITY_INVALID applies, which reason a non-GOOD quality gets, and precedence.** (a) Which `kw` values are invalid: NaN, \u00b1inf, negative? A negative spare capacity could be a real reading (the alternate feeder is already overloaded) or a bad one. With `L = 0 kW` candidate sections and `C = \u22120.3`, REQ-TIECAP-3 would close the tie unless negative values are invalid. (b) Does `quality != GOOD` give CAPACITY_UNKNOWN (Q-SPEC-2 calls it \"unknown\") or CAPACITY_INVALID? (c) `BlockedTie` carries one reason. When several conditions hold (for example stale and not GOOD and NaN), which reason is recorded? (d) A structurally malformed entry in the HTTP body (for example a string `kw` or a missing `quality`): reject the whole request with 422, or block only that tie with CAPACITY_INVALID and return 200? Blocks: REQ-TIECAP-7, REQ-TIECAP-8, REQ-TIECAP-13 (malformed input only), REQ-TIECAP-14 (legacy validity), REQ-TIECAP-17.\n- **Q-SPEC-10: time reference.** (a) Is t_eval the planner's own wall clock (UTC) when `build_plan` starts, or an evaluation time supplied by the caller or injected? (b) A timestamp later than t_eval (clock skew between the SCADA front end and the planner): usable, stale, or invalid? Is any skew allowed? Without a rule, a future-dated value would look fresh indefinitely. (c) A timezone-naive timestamp: reject, or interpret as UTC? Blocks: REQ-TIECAP-6, REQ-TIECAP-16, REQ-TIECAP-17.\n- **Q-SPEC-11: legacy format alongside the new one.** (a) HTTP body: keep the legacy floats under `tie_capacity_kw` next to the new `tie_capacity`, or have one field accept either shape? (b) If both forms are supplied in one call, or for the same tie: refuse, let the new form win, or something else? (c) Where does the \"deprecation note\" go: `RestorationPlan.notes` (shown to operators), an HTTP `Deprecation` header, OpenAPI `deprecated`, a log line, or several of these? Blocks: REQ-TIECAP-14.\n\n## 3. Scope exclusions (STD-REQ-7)\n\n- The SCADA adapter and telemetry ingestion: scan scheduling, quality mapping and timestamping (integration team, Q-SPEC-3).\n- Spare capacity on one alternate feeder shared by several ties (Q-SPEC-7). Each tie is checked independently.\n- Partial pick-up or load shedding to fit within capacity (Q-SPEC-6).\n- Nameplate or thermal rating of the tie switch, unit conversion, per-unit bases, and any safety margin beyond \u03c4 = 0.5 kW (Q-SPEC-1, Q-SPEC-4).\n- Removing the legacy `dict[str, float]` input (a later release).\n- `locate_fault` and fault-location logic (open PRs #8 and #11). `_isolation_switches` and DEF-FLISR-7 (a tie that is an isolation point back-feeds the faulted section) are a separate defect run. This change shall not fix or mask DEF-FLISR-7.\n- Ties that are not SCADA-controllable, and ties with an empty candidate node set. Both are skipped silently as today and are not listed in `blocked_ties`.\n- `console/**`. The console does not call `/flisr/plan` today. `state_estimator.py`, `agc.py`, `savecase.py`, `firmware/**` and `legacy/**` are also out of scope.\n\n## 4. Verification notes for QA\n\n- The independent oracle for the close/block decision is a QA-owned BFS over the test topology plus the closed-form checks `L \u2264 C + 0.5`, `age > 20` and `quality == \"GOOD\"`. It must not import `app.network` or `app.flisr` helpers.\n- Tolerance: 0.5 kW engineering units. A per-unit tolerance was waived by the human answer to Q-SPEC-4. QA should record that waiver against STD-SAFETY-6.\n- Order of work under `.agents/skills/safety-critical-change/SKILL.md`: baseline, then characterization (REQ-TIECAP-15, REQ-TIECAP-18), then a failing reproduction (missing capacity read as 0 kW and no machine-readable reason), then the minimal fix, then the invariant (REQ-TIECAP-17, at least 500 seeded cases).\n- Tool classification (STD-SAFETY-7) is the assessor's finding. The specification takes no tool-certification credit.\n"
+    "specify.specification": "# Specification \u2014 FLISR restoration respects tie-switch capacity\n\nRun: `feature-tie-capacity` \u00b7 Stage: SPECIFY \u00b7 Attempt: 3 \u00b7 Status: **BLOCKED** (open questions Q-SPEC-12, Q-SPEC-13; every other requirement is complete)\n\n## 0. Source, inputs and classification\n\n- Source: change request \"respect tie-switch capacity during FLISR restoration\", plus human answers Q-SPEC-1..Q-SPEC-11 (ops-lead-standin, recorded gate actions).\n- Safety classification (STD-REQ-6): **safety-critical** (IEC 61508-3 context). The change alters which tie switches FLISR commands closed. Every unit derived from this specification inherits the classification. `backend/app/flisr.py` is a protected path: two human reviewers (STD-GOV-6, STD-SAFETY-1).\n- Scope (Q-SPEC-8): `build_plan` in `backend/app/flisr.py`; `POST /flisr/plan` in `backend/app/api.py`; new types in `backend/app/models.py`.\n\n### Current behaviour (baseline, `main` @ 5f6b471, re-measured this attempt)\n\n- `build_plan(feeder, lockout_switch_mrid, tie_capacity_kw: dict[str, float] | None)`. A tie with no entry reads as `0.0` kW (`flisr.py:98`, `tie_capacity_kw.get(switch.mrid, 0.0)`): an implicit \"treat as zero\", forbidden by STD-REQ-3.\n- A tie is skipped when `transferred > available` (strict), so equality closes; there is no tolerance.\n- Shipped model, `CB-1201` open: isolation opens `SEC-SW-1201-1` and `REC-1201-2`; restoration re-closes `CB-1201`. Tie `TIE-1201-1405` has L = 1490 kW.\n  - no capacity \u2192 tie skipped, note `\"Hollow Creek tie to 1405 skipped: 1490 kW exceeds 0 kW available capacity\"`, `customers_restored = 0`, `customers_remaining = 437`, `transferred_load_kw = 0.0`.\n  - C = 1490.0 \u2192 tie closed, `customers_restored = 341`, `customers_remaining = 96`, `transferred_load_kw = 1490.0`, no notes.\n  - C = 1489.9 \u2192 tie skipped (note says \"exceeds 1490 kW\", rounding hides the 0.1 kW).\n- HTTP today (`FlisrRequest`, Pydantic lax mode, extra fields ignored): a JSON `NaN` capacity is accepted, a string `\"2000\"` is coerced to 2000.0, and an unknown body field is silently ignored. All three reach the planner.\n- No timestamp, no quality, no machine-readable reason for a skipped tie.\n\n### Definitions\n\n- **Candidate tie**: a `Switch` with `kind == tie` and `scada_controllable == True` for which `_nodes_restored_by` returns a non-empty node set. Other ties are skipped silently, as today (\u00a73).\n- **L (transferred load)**: sum of `Section.load_kw` over sections whose `to_node` is in the candidate node set. Unit kW; range L \u2265 0.\n- **C (tie capacity)**: `TieCapacity.kw` \u2014 the alternate feeder's spare capacity as delivered by the SCADA scan every 10 s, kW on the same basis as `load_kw`. No unit conversion, no per-unit base, not nameplate (Q-SPEC-1).\n- **\u03c4 (tolerance)**: 0.5 kW, the only tolerance; no additional safety margin (Q-SPEC-1, Q-SPEC-4). Per-unit statement waived by Q-SPEC-4.\n- **as_of**: the evaluation instant. The request's `as_of` (timezone-aware ISO-8601 UTC instant supplied by the caller); when absent, the server's UTC now (Q-SPEC-10).\n- **age**: `as_of \u2212 TieCapacity.timestamp`, in seconds (Q-SPEC-10). Negative when the timestamp is ahead of as_of.\n- **Usable capacity**: an entry that is present, valid (REQ-TIECAP-8), `quality == \"GOOD\"` and `age \u2264 20 s` (Q-SPEC-2).\n- **Present** (HTTP body field): the key appears in the JSON body, whatever its value.\n\n## 1. Requirements\n\n| ID | Requirement (one testable statement) | Inputs \u2192 outputs | Missing / late / invalid behaviour | Verification (oracle) | Depends on open Q |\n|---|---|---|---|---|---|\n| REQ-TIECAP-1 | `backend/app/models.py` shall define a Pydantic model `TieCapacity` with fields `kw` (kW, same basis as `Section.load_kw`), `timestamp` and `quality: str`, all required, and shall reject unknown fields. Model validation shall not range-check `kw` or require a timezone on `timestamp`; those checks are the planner's (REQ-TIECAP-8) so that they yield per-tie `CAPACITY_INVALID` and not a request error. | \u2014 \u2192 type | A missing or unknown field fails model validation (\u2192 HTTP 422, REQ-TIECAP-13). | Test: model validation unit tests; inspection of `models.py`. | Q-SPEC-13 (type of `timestamp` only) |\n| REQ-TIECAP-2 | `flisr.build_plan` shall accept `tie_capacity: dict[str, TieCapacity] \\| None` keyed by tie switch mRID, and `as_of: datetime \\| None`. When `as_of` is None it shall use the UTC now read once at the start of the call. | feeder, lockout mRID, tie_capacity, as_of \u2192 `RestorationPlan` | `tie_capacity` None or `{}` \u2192 every candidate tie is CAPACITY_UNKNOWN (REQ-TIECAP-5). Invalid `as_of` \u2192 open (Q-SPEC-12). | Test with an injected `as_of`; inspection. | Q-SPEC-12 (invalid as_of only) |\n| REQ-TIECAP-3 | For a candidate tie with usable capacity C, `build_plan` shall emit a `close` restoration step for that tie **if and only if** `L \u2264 C + 0.5 kW`. | L, C \u2192 close step present / absent | C not usable \u2192 REQ-TIECAP-5..8; never closed. | Test against an independent closed-form oracle: QA computes L with its own BFS over the test topology (not `network.load_on_nodes` or `_nodes_restored_by`) and evaluates `L_oracle \u2264 C + 0.5`. Shipped-model boundary (L = 1490 kW): C = 1490.0 closes; C = 1489.5 closes (L = C + \u03c4); C = 1489.4 blocked CAPACITY_EXCEEDED. Tolerance 0.5 kW engineering units; per-unit waived (Q-SPEC-4). | \u2014 |\n| REQ-TIECAP-4 | For a candidate tie with usable capacity and `L > C + 0.5 kW`, `build_plan` shall emit no step for that tie and shall record `BlockedTie(tie_id=<mRID>, reason=CAPACITY_EXCEEDED)`. No partial pick-up (Q-SPEC-6). | L, C \u2192 blocked_ties entry | \u2014 | Test (oracle as REQ-TIECAP-3). | \u2014 |\n| REQ-TIECAP-5 | For a candidate tie with no entry in `tie_capacity` (including None / `{}`), or whose entry has `quality != \"GOOD\"` (exact, case-sensitive match), `build_plan` shall emit no step for that tie and record `BlockedTie(reason=CAPACITY_UNKNOWN)`. A missing value shall never be read as 0 kW or any other value (Q-SPEC-2, Q-SPEC-9). | entry / quality \u2192 blocked_ties entry | Missing or non-GOOD \u2192 refuse for that tie only. | Test: missing key, `None`, `{}`, qualities `\"BAD\"`, `\"SUSPECT\"`, `\"good\"`, `\"\"`. Inspection that no default capacity remains at `flisr.py:98`. | \u2014 |\n| REQ-TIECAP-6 | For a candidate tie whose valid entry has `age > 20 s`, `build_plan` shall not use the value, emit no step for that tie and record `BlockedTie(reason=CAPACITY_STALE)`. `age \u2264 20 s` (exactly 20 s included) is fresh (Q-SPEC-2). | timestamp, as_of \u2192 usable / blocked | Late \u2192 refuse for that tie. | Test with injected as_of: age 19.999 s, 20.000 s (fresh), 20.001 s (stale). Oracle: closed-form `age > 20`. | \u2014 |\n| REQ-TIECAP-7 | A timestamp ahead of as_of by no more than 2 s (\u22122 s \u2264 age < 0) shall be treated as fresh; ahead by more than 2 s (age < \u22122 s) is CAPACITY_INVALID (Q-SPEC-10). | timestamp, as_of \u2192 usable / invalid | Future-dated \u2192 refuse for that tie. | Test: age \u22121.999 s, \u22122.000 s (fresh), \u22122.001 s (invalid). | \u2014 |\n| REQ-TIECAP-8 | For a candidate tie whose entry has `kw` NaN, +inf, \u2212inf, negative, or otherwise not a finite number, or a `timestamp` that is unparseable, timezone-naive, or more than 2 s ahead of as_of, `build_plan` shall emit no step for that tie and record `BlockedTie(reason=CAPACITY_INVALID)`. It shall never clamp or substitute a value (Q-SPEC-9, Q-SPEC-10). `kw = 0.0` and `kw = \u22120.0` are valid. | kw, timestamp \u2192 usable / blocked | Invalid \u2192 refuse for that tie. | Test: each listed class at `build_plan` level; NaN / \u00b1Infinity also through HTTP (accepted as JSON numbers today, see baseline). | Q-SPEC-13 (unparseable timestamp through HTTP only) |\n| REQ-TIECAP-9 | When several conditions apply to one tie, `build_plan` shall record only the first in the order CAPACITY_INVALID, CAPACITY_UNKNOWN, CAPACITY_STALE, CAPACITY_EXCEEDED (Q-SPEC-9). | entry \u2192 single reason | \u2014 | Test: every pair/combination of conditions, e.g. NaN + BAD + stale \u2192 INVALID; BAD + stale \u2192 UNKNOWN; stale + exceeded \u2192 STALE. Oracle: closed-form precedence function in the QA test. | \u2014 |\n| REQ-TIECAP-10 | A blocked tie shall not change the plan's isolation steps, the lockout re-close step, or how any other candidate tie is evaluated (per-tie blocking, Q-SPEC-5). | per-tie inputs \u2192 plan | \u2014 | Test: two-tie generated topology, one tie usable, one blocked; isolation and the other tie's step equal the plan built with the blocked tie's entry made usable-but-exceeded. | \u2014 |\n| REQ-TIECAP-11 | `RestorationPlan` shall gain `blocked_ties: list[BlockedTie]`, `BlockedTie{tie_id: str, reason}`, reason \u2208 {CAPACITY_UNKNOWN, CAPACITY_STALE, CAPACITY_INVALID, CAPACITY_EXCEEDED}, with exactly one entry per blocked candidate tie, in `feeder.switches` order, empty when none is blocked (Q-SPEC-5). | \u2014 \u2192 plan field | \u2014 | Test (schema + content); inspection of `models.py`. | \u2014 |\n| REQ-TIECAP-12 | For each blocked tie, `RestorationPlan.notes` shall contain one operator-readable entry naming the tie (`Switch.name`) and the reason; for CAPACITY_EXCEEDED it shall also state L and C in kW to at least 0.1 kW resolution; for CAPACITY_STALE the age in seconds. | blocked tie \u2192 note | \u2014 | Test: content asserted per reason. | \u2014 |\n| REQ-TIECAP-13 | `POST /flisr/plan` shall accept a body field `tie_capacity` (object: tie mRID \u2192 `TieCapacity`) and an optional `as_of`; it shall return HTTP 200 with the plan, including `blocked_ties`, when ties are blocked, never 409 for a blocked tie (Q-SPEC-5). It shall reject with HTTP 422, before the planner runs, a body with wrong JSON types (no string\u2192number or bool\u2192number coercion), missing required fields or unknown fields at body or `TieCapacity` level (Q-SPEC-9). Existing 404 (unknown feeder) and 409 (`FlisrError`) are unchanged. | HTTP body \u2192 status + plan | Malformed \u2192 422. | Test (FastAPI `TestClient`): `\"kw\": \"2000\"` \u2192 422; extra body field \u2192 422; `TieCapacity` missing `quality` \u2192 422; one blocked tie \u2192 200. | Q-SPEC-12 (as_of validation), Q-SPEC-13 (unparseable timestamp) |\n| REQ-TIECAP-14 | The response body shall always carry `as_of`: the instant used \u2014 the supplied value, or the server's UTC now when absent (Q-SPEC-10). | as_of \u2192 echoed as_of | \u2014 | Test: supplied value echoed; absent \u2192 a UTC instant between the request's send and receive times. | \u2014 |\n| REQ-TIECAP-15 | `tie_capacity` and the legacy `tie_capacity_kw` shall be mutually exclusive: both present in one body \u2192 HTTP 422 (Q-SPEC-11); both passed to `build_plan` \u2192 `build_plan` raises and returns no plan. | body \u2192 422 / raise | \u2014 | Test: both present (including both `{}`) \u2192 422; `build_plan` with both \u2192 raises. | \u2014 |\n| REQ-TIECAP-16 | For one release, a request carrying only `tie_capacity_kw` (`dict[str, float]`) \u2014 and `build_plan` called with only `tie_capacity_kw` \u2014 shall be evaluated as `TieCapacity(kw=value, timestamp=as_of, quality=\"GOOD\")` per entry through REQ-TIECAP-3..12, and the response shall carry `deprecations: [\"tie_capacity_kw\"]` (Q-SPEC-3, Q-SPEC-11). Otherwise `deprecations` is `[]`. | legacy map \u2192 same decisions + deprecations | Tie missing from the legacy map \u2192 CAPACITY_UNKNOWN. Legacy NaN / \u00b1inf / negative \u2192 CAPACITY_INVALID. Wrong JSON type \u2192 422. | Test: legacy-only with C = 2000.0 gives the same steps and totals as `tie_capacity` with GOOD/as_of; `deprecations` asserted. | \u2014 |\n| REQ-TIECAP-17 | The `POST /flisr/plan` OpenAPI description shall state that `tie_capacity_kw` is deprecated, is removed after one release, and is mutually exclusive with `tie_capacity` (Q-SPEC-11). The Document stage's docs page carries the same note. | \u2014 \u2192 OpenAPI text | \u2014 | Inspection: `app.openapi()` text for `/flisr/plan`. | \u2014 |\n| REQ-TIECAP-18 | For each blocked tie, `build_plan` shall add the customers of its candidate sections to `customers_remaining` and add nothing to `customers_restored` or `transferred_load_kw`. Closed-tie accounting is unchanged. | plan totals | \u2014 | Test; oracle: independent sums over the test topology. | \u2014 |\n| REQ-TIECAP-19 | When no fault indication is present (`faulted_section is None`), the plan shall be as today (no isolation, no restoration, manual-patrol note) with `blocked_ties` empty. | \u2014 | \u2014 | Test (characterization). | \u2014 |\n| REQ-TIECAP-20 | as_of shall be fixed once per `build_plan` call; every entry in one plan is aged against the same instant. | \u2014 | \u2014 | Test and inspection (no clock read inside the per-tie loop). | \u2014 |\n| REQ-TIECAP-21 | Safety invariant: no plan shall contain a `close` step for a tie unless that tie's capacity is usable and `L \u2264 C + 0.5 kW`; every candidate tie not closed shall appear exactly once in `blocked_ties` with the reason the REQ-TIECAP-9 precedence gives. | generated feeders + capacity maps + as_of \u2192 plans | Covers missing, non-GOOD, stale, boundary-age, future-dated, naive, non-finite, negative, below / at / above `L + \u03c4`. | Test (STD-SAFETY-5): \u2265 500 seeded `random` cases over radial and branched topologies with one or more ties (the seeded generator in `backend/tests/rca_def_flisr_7_sweep.py` on branch `agent/rca-backfeed/explore` may be reused). Oracle: the QA-owned BFS of REQ-TIECAP-3 plus closed-form usability and precedence checks. | \u2014 |\n| REQ-TIECAP-22 | For inputs where every candidate tie has usable capacity and `L \u2264 C` or `L > C + 0.5 kW`, the isolation steps, restoration steps and their order, `customers_restored`, `customers_remaining` and `transferred_load_kw` shall equal `main` @ 5f6b471. | \u2014 | \u2014 | Test: `@pytest.mark.characterization` tests pinned on unmodified code before any change (STD-SAFETY-2). | \u2014 |\n\n### Intended behaviour changes (blast radius)\n\n1. A candidate tie with no capacity entry was skipped with a \"0 kW available\" note; it is now blocked CAPACITY_UNKNOWN. Steps and accounting are identical; note text and `blocked_ties` are new.\n2. `C < L \u2264 C + 0.5 kW` used to skip the tie and now closes it (Q-SPEC-1/Q-SPEC-4). This is the **only** change that makes the planner more permissive; reviewers should confirm it.\n3. Legacy NaN / \u00b1inf / negative values were compared numerically. `L > NaN` is False, so on the shipped model a NaN capacity **closes** `TIE-1201-1405` today, and so does +inf (re-measured this attempt). Both are now CAPACITY_INVALID, which removes a latent unsafe close.\n4. HTTP: string\u2192number coercion and unknown fields, accepted today, become 422. Clients that relied on them break.\n5. Response schema gains `blocked_ties`, `as_of`, `deprecations` (additive).\n\n## 2. Open questions (STD-REQ-4) \u2014 not resolved by assumption\n\n- **Q-SPEC-12 \u2014 invalid `as_of`.** Q-SPEC-10 says `as_of` is a timezone-aware ISO-8601 UTC instant and covers only its absence. What happens when the supplied `as_of` is (a) timezone-naive, (b) aware with a non-UTC offset (e.g. `+02:00` \u2014 accept as the same instant, or reject?), (c) unparseable? Options: reject the request with 422 (no plan, not even isolation), or build the plan with isolation and block every candidate tie CAPACITY_INVALID (consistent with Q-SPEC-5 per-tie blocking). (d) Should a supplied `as_of` be bounded against the server clock? Without a bound a caller can make 10-minute-old capacity look fresh by back-dating `as_of`, which bypasses REQ-TIECAP-6. Blocks: REQ-TIECAP-2 (invalid as_of only), REQ-TIECAP-13 (as_of validation).\n- **Q-SPEC-13 \u2014 unparseable capacity timestamp over HTTP.** Q-SPEC-9 says an unparseable timestamp is CAPACITY_INVALID (per tie, HTTP 200), and that wrong types are 422 (whole request). Over JSON a timestamp is a string either way. Is a string that is not ISO-8601 (e.g. `\"yesterday\"`) (a) a per-tie CAPACITY_INVALID with HTTP 200 \u2014 which means `TieCapacity.timestamp` must accept arbitrary strings and the planner parses them \u2014 or (b) a 422, leaving CAPACITY_INVALID-unparseable reachable only from Python callers? Also, is a JSON number (Unix seconds) a wrong type (422) or accepted? Blocks: REQ-TIECAP-1 (timestamp type), REQ-TIECAP-8 (HTTP path only), REQ-TIECAP-13.\n\n## 3. Scope exclusions (STD-REQ-7)\n\n- SCADA adapter and telemetry ingestion: scan scheduling, quality mapping, timestamping (integration team, Q-SPEC-3).\n- Spare capacity of one alternate feeder shared by several ties (Q-SPEC-7); each tie is checked independently.\n- Partial pick-up or load shedding to fit within capacity (Q-SPEC-6).\n- Nameplate / thermal rating of the tie switch, unit conversion, per-unit bases, any safety margin beyond \u03c4 (Q-SPEC-1, Q-SPEC-4).\n- Removing legacy `tie_capacity_kw` (separate change after one release, Q-SPEC-11).\n- `tie_capacity` entries whose key is not a candidate tie of the feeder: ignored as today; not validated, not listed.\n- `locate_fault` / fault-location logic; `_isolation_switches` and DEF-FLISR-7 (a tie that is an isolation point back-feeds the faulted section) \u2014 separate defect run. This change shall neither fix nor mask DEF-FLISR-7.\n- Non-SCADA-controllable ties and ties with an empty candidate set: skipped silently as today, not in `blocked_ties`.\n- `console/**` (does not call `/flisr/plan`), `state_estimator.py`, `agc.py`, `savecase.py`, `firmware/**`, `legacy/**`.\n\n## 4. Verification notes for QA\n\n- Independent oracle: QA-owned BFS over the test topology plus closed-form `L \u2264 C + 0.5`, `age > 20`, `age < \u22122`, `quality == \"GOOD\"`, `math.isfinite(kw) and kw \u2265 0`, and the REQ-TIECAP-9 precedence. It must not import `app.network` or `app.flisr` helpers.\n- Tolerance 0.5 kW engineering units; per-unit tolerance waived by Q-SPEC-4 \u2014 record the waiver against STD-SAFETY-6.\n- Order of work (`.agents/skills/safety-critical-change/SKILL.md`): baseline \u2192 characterization (REQ-TIECAP-19, REQ-TIECAP-22) \u2192 failing reproductions (missing capacity read as 0 kW with no machine-readable reason; legacy NaN closes the tie) \u2192 minimal fix \u2192 invariant (REQ-TIECAP-21, \u2265 500 seeded cases).\n- Tool classification (STD-SAFETY-7) is the assessor's finding; this specification claims no tool-certification credit.\n",
+    "specify.phases": "prepare: standards STD-GOV/STD-REQ/STD-SAFETY confirmed; instruction files read. execute: spec written. verify: clause-by-clause check (evidence). deliver: BLOCKED on Q-SPEC-12, Q-SPEC-13.",
+    "specify.compliance_notes": "No `ai-generated` label exists in the repo and no PR was opened at this stage (spec delivered on the branch, as in attempts 1-2). The commit carries a platform-added Co-Authored-By trailer with a personal name (STD-GOV-7)."
   },
   "units": [],
   "waves_done": [],
@@ -161,6 +163,31 @@
       "status": "answered",
       "answer": "The new body field tie_capacity (dict[str, TieCapacity]) and the legacy tie_capacity_kw are mutually exclusive; both present is HTTP 422. Legacy-only requests are treated as quality GOOD with timestamp = as_of and the response carries deprecations: ['tie_capacity_kw']. The deprecation note lives in the endpoint's OpenAPI description and in the docs page the Document stage produces; removal is a separate change after one release.",
       "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-SPEC-12",
+      "question": "Invalid as_of. Q-SPEC-10 only covers a missing as_of. What happens when the supplied as_of is (a) timezone-naive, (b) aware but with a non-UTC offset such as +02:00 (accept it as the same instant, or reject?), or (c) unparseable? The two options are: reject with HTTP 422, so no plan and not even isolation; or build the plan with isolation and block every candidate tie as CAPACITY_INVALID. (d) Should a supplied as_of be bounded against the server clock? Without a bound, a caller can back-date as_of so that stale capacity looks fresh, which bypasses the 20 s staleness rule.",
+      "blocking_units": [
+        "REQ-TIECAP-2",
+        "REQ-TIECAP-13"
+      ],
+      "stage": "specify",
+      "status": "answered",
+      "answer": "(a) timezone-naive as_of: HTTP 422. (b) aware non-UTC offset: accept, normalise to the same UTC instant. (c) unparseable: HTTP 422. (d) yes, bounded: an as_of more than 60 s before or 2 s after the server clock is HTTP 422, so staleness cannot be bypassed by back-dating. 422 means no plan at all, which is acceptable because the request itself is malformed; the operator retries with a valid request.",
+      "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-SPEC-13",
+      "question": "Unparseable capacity timestamp over HTTP. Q-SPEC-9 says an unparseable timestamp is CAPACITY_INVALID (per tie, HTTP 200) and that wrong types get HTTP 422 for the whole request. In JSON the timestamp is a string either way, so is a non-ISO-8601 string such as 'yesterday' (a) a per-tie CAPACITY_INVALID with HTTP 200, which means TieCapacity.timestamp must accept any string, or (b) a 422? And is a JSON number (Unix seconds) a wrong type (422) or accepted?",
+      "blocking_units": [
+        "REQ-TIECAP-1",
+        "REQ-TIECAP-8",
+        "REQ-TIECAP-13"
+      ],
+      "stage": "specify",
+      "status": "answered",
+      "answer": "(b) 422. TieCapacity.timestamp is a strict timezone-aware ISO-8601 datetime field; a non-ISO string or a JSON number is a request-validation failure for the whole request. Per-tie CAPACITY_INVALID for timestamps therefore covers only well-formed values that fail the semantic rules (future-dated beyond 2 s). Q-SPEC-9 is amended to match.",
+      "by": "ops-lead-standin"
     }
   ],
   "answers": [
@@ -218,6 +245,16 @@
       "id": "Q-SPEC-11",
       "answer": "The new body field tie_capacity (dict[str, TieCapacity]) and the legacy tie_capacity_kw are mutually exclusive; both present is HTTP 422. Legacy-only requests are treated as quality GOOD with timestamp = as_of and the response carries deprecations: ['tie_capacity_kw']. The deprecation note lives in the endpoint's OpenAPI description and in the docs page the Document stage produces; removal is a separate change after one release.",
       "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-SPEC-12",
+      "answer": "(a) timezone-naive as_of: HTTP 422. (b) aware non-UTC offset: accept, normalise to the same UTC instant. (c) unparseable: HTTP 422. (d) yes, bounded: an as_of more than 60 s before or 2 s after the server clock is HTTP 422, so staleness cannot be bypassed by back-dating. 422 means no plan at all, which is acceptable because the request itself is malformed; the operator retries with a valid request.",
+      "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-SPEC-13",
+      "answer": "(b) 422. TieCapacity.timestamp is a strict timezone-aware ISO-8601 datetime field; a non-ISO string or a JSON number is a request-validation failure for the whole request. Per-tie CAPACITY_INVALID for timestamps therefore covers only well-formed values that fail the semantic rules (future-dated beyond 2 s). Q-SPEC-9 is amended to match.",
+      "by": "ops-lead-standin"
     }
   ],
   "loops": {},
@@ -233,7 +270,521 @@
     "reason": "awaiting-session",
     "stage": "specify",
     "unit": "-",
-    "attempt": 3,
-    "request": "sessions/specify:-:3.request.json"
+    "attempt": 4,
+    "request": "sessions/specify:-:4.request.json"
+  },
+  "results": {
+    "specify:-:1": {
+      "verdict": "BLOCKED",
+      "summary": "The specification is drafted and saved as artifacts.specification. It has 9 requirements (REQ-FLISR-001..009), 3 defects reproduced on main@5f6b471 (DEF-FLISR-001..003), the safety invariant INV-1, a verification method and independent BFS oracle for each requirement, and a scope-exclusion list. The verdict is BLOCKED because 8 questions are open (Q-SPEC-1..8): the capacity quantity and unit, the staleness limit and hold-last-value window, how timestamp and quality are delivered, behaviour at equality, per-tie vs whole-plan refusal, partial pick-up, shared capacity, and file-name errors in the repo contract. Probing build_plan found that today a NaN capacity closes TIE-1201-1405 and transfers 1490 kW; +inf also restores; and a missing capacity is silently treated as 0 kW, which closes the tie when the candidate load is 0 kW. No code was changed, so no branch, commit or PR was created.",
+      "evidence": [
+        {
+          "kind": "note",
+          "ref": "phase:prepare",
+          "detail": "Loaded STD-GOV v1.1, STD-REQ v1.2 and STD-SAFETY v3.1 from the brief. Read .agents/skills/safety-critical-change/SKILL.md and DEMO_NOTES.md. DEMO_NOTES.md has no tie-capacity content."
+        },
+        {
+          "kind": "file",
+          "ref": "backend/app/flisr.py:64-128",
+          "detail": "The capacity decision is in build_plan: available = tie_capacity_kw.get(switch.mrid, 0.0), and the tie closes when transferred <= available. That 0.0 default is an implicit zero (STD-REQ-3). locate_fault (lines 24-35) never reads capacity."
+        },
+        {
+          "kind": "file",
+          "ref": "backend/app/api.py:15-18",
+          "detail": "FlisrRequest.tie_capacity_kw: dict[str, float] = {} has no timestamp or quality field. Pydantic accepts -1 and NaN."
+        },
+        {
+          "kind": "file",
+          "ref": "backend/data/feeder_model.json",
+          "detail": "One tie, TIE-1201-1405. With CB-1201 open it would pick up 1490 kW and 341 customers."
+        },
+        {
+          "kind": "command",
+          "ref": "python probe of build_plan on FDR-1201 with CB-1201.open=True",
+          "detail": "Results: NaN -> tie closed, 1490 kW transferred, no note (DEF-FLISR-001). Missing -> note '1490 kW exceeds 0 kW available capacity' (DEF-FLISR-002). Missing with 0 kW candidate load -> tie closed (DEF-FLISR-002). +inf -> tie closed; -5 -> reported as a real capacity (DEF-FLISR-003). 1920 and 2000 -> tie closed (conforms)."
+        },
+        {
+          "kind": "command",
+          "ref": "pytest backend -q",
+          "detail": "Baseline: 2 passed in 0.08s."
+        },
+        {
+          "kind": "command",
+          "ref": "ruff check backend tools",
+          "detail": "Baseline already fails on main: UP017 at tools/build_coverage_report.py:183. This run changed no code; recorded so later stages do not count it as a regression."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-1",
+          "detail": "Every requirement has an id matching (?:REQ|DEF)-[A-Z]+-\\d{1,3} (REQ-FLISR-001..009, DEF-FLISR-001..003) and is one shall statement with named inputs and outputs."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-2",
+          "detail": "Unit kW, range finite >= 0 and limit behaviour are stated. Behaviour at equality and the unit itself are open (Q-SPEC-4, Q-SPEC-1)."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-3",
+          "detail": "Missing input -> refuse (REQ-FLISR-004). Invalid input (NaN, +/-inf, negative) -> refuse and flag quality (REQ-FLISR-005). Stale or bad-quality input -> refuse, with hold-last-value pending Q-SPEC-2 (REQ-FLISR-006). Zero is never implied."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-4",
+          "detail": "8 open questions Q-SPEC-1..8, each with blocking_units. The verdict is BLOCKED. Work that does not depend on them is specified: REQ-FLISR-004, 005, 008, 009 and DEF-FLISR-001..003."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-5",
+          "detail": "Each requirement names its verification method. The independent oracle is a closed-form BFS load computation written in the test, which does not call _nodes_restored_by, energised_nodes or load_on_nodes."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-6",
+          "detail": "Classified safety-critical; all derived units inherit this. backend/app/flisr.py is a protected path needing 2 human reviewers (STD-GOV-6, STD-SAFETY-1)."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-7",
+          "detail": "Scope exclusions are listed in section 6: locate_fault, the tie-isolation back-feed defect, real-time load basis, the SCADA adapter, console, partial pick-up and other checks on the alternate feeder."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-SAFETY-2/3/5/6",
+          "detail": "Requires characterization tests before changes (REQ-FLISR-008), failing reproductions first (REQ-FLISR-009), INV-1 over >= 500 seeded cases, and a closed-form oracle with tolerance in kW and p.u."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-GOV-7",
+          "detail": "Checked: the specification contains no customer identifiers, personal names or credentials. Feeder and switch names come from the repo's synthetic model."
+        },
+        {
+          "kind": "artifact",
+          "ref": "artifacts.specification",
+          "detail": "The full specification as markdown (also at /home/ubuntu/stage-specify/specification.md on the stage VM)."
+        },
+        {
+          "kind": "note",
+          "ref": "phase:deliver",
+          "detail": "No code was changed, so no branch, commit or PR was created; the specification is returned as an artifact. trace[] is empty, as the specify skill requires."
+        }
+      ],
+      "questions": [
+        {
+          "id": "Q-SPEC-1",
+          "question": "What is 'tie capacity'? The source says it is the 'rated capacity' (a static nameplate rating) but also says it arrives from the SCADA scan every 10 s (a live value, usually the alternate feeder's spare capacity). Which is it, and in which unit: kW (what the code uses today), kVA or A (feeders carry rating_amps)? If it is kVA or A, what power factor or voltage converts the load_kw load basis, and what p.u. base should the tolerance use?",
+          "blocking_units": [
+            "REQ-FLISR-001",
+            "REQ-FLISR-002",
+            "REQ-FLISR-003",
+            "INV-1"
+          ]
+        },
+        {
+          "id": "Q-SPEC-2",
+          "question": "When is a 10 s scan value 'late' (for example 20 s = 2 missed scans, or 30 s)? Inside that window, may the planner hold the last good value, or must it refuse any value older than one scan?",
+          "blocking_units": [
+            "REQ-FLISR-006"
+          ]
+        },
+        {
+          "id": "Q-SPEC-3",
+          "question": "Today tie_capacity_kw is a bare dict[str, float] with no timestamp or quality. How should the value's timestamp and SCADA quality reach build_plan and POST /flisr/plan? May we extend the build_plan signature and the POST /flisr/plan body (an API change for the SCADA adapter), and who owns the adapter side?",
+          "blocking_units": [
+            "REQ-FLISR-006",
+            "REQ-FLISR-007"
+          ]
+        },
+        {
+          "id": "Q-SPEC-4",
+          "question": "When transferred load exactly equals tie capacity, should the tie close or not? Is a safety margin or comparison tolerance needed, stated in kW and p.u.?",
+          "blocking_units": [
+            "REQ-FLISR-002",
+            "INV-1"
+          ]
+        },
+        {
+          "id": "Q-SPEC-5",
+          "question": "The source says 'the plan must say so instead of restoring'. When one tie's capacity is unknown, is only that tie blocked (the lockout reclose and ties with known capacity still go ahead), or is the whole restoration refused (isolation-only / manual-action plan, or HTTP 409)? Must 'capacity unknown' also be a machine-readable RestorationPlan field, not only a free-text note?",
+          "blocking_units": [
+            "REQ-FLISR-004",
+            "REQ-FLISR-007"
+          ]
+        },
+        {
+          "id": "Q-SPEC-6",
+          "question": "When load exceeds capacity, should the planner try a partial pick-up (open a downstream sectionalizer so the rest fits), or is skipping the tie the required outcome? Skipping is today's behaviour.",
+          "blocking_units": [
+            "REQ-FLISR-003"
+          ]
+        },
+        {
+          "id": "Q-SPEC-7",
+          "question": "When two or more ties pick up load from the same alternate feeder, is capacity per tie, or shared so that the sum of the transfers must fit? The shipped model has one tie, so the source does not settle this.",
+          "blocking_units": [
+            "REQ-FLISR-001",
+            "INV-1"
+          ]
+        },
+        {
+          "id": "Q-SPEC-8",
+          "question": "The brief's layer map names backend/app/state_estimation.py and backend/app/main.py, but those files do not exist; the real files are state_estimator.py and api.py. The source also names locate_fault as the planner, but the capacity logic is in build_plan. Please confirm that build_plan plus api.py is the intended scope, and correct the repo contract's layer map.",
+          "blocking_units": [
+            "DESIGN",
+            "ARCHITECT"
+          ]
+        }
+      ],
+      "artifacts": {
+        "specification": "# Specification: FLISR restoration respects tie-switch capacity\n\nRun `feature-tie-capacity`, stage SPECIFY, attempt 1. Target repo `tedfoley-cog/adms-test-automation-demo` @ `5f6b471` (main).\n\n## 1. Classification (STD-REQ-6, STD-SAFETY-1)\n**Safety-critical** (IEC 61508-3 context). The change decides whether a tie switch is closed onto field load during FLISR restoration. Every unit derived from this specification inherits this classification. `backend/app/flisr.py` is a protected path: two human reviewers before merge (STD-GOV-6).\n\n## 2. Where the behaviour lives today (repo evidence)\n- The capacity decision is in `backend/app/flisr.py::build_plan` (lines 64-128), not in `locate_fault`. `locate_fault` (lines 24-35) only picks the faulted section and never reads capacity.\n- Capacity input: `build_plan(..., tie_capacity_kw: dict[str, float] | None)`. Over HTTP it is `FlisrRequest.tie_capacity_kw: dict[str, float] = {}` in `backend/app/api.py` (lines 15-18). No timestamp, quality flag or source field exists.\n- Load transferred by a tie = sum of `Section.load_kw` (static model value, kW) over the nodes the tie would pick up (`_nodes_restored_by` + `network.load_on_nodes`).\n- Rule today: `available = tie_capacity_kw.get(switch.mrid, 0.0)`; the tie closes when `transferred <= available`, otherwise it is skipped with a note.\n\nCurrent behaviour, observed on the shipped `FDR-1201` model with `CB-1201.open = True` (fault at SEC-1201-03, tie `TIE-1201-1405` would pick up 1490 kW / 341 customers):\n\n| Capacity input for TIE-1201-1405 | Tie closed? | Plan note | Conforms to source? |\n|---|---|---|---|\n| 2000 kW | yes, 1490 kW transferred | none | yes |\n| 1920 kW | yes | none | yes |\n| -5 kW | no | \"skipped: 1490 kW exceeds -5 kW available capacity\" | no: an invalid value is reported as a real capacity |\n| missing | no | \"skipped: 1490 kW exceeds 0 kW available capacity\" | no: missing is treated as 0 kW (implicit zero, STD-REQ-3) and the plan does not say capacity is unknown |\n| missing, candidate load 0 kW | **yes** | none | **no: closes a tie whose capacity is unknown** |\n| NaN | **yes, 1490 kW transferred** | none | **no: `1490 > nan` is False, so an invalid value restores** |\n| +inf | **yes** | none | no: a non-finite value is accepted as capacity |\n\nPydantic accepts `-1` and `NaN` in `FlisrRequest.tie_capacity_kw` without error.\n\n## 3. Requirements\nInputs: feeder model, lockout switch mRID, per-tie capacity value. Outputs: `RestorationPlan.restoration`, `.notes`, `.customers_restored`, `.customers_remaining`, `.transferred_load_kw`.\n\n**REQ-FLISR-001 (capacity bound).** For every tie switch `T` that `build_plan` puts in `plan.restoration` with action `close`, the load transferred through `T` (kW, sum of `load_kw` of the sections `T` would pick up after isolation) shall be less than or equal to the known capacity of `T` (kW), subject to the limit rule in REQ-FLISR-002.\n- Unit: kW (pending Q-SPEC-1). Range: finite, >= 0. \n- Verification: test plus a seeded invariant (>= 500 cases, STD-SAFETY-5). Oracle: see section 5.\n\n**REQ-FLISR-002 (behaviour at the limit).** When transferred load equals the known capacity, the tie shall [close | not close] and the comparison shall use tolerance [X kW / X p.u.]. *Open: Q-SPEC-4.* Today the tie closes at equality with exact float comparison.\n- Verification: boundary tests at capacity - delta, = capacity, + delta, with delta stated in kW and p.u. (STD-SAFETY-6).\n\n**REQ-FLISR-003 (exceeds capacity).** When transferred load exceeds the known capacity of `T`, `build_plan` shall not close `T`; shall add a note naming `T`'s name, the transferred kW and the capacity kW; shall add the customers `T` would have picked up to `customers_remaining`; and shall add nothing for `T` to `customers_restored` or `transferred_load_kw`. Whether partial pick-up should be tried instead: *Q-SPEC-6.*\n- Verification: test (characterization of the current note format plus the counters).\n\n**REQ-FLISR-004 (unknown capacity: missing).** When no capacity value is supplied for a SCADA-controllable tie `T` that has candidate nodes, `build_plan` shall refuse to close `T` (whatever the candidate load, including 0 kW) and shall add a note that names `T` and says its capacity is unknown. It shall not report a numeric capacity for `T`, and shall not treat the missing value as 0 kW. Counters as in REQ-FLISR-003. Whether the rest of the plan still proceeds: *Q-SPEC-5.*\n- Handling: **refuse** (STD-REQ-3).\n- Verification: tests for missing with candidate load > 0 and with candidate load = 0 kW (the second fails today).\n\n**REQ-FLISR-005 (unknown capacity: invalid).** A capacity value that is NaN, +/-inf or negative shall be treated as unknown: REQ-FLISR-004 applies, and the note shall say the value was invalid. Zero is a valid, known capacity: any candidate load > 0 kW exceeds it (REQ-FLISR-003).\n- Handling: **refuse + flag quality** in the note.\n- Verification: tests for NaN, +inf, -inf, -5 kW and 0 kW. NaN and +inf fail today.\n\n**REQ-FLISR-006 (unknown capacity: stale / bad quality).** Capacity telemetry arrives from the SCADA scan every 10 s. A capacity value older than [N s] at plan time, or flagged bad quality by SCADA, shall be treated as unknown (REQ-FLISR-004), with the note giving the age or quality. Whether a hold-last-value window is allowed: *Q-SPEC-2.* How age and quality reach `build_plan` / `POST /flisr/plan` (today only a bare float exists): *Q-SPEC-3.*\n- Handling: refuse (hold-last-value only if Q-SPEC-2 allows it).\n- Verification: tests with value age at limit - 1 s, = limit, limit + 1 s; bad-quality flag.\n\n**REQ-FLISR-007 (capacity in the API).** `POST /flisr/plan` shall accept the capacity inputs needed by REQ-FLISR-004..006 and shall return the plan (HTTP 200) with the unknown-capacity note. It shall not answer 422 or 409 just because one tie's capacity is unknown, unless Q-SPEC-5 decides the whole plan is refused.\n- Verification: API test through `fastapi.testclient` with missing, NaN (if the JSON transport allows it) and negative values.\n\n**REQ-FLISR-008 (unchanged behaviour).** With every tie capacity known, valid, fresh and not exceeded, `build_plan` shall give the same plan as `main@5f6b471`: every isolation step, restoration step and order, the counters and the notes. This includes the existing test `test_build_plan_isolates_and_restores_tail` (2000 kW, 341 customers restored).\n- Verification: characterization tests (`@pytest.mark.characterization`) written before any code change (STD-SAFETY-2).\n\n**REQ-FLISR-009 (defects reproduced first).** Before the fix, DEF-FLISR-001..003 shall each have a failing test that states the defect in operational terms (STD-SAFETY-3).\n\n### Defects found while specifying\n- **DEF-FLISR-001**: a NaN capacity closes the tie and transfers 1490 kW (`transferred > available` is False for NaN). Violates REQ-FLISR-001 and 005.\n- **DEF-FLISR-002**: a missing capacity defaults to 0.0 kW. The plan reports \"0 kW available capacity\" instead of \"unknown\", and the tie closes when the candidate load is 0 kW. Violates REQ-FLISR-004 and STD-REQ-3.\n- **DEF-FLISR-003**: +inf and negative capacities are accepted as real values (+inf restores; -5 kW is reported as a capacity). Violates REQ-FLISR-005.\n\n## 4. Safety invariant (STD-SAFETY-5)\n**INV-1**: For every plan, each tie in `plan.restoration` with action `close` has a known, valid, fresh capacity C and an independently computed transferred load L with L <= C (+ the tolerance from Q-SPEC-4). No tie whose capacity is missing, invalid or stale is ever closed.\nDemonstrated over at least 500 seeded `random` cases: radial and branched feeders with 1-3 tie switches, fault-indicator patterns, section loads 0-3000 kW (including 0), and capacity inputs drawn from {missing, NaN, +/-inf, negative, 0, below L, = L, above L}. No new dependencies.\n\n## 5. Verification method and independent oracle (STD-REQ-5, STD-SAFETY-6)\n| Req | Method | Oracle |\n|---|---|---|\n| REQ-FLISR-001, 002 | test + seeded invariant | Closed-form oracle written in the test: BFS over the test-built topology with isolation switches open and the tie closed, minus nodes reachable from the own source; L = sum of section `load_kw`. It does not call `_nodes_restored_by`, `network.energised_nodes` or `network.load_on_nodes`. Tolerance stated in kW and in p.u. of the tie capacity (base per Q-SPEC-1). |\n| REQ-FLISR-003 | test | Hand-computed expected note and counters for FDR-1201. |\n| REQ-FLISR-004, 005, 006 | test | Expected outcome tables (section 2 and the requirement text); for missing/invalid/stale, the expected result is \"not closed + unknown-capacity note\". |\n| REQ-FLISR-007 | test (API) | HTTP status + plan body. |\n| REQ-FLISR-008 | characterization test | Plans recorded from `main@5f6b471`. |\n| REQ-FLISR-009 | test (fails before the fix) | Failure output kept for the PR. |\n| INV-1 | analysis/demonstration over >= 500 seeded cases | Same BFS oracle as REQ-FLISR-001. |\n\n## 6. Scope exclusions (STD-REQ-7)\n- `locate_fault` fault location logic (no capacity involvement; see Q-SPEC-8).\n- The known defect where `_isolation_switches` skips tie switches (back-feed of a section next to a tie). Separate change.\n- Real-time measured load on the transferred sections: the static `Section.load_kw` stays the load basis unless Q-SPEC-1 decides otherwise.\n- The SCADA scan adapter / ICCP ingest itself. This change specifies only what `build_plan` and `POST /flisr/plan` do with the value they receive.\n- Console (`console/**`) UI changes, AGC, state estimation, firmware, legacy Habitat tasks.\n- Partial pick-up / load shedding to fit a tie's capacity (pending Q-SPEC-6; excluded unless the answer brings it in).\n- Thermal, voltage-drop or protection-coordination checks on the alternate feeder other than the single capacity number.\n\n## 7. Open questions (STD-REQ-4)\n- **Q-SPEC-1** (blocks REQ-FLISR-001, 002, 003, INV-1): What quantity is \"tie capacity\"? The source says \"rated capacity\" (a static nameplate rating), yet says it comes from the SCADA scan every 10 s (a live value, normally the alternate feeder's spare capacity). Which is it, and in which unit: kW (as the code uses today), kVA or A (feeders carry `rating_amps`)? If kVA or A, what power factor / voltage base converts the `load_kw` load basis? What p.u. base should the tolerance use?\n- **Q-SPEC-2** (blocks REQ-FLISR-006): After what age is a 10 s scan value \"late\" (for example 2 missed scans = 20 s, or 30 s)? Inside that window, may the last good value be held (hold-last-value), or must any value older than one scan be refused?\n- **Q-SPEC-3** (blocks REQ-FLISR-006, 007): How do value timestamp and SCADA quality reach the planner? Today `tie_capacity_kw` is a bare `dict[str, float]` with no time or quality. Is it acceptable to extend the `build_plan` signature and the `POST /flisr/plan` body (an API change for the SCADA adapter), and who owns the adapter side?\n- **Q-SPEC-4** (blocks REQ-FLISR-002, INV-1): At exactly `transferred == capacity`, close or not? Is a safety margin or comparison tolerance needed (in kW and p.u.)?\n- **Q-SPEC-5** (blocks REQ-FLISR-004, 007): \"The plan must say so instead of restoring.\" When one tie's capacity is unknown, does that block only that tie (the lockout reclose and other ties with known capacity still go ahead), or the whole restoration (plan returns isolation only / manual action, or the API answers 409)? Should \"capacity unknown\" also be a machine-readable field in `RestorationPlan`, not only a free-text note?\n- **Q-SPEC-6** (blocks REQ-FLISR-003): When load exceeds capacity, should the planner try partial pick-up (open a downstream sectionalizer so the rest fits), or is skipping the tie (today's behaviour) the required outcome?\n- **Q-SPEC-7** (blocks REQ-FLISR-001, INV-1): When two or more ties pick up load from the same alternate feeder, is capacity per tie or shared, so the sum of transfers must fit? The shipped model has one tie, so the source does not settle it.\n- **Q-SPEC-8** (non-blocking for the spec text; blocks DESIGN/ARCHITECT): The brief's layer map names `backend/app/state_estimation.py` and `backend/app/main.py`, which do not exist (the real files are `state_estimator.py` and `api.py`). The source names `locate_fault` as the planner, but the capacity logic is in `build_plan`. Please confirm `build_plan` + `api.py` is the intended scope and correct the repo contract's layer map.\n\n## 8. Notes for later stages\n- `ruff check backend tools` already fails on `main` (UP017 in `tools/build_coverage_report.py:183`), before any change from this run. Later stages should not count it as a regression or fix it as drive-by scope.\n- To exercise `build_plan` on the shipped model, set `CB-1201.open = True`: no lockout is open in `feeder_model.json`, so `/flisr/plan` returns 409 otherwise.\n"
+      },
+      "standards_loaded": [
+        "STD-GOV",
+        "STD-REQ",
+        "STD-SAFETY"
+      ],
+      "session_url": "https://devin-gtm.devinenterprise.com/sessions/5b0d3d3bd2784065896fd7d9ca750afc",
+      "model": "normal"
+    },
+    "specify:-:2": {
+      "verdict": "BLOCKED",
+      "summary": "Phases: PREPARE: loaded STD-GOV v1.1, STD-REQ v1.2 and STD-SAFETY v3.1 from the brief. Read .agents/skills/safety-critical-change/SKILL.md, DEMO_NOTES.md, flisr.py, models.py, api.py and network.py. Baseline: pytest 2 passed; ruff check has 1 pre-existing error on main. EXECUTE: turned the source and the human answers Q-SPEC-1..8 into 18 requirements, REQ-TIECAP-1..18. Each gives units, range and limits, missing/late/invalid behaviour, a verification method and an independent oracle (a QA-owned BFS for L plus the closed-form checks L <= C+0.5 kW, age > 20 s and quality == GOOD). The spec also states the classification (safety-critical), the blast radius and the scope exclusions. Pushed it to the branch as docs/specs/feature-tie-capacity/specification.md with the AI-Governance trailer. No PR was opened. No production code was changed. VERIFY: checked each requirement against STD-REQ-1..7 and STD-SAFETY-2/5/6. Three gaps remain that the source and Q-SPEC-1..8 do not settle: Q-SPEC-9 (what counts as CAPACITY_INVALID, which reason a non-GOOD quality gets, precedence between reasons, malformed HTTP input), Q-SPEC-10 (time reference, future-dated and timezone-naive timestamps) and Q-SPEC-11 (how the legacy and new body forms coexist, and where the deprecation note goes). DELIVER: BLOCKED, per STD-REQ-4. The requirements that do not depend on these questions are fully specified.",
+      "evidence": [
+        {
+          "kind": "file",
+          "ref": "docs/specs/feature-tie-capacity/specification.md",
+          "detail": "The full specification, committed 20d617f2dea9348afb5374db481a599674971ccc on agent/feature-tie-capacity/specify"
+        },
+        {
+          "kind": "commit",
+          "ref": "20d617f2dea9348afb5374db481a599674971ccc",
+          "detail": "Carries the trailer AI-Governance: run=feature-tie-capacity stage=specify agent=devin model=normal"
+        },
+        {
+          "kind": "file",
+          "ref": "backend/app/flisr.py:98",
+          "detail": "tie_capacity_kw.get(switch.mrid, 0.0) reads a missing capacity as 0 kW, an implicit 'treat as zero' that STD-REQ-3 forbids. REQ-TIECAP-5 replaces it."
+        },
+        {
+          "kind": "file",
+          "ref": "backend/app/flisr.py:99",
+          "detail": "Today a tie is skipped only when transferred > available (strict, no tolerance). REQ-TIECAP-3 changes this to L <= C + 0.5 kW, which is more permissive; flagged in the blast radius."
+        },
+        {
+          "kind": "file",
+          "ref": "backend/app/models.py",
+          "detail": "RestorationPlan has no blocked_ties field and there is no TieCapacity type yet (REQ-TIECAP-1, REQ-TIECAP-10)."
+        },
+        {
+          "kind": "file",
+          "ref": "backend/app/api.py:15-49",
+          "detail": "FlisrRequest.tie_capacity_kw: dict[str, float]. FlisrError maps to 409 and KeyError to 404 (REQ-TIECAP-13, REQ-TIECAP-14)."
+        },
+        {
+          "kind": "command",
+          "ref": "PYTHONPATH=backend python -c 'build_plan(FDR-1201 with CB-1201 open, no capacity)'",
+          "detail": "Baseline: isolates SEC-1201-03, skips TIE-1201-1405 with the note '1490 kW exceeds 0 kW available capacity', customers_remaining=437. L for the boundary examples is 1490 kW."
+        },
+        {
+          "kind": "command",
+          "ref": "pytest backend -q",
+          "detail": "2 passed on main @ 5f6b471 (baseline)"
+        },
+        {
+          "kind": "command",
+          "ref": "ruff check backend tools",
+          "detail": "1 pre-existing error on main, in tools/ (UP017). Not introduced by this stage; no code was changed."
+        },
+        {
+          "kind": "file",
+          "ref": ".agents/skills/safety-critical-change/SKILL.md",
+          "detail": "Repo instruction file. The order of work in spec \u00a74 and the >=500-case invariant come from it."
+        },
+        {
+          "kind": "file",
+          "ref": "DEMO_NOTES.md",
+          "detail": "Repo instruction file. Read; it holds no requirement content for this change."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-1",
+          "detail": "Ids REQ-TIECAP-n match (?:REQ|DEF)-[A-Z]+-\\d{1,3}; each is one shall-statement."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-2",
+          "detail": "L, C and \u03c4 are in kW, age in s. Limits are stated: L=C closes, L=C+0.5 closes, age=20 s is fresh."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-3",
+          "detail": "Missing \u2192 CAPACITY_UNKNOWN, late \u2192 CAPACITY_STALE, non-GOOD \u2192 refuse. The definition of invalid is open (Q-SPEC-9). Nothing is read as zero."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-4",
+          "detail": "Q-SPEC-9, Q-SPEC-10 and Q-SPEC-11 are raised, not assumed."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-5",
+          "detail": "Each requirement names a verification method and, for the close/block decision, an independent BFS + closed-form oracle."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-6",
+          "detail": "Classified safety-critical; derived units inherit it."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-7",
+          "detail": "Scope exclusions in \u00a73: SCADA adapter, shared capacity, partial pick-up, nameplate rating, DEF-FLISR-7, locate_fault, console."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-SAFETY-2",
+          "detail": "REQ-TIECAP-15 and REQ-TIECAP-18 are the characterization requirements, pinned before any change."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-SAFETY-5",
+          "detail": "REQ-TIECAP-17 safety invariant over >=500 seeded cases."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-SAFETY-6",
+          "detail": "Tolerance 0.5 kW in engineering units; the per-unit statement was waived by Q-SPEC-4 and is recorded for QA."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-GOV-1",
+          "detail": "Branch agent/feature-tie-capacity/specify. No PR, no merge, no gate action."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-GOV-2",
+          "detail": "The trailer is on the commit. No PR was opened, so the label rule does not apply. The repo has no ai-generated label yet."
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-GOV-7",
+          "detail": "The specification contains no customer identifiers, personal names or credentials."
+        },
+        {
+          "kind": "requirement",
+          "ref": "Q-SPEC-1..Q-SPEC-8",
+          "detail": "Human answers applied verbatim: live spare capacity in kW, the 20 s/GOOD rule, the TieCapacity model and legacy map, equality closes with a 0.5 kW tolerance, per-tie blocked_ties with HTTP 200, exceeded ties skipped, no shared capacity, scope limited to flisr/api/models."
+        }
+      ],
+      "questions": [
+        {
+          "id": "Q-SPEC-9",
+          "question": "What triggers CAPACITY_INVALID, and how are reasons assigned? (a) Which kw values are invalid: NaN, \u00b1inf, negative? A negative spare capacity could be a real reading (alternate feeder already overloaded) or a bad value; with L=0 kW and C=-0.3 the tie would close unless negative values are invalid. (b) Does quality != GOOD give CAPACITY_UNKNOWN or CAPACITY_INVALID? (c) BlockedTie has one reason: when several conditions hold (e.g. stale + not GOOD + NaN), which is recorded? (d) A malformed HTTP entry (e.g. string kw, missing quality): reject the whole request with 422, or block only that tie with CAPACITY_INVALID and return 200?",
+          "blocking_units": [
+            "REQ-TIECAP-7",
+            "REQ-TIECAP-8",
+            "REQ-TIECAP-13",
+            "REQ-TIECAP-14",
+            "REQ-TIECAP-17"
+          ]
+        },
+        {
+          "id": "Q-SPEC-10",
+          "question": "What is the time reference for staleness? (a) Is t_eval the planner's UTC wall clock when build_plan starts, or an evaluation time supplied by the caller or injected? (b) A timestamp later than t_eval (clock skew): usable, stale, or invalid? Is any skew allowed? Without a rule a future-dated value looks fresh indefinitely. (c) A timezone-naive timestamp: reject, or interpret as UTC?",
+          "blocking_units": [
+            "REQ-TIECAP-6",
+            "REQ-TIECAP-16",
+            "REQ-TIECAP-17"
+          ]
+        },
+        {
+          "id": "Q-SPEC-11",
+          "question": "How does the legacy dict[str, float] coexist with the new form? (a) HTTP body: keep the legacy floats under tie_capacity_kw next to a new tie_capacity field, or one field that accepts either shape? (b) If both forms are supplied in one call, or for the same tie: refuse, new form wins, or something else? (c) Where does the 'deprecation note' go: RestorationPlan.notes (shown to operators), an HTTP Deprecation header, OpenAPI deprecated, a log line, or several?",
+          "blocking_units": [
+            "REQ-TIECAP-14"
+          ]
+        }
+      ],
+      "artifacts": {
+        "specification": "# Specification \u2014 FLISR restoration respects tie-switch capacity\n\nRun: `feature-tie-capacity` \u00b7 Stage: SPECIFY \u00b7 Attempt: 2 \u00b7 Status: **BLOCKED** (open questions Q-SPEC-9, Q-SPEC-10, Q-SPEC-11)\n\n## 0. Source, inputs and classification\n\n- Source: change request \"respect tie-switch capacity during FLISR restoration\" plus human answers Q-SPEC-1..Q-SPEC-8 (ops-lead-standin).\n- Safety classification (STD-REQ-6): **safety-critical** (IEC 61508-3 context). The change alters which tie switches FLISR commands closed. Every unit derived from this specification inherits the classification. `backend/app/flisr.py` is a protected path and needs two human reviewers (STD-GOV-6, STD-SAFETY-1).\n- Scope (Q-SPEC-8): `build_plan` in `backend/app/flisr.py`, `POST /flisr/plan` in `backend/app/api.py`, and new types in `backend/app/models.py`.\n\n### Current behaviour (baseline, `main` @ 5f6b471)\n\n- `build_plan(feeder, lockout_switch_mrid, tie_capacity_kw: dict[str, float] | None)`. A tie with no entry reads as `0.0` kW (`flisr.py:98`, `tie_capacity_kw.get(switch.mrid, 0.0)`). That is an implicit \"treat as zero\", which STD-REQ-3 forbids.\n- A tie is skipped when `transferred > available` (strict). Equality closes. There is no tolerance.\n- On the shipped model with `CB-1201` open and no capacity supplied, the plan isolates `SEC-1201-03` (opens `SEC-SW-1201-1` and `REC-1201-2`), re-closes `CB-1201` and skips `TIE-1201-1405` with the note `\"Hollow Creek tie to 1405 skipped: 1490 kW exceeds 0 kW available capacity\"`. The results are `customers_remaining = 437` and `customers_restored = 0`.\n- There is no timestamp, no quality and no machine-readable reason for a skipped tie.\n\n### Definitions\n\n- **Tie**: a `Switch` with `kind == tie` and `scada_controllable == True` for which `_nodes_restored_by` returns a non-empty candidate node set. Other ties are out of scope (see \u00a73). Today they are skipped silently, and that does not change.\n- **L (transferred load)**: the sum of `Section.load_kw` over the sections whose `to_node` is in the tie's candidate node set. Unit kW. Range L \u2265 0.\n- **C (tie capacity)**: the alternate feeder's spare capacity as delivered by the SCADA scan every 10 s. Unit kW, on the same basis as `load_kw`. No unit conversion and no per-unit base (Q-SPEC-1). It is not a nameplate rating.\n- **Tolerance \u03c4**: 0.5 kW. This is the only tolerance and no other safety margin applies (Q-SPEC-1, Q-SPEC-4). Per-unit statement waived by human answer Q-SPEC-4.\n- **t_eval**: the instant against which a capacity value's age is judged. Its source is open (Q-SPEC-10).\n- **age**: `t_eval \u2212 TieCapacity.timestamp`, in seconds.\n- **Usable capacity**: an entry that is present, has `quality == \"GOOD\"` and `age \u2264 20 s` (Q-SPEC-2), and is not invalid (definition open, Q-SPEC-9).\n\n## 1. Requirements\n\n| ID | Requirement (one testable statement) | Inputs \u2192 outputs | Missing / late / invalid behaviour | Verification (oracle) | Depends on open Q |\n|---|---|---|---|---|---|\n| REQ-TIECAP-1 | `backend/app/models.py` shall define a Pydantic model `TieCapacity` with the fields `kw: float` (kW, same basis as `Section.load_kw`), `timestamp: datetime` and `quality: str`. | \u2014 \u2192 type | A field that is missing from a `TieCapacity` fails model validation. Value validity is covered by REQ-TIECAP-8. | Test: construction and validation unit tests; inspection of `models.py`. | \u2014 |\n| REQ-TIECAP-2 | `flisr.build_plan` shall accept `tie_capacity: dict[str, TieCapacity] \\| None`, keyed by tie switch mRID. | feeder, lockout mRID, tie_capacity \u2192 `RestorationPlan` | `None` or `{}` means no tie has a known capacity, so every tie falls under REQ-TIECAP-5. | Test. | \u2014 |\n| REQ-TIECAP-3 | For a tie with usable capacity C, `build_plan` shall emit a `close` restoration step for that tie **if and only if** `L \u2264 C + 0.5 kW`. | L, C \u2192 close step present / absent | If C is not usable, REQ-TIECAP-5..8 apply and the tie is never closed. | Test against an independent closed-form oracle: the QA test computes L itself with a BFS over the test topology (not `network.load_on_nodes` or `_nodes_restored_by`) and evaluates `L_oracle \u2264 C + 0.5`. Boundary cases on the shipped model (L = 1490 kW): C = 1490.0 closes, C = 1489.5 closes (L = C + \u03c4), C = 1489.4 does not close (blocked as CAPACITY_EXCEEDED). Tolerance 0.5 kW engineering units; per-unit waived (Q-SPEC-4). | \u2014 |\n| REQ-TIECAP-4 | For a tie with usable capacity and `L > C + 0.5 kW`, `build_plan` shall emit no step for that tie and shall record `BlockedTie(tie_id=<mRID>, reason=CAPACITY_EXCEEDED)`. It shall not pick up part of the load (Q-SPEC-6). | L, C \u2192 blocked_ties entry | \u2014 | Test (same oracle as REQ-TIECAP-3). | \u2014 |\n| REQ-TIECAP-5 | For a tie with no entry in `tie_capacity` (including `tie_capacity` None or empty), `build_plan` shall emit no step for that tie and shall record `BlockedTie(reason=CAPACITY_UNKNOWN)`. The missing value shall never be read as 0 kW or any other value. | absent entry \u2192 blocked_ties entry | Missing \u2192 refuse for that tie only. | Test: missing key and `None`; inspection that no default capacity value remains (`flisr.py:98`). | \u2014 |\n| REQ-TIECAP-6 | For a tie whose entry has `age > 20 s`, `build_plan` shall not use the value, shall emit no step for that tie and shall record `BlockedTie(reason=CAPACITY_STALE)`. An entry with `age \u2264 20 s` (so exactly 20 s is still fresh) is usable if REQ-TIECAP-7 and REQ-TIECAP-8 are also met. | timestamp, t_eval \u2192 usable / blocked | Late \u2192 refuse for that tie. A future timestamp (age < 0) and a timezone-naive timestamp are undefined (Q-SPEC-10). | Test with an injected t_eval: ages 19.999 s, 20.000 s (usable), 20.001 s (stale). Oracle: closed-form `age > 20`. | Q-SPEC-10 |\n| REQ-TIECAP-7 | For a tie whose entry has `quality != \"GOOD\"` (exact match), `build_plan` shall not use the value, shall emit no step for that tie and shall record a `BlockedTie`. Which reason code applies (CAPACITY_UNKNOWN or CAPACITY_INVALID), and which reason wins when several conditions hold at once, is open. | quality \u2192 usable / blocked | Bad or uncertain quality \u2192 refuse for that tie (Q-SPEC-2). | Test. | Q-SPEC-9 |\n| REQ-TIECAP-8 | For a tie whose entry holds an invalid value, `build_plan` shall emit no step for that tie and shall record `BlockedTie(reason=CAPACITY_INVALID)`. What counts as invalid (NaN, \u00b1inf, negative kW, \u2026) is open, and so is whether malformed HTTP input is a 422 or a per-tie CAPACITY_INVALID. | kw \u2192 usable / blocked | Invalid \u2192 refuse for that tie. Never clamp and never substitute a value. | Test. | Q-SPEC-9 |\n| REQ-TIECAP-9 | A blocked tie shall not change the plan's isolation steps, the lockout re-close step, or how any other tie is evaluated (per-tie blocking, Q-SPEC-5). | per-tie inputs \u2192 plan | \u2014 | Test: a two-tie generated topology with one tie usable and one blocked. Compare isolation and the other tie's step against the same plan built without the blocked tie's problem. | \u2014 |\n| REQ-TIECAP-10 | `RestorationPlan` shall gain `blocked_ties: list[BlockedTie]`, where `BlockedTie{tie_id: str, reason}` and `reason` \u2208 {CAPACITY_UNKNOWN, CAPACITY_STALE, CAPACITY_INVALID, CAPACITY_EXCEEDED}. It holds exactly one entry per blocked tie and is empty when no tie is blocked. | \u2014 \u2192 plan field | \u2014 | Test (schema plus content). Inspection of `models.py`. | \u2014 |\n| REQ-TIECAP-11 | For each blocked tie, `RestorationPlan.notes` shall contain one operator-readable entry naming the tie (`Switch.name`) and the reason. For CAPACITY_EXCEEDED it shall also give L and C in kW, and for CAPACITY_STALE the age in seconds. | blocked tie \u2192 note | \u2014 | Test (content asserted per reason). | \u2014 |\n| REQ-TIECAP-12 | For a blocked tie, `build_plan` shall add the customers of the candidate sections to `customers_remaining` and shall add nothing to `customers_restored` or `transferred_load_kw`. For a closed tie the accounting stays as it is today. | plan totals | \u2014 | Test. Oracle: independent sums over the test topology. | \u2014 |\n| REQ-TIECAP-13 | `POST /flisr/plan` shall accept a `tie_capacity` object mapping tie mRID \u2192 `TieCapacity`. When one or more ties are blocked it shall return HTTP 200 with the plan, including `blocked_ties`. It shall not return 409 for a blocked tie (Q-SPEC-5). The existing 404 (unknown feeder) and 409 (`FlisrError`) behaviour stays the same. | HTTP body \u2192 HTTP status + plan | Malformed `TieCapacity`: open (Q-SPEC-9 d). | Test (FastAPI `TestClient`). | Q-SPEC-9 (malformed only) |\n| REQ-TIECAP-14 | For one release, `build_plan` and `POST /flisr/plan` shall still accept the legacy `dict[str, float]`. Each value shall be treated as `TieCapacity(kw=value, timestamp=t_eval, quality=\"GOOD\")`, and the caller shall get a deprecation note (Q-SPEC-3). The body field shape, what happens when both forms are supplied, and where the deprecation note goes are open. | legacy map \u2192 same decisions as REQ-TIECAP-3..12 | A tie missing from the legacy map \u2192 CAPACITY_UNKNOWN (REQ-TIECAP-5). An invalid legacy value is handled per Q-SPEC-9. | Test. | Q-SPEC-9, Q-SPEC-11 |\n| REQ-TIECAP-15 | When no fault indication is present (`faulted_section is None`), the plan shall be as it is today (no isolation, no restoration, manual-patrol note) with `blocked_ties` empty. | \u2014 | \u2014 | Test (characterization). | \u2014 |\n| REQ-TIECAP-16 | t_eval shall be taken once per `build_plan` call, so every tie in one plan is judged against the same instant. | \u2014 | Source of t_eval (wall clock or injected) and the reference timezone are open. | Test and inspection. | Q-SPEC-10 |\n| REQ-TIECAP-17 | Safety invariant: no plan shall contain a `close` step for a tie unless that tie's capacity is usable and `L \u2264 C + 0.5 kW`. Every tie of the kind defined in \u00a70 that is not closed shall appear exactly once in `blocked_ties`. | generated feeders + capacity maps \u2192 plans | Covers missing, stale, bad-quality and invalid entries. | Test (STD-SAFETY-5): at least 500 seeded `random` cases over radial and branched topologies with one or more ties, and capacity entries drawn across the missing / stale / boundary-age / non-GOOD / invalid / below / at / above `L + \u03c4` classes. The QA-owned BFS oracle of REQ-TIECAP-3 recomputes L. | Q-SPEC-9, Q-SPEC-10 (for the invalid and future-time classes) |\n| REQ-TIECAP-18 | For inputs where every tie has usable capacity and `L \u2264 C` or `L > C + 0.5 kW`, the isolation steps, the restoration steps and their order, `customers_restored`, `customers_remaining` and `transferred_load_kw` shall equal the values on `main` @ 5f6b471. | \u2014 | \u2014 | Test: `@pytest.mark.characterization` tests pinned on unmodified code before any change (STD-SAFETY-2). | \u2014 |\n\n### Intended behaviour changes (blast radius)\n\n1. A tie with no capacity entry used to be skipped with a \"0 kW available\" note. It is now blocked with reason CAPACITY_UNKNOWN (REQ-TIECAP-5). The step and the accounting are the same; the note text and `blocked_ties` are new.\n2. `C < L \u2264 C + 0.5 kW` used to skip the tie and now closes it (REQ-TIECAP-3, Q-SPEC-1/Q-SPEC-4). This is the **only** change that makes the planner more permissive. Reviewers should confirm it was intended.\n3. A value that is stale or not GOOD used to be impossible to express. It now blocks the tie.\n4. The `RestorationPlan` schema gains `blocked_ties`, an additive field.\n\n## 2. Open questions (STD-REQ-4) \u2014 not resolved by assumption\n\n- **Q-SPEC-9: when CAPACITY_INVALID applies, which reason a non-GOOD quality gets, and precedence.** (a) Which `kw` values are invalid: NaN, \u00b1inf, negative? A negative spare capacity could be a real reading (the alternate feeder is already overloaded) or a bad one. With `L = 0 kW` candidate sections and `C = \u22120.3`, REQ-TIECAP-3 would close the tie unless negative values are invalid. (b) Does `quality != GOOD` give CAPACITY_UNKNOWN (Q-SPEC-2 calls it \"unknown\") or CAPACITY_INVALID? (c) `BlockedTie` carries one reason. When several conditions hold (for example stale and not GOOD and NaN), which reason is recorded? (d) A structurally malformed entry in the HTTP body (for example a string `kw` or a missing `quality`): reject the whole request with 422, or block only that tie with CAPACITY_INVALID and return 200? Blocks: REQ-TIECAP-7, REQ-TIECAP-8, REQ-TIECAP-13 (malformed input only), REQ-TIECAP-14 (legacy validity), REQ-TIECAP-17.\n- **Q-SPEC-10: time reference.** (a) Is t_eval the planner's own wall clock (UTC) when `build_plan` starts, or an evaluation time supplied by the caller or injected? (b) A timestamp later than t_eval (clock skew between the SCADA front end and the planner): usable, stale, or invalid? Is any skew allowed? Without a rule, a future-dated value would look fresh indefinitely. (c) A timezone-naive timestamp: reject, or interpret as UTC? Blocks: REQ-TIECAP-6, REQ-TIECAP-16, REQ-TIECAP-17.\n- **Q-SPEC-11: legacy format alongside the new one.** (a) HTTP body: keep the legacy floats under `tie_capacity_kw` next to the new `tie_capacity`, or have one field accept either shape? (b) If both forms are supplied in one call, or for the same tie: refuse, let the new form win, or something else? (c) Where does the \"deprecation note\" go: `RestorationPlan.notes` (shown to operators), an HTTP `Deprecation` header, OpenAPI `deprecated`, a log line, or several of these? Blocks: REQ-TIECAP-14.\n\n## 3. Scope exclusions (STD-REQ-7)\n\n- The SCADA adapter and telemetry ingestion: scan scheduling, quality mapping and timestamping (integration team, Q-SPEC-3).\n- Spare capacity on one alternate feeder shared by several ties (Q-SPEC-7). Each tie is checked independently.\n- Partial pick-up or load shedding to fit within capacity (Q-SPEC-6).\n- Nameplate or thermal rating of the tie switch, unit conversion, per-unit bases, and any safety margin beyond \u03c4 = 0.5 kW (Q-SPEC-1, Q-SPEC-4).\n- Removing the legacy `dict[str, float]` input (a later release).\n- `locate_fault` and fault-location logic (open PRs #8 and #11). `_isolation_switches` and DEF-FLISR-7 (a tie that is an isolation point back-feeds the faulted section) are a separate defect run. This change shall not fix or mask DEF-FLISR-7.\n- Ties that are not SCADA-controllable, and ties with an empty candidate node set. Both are skipped silently as today and are not listed in `blocked_ties`.\n- `console/**`. The console does not call `/flisr/plan` today. `state_estimator.py`, `agc.py`, `savecase.py`, `firmware/**` and `legacy/**` are also out of scope.\n\n## 4. Verification notes for QA\n\n- The independent oracle for the close/block decision is a QA-owned BFS over the test topology plus the closed-form checks `L \u2264 C + 0.5`, `age > 20` and `quality == \"GOOD\"`. It must not import `app.network` or `app.flisr` helpers.\n- Tolerance: 0.5 kW engineering units. A per-unit tolerance was waived by the human answer to Q-SPEC-4. QA should record that waiver against STD-SAFETY-6.\n- Order of work under `.agents/skills/safety-critical-change/SKILL.md`: baseline, then characterization (REQ-TIECAP-15, REQ-TIECAP-18), then a failing reproduction (missing capacity read as 0 kW and no machine-readable reason), then the minimal fix, then the invariant (REQ-TIECAP-17, at least 500 seeded cases).\n- Tool classification (STD-SAFETY-7) is the assessor's finding. The specification takes no tool-certification credit.\n"
+      },
+      "standards_loaded": [
+        "STD-GOV",
+        "STD-REQ",
+        "STD-SAFETY"
+      ],
+      "files_touched": [
+        "docs/specs/feature-tie-capacity/specification.md"
+      ],
+      "branch": "agent/feature-tie-capacity/specify",
+      "session_url": "https://devin-gtm.devinenterprise.com/sessions/500e9d04dca547019bec61f63bc6879e",
+      "model": "normal"
+    },
+    "specify:-:3": {
+      "verdict": "BLOCKED",
+      "summary": "SPECIFY attempt 3. prepare: STD-GOV, STD-REQ and STD-SAFETY loaded; read .agents/skills/safety-critical-change/SKILL.md, DEMO_NOTES.md, flisr.py, api.py, models.py and network.py; re-measured the baseline on main@5f6b471. execute: applied Q-SPEC-9..11 and wrote 22 requirements (REQ-TIECAP-1..22), each with its missing/late/invalid behaviour, a verification method and an independent oracle, plus scope exclusions and blast radius. New finding: on main today a NaN or +inf tie capacity CLOSES TIE-1201-1405 (L > NaN is False). The HTTP layer accepts JSON NaN, turns \"2000\" into a number and ignores unknown fields. verify: re-checked every requirement against STD-REQ-1..7, STD-SAFETY-2/4/5/6/7 and STD-GOV-1/2/6/7. deliver: BLOCKED on two new gaps the answers do not cover. Q-SPEC-12: a supplied as_of that is invalid (naive, non-UTC, unparseable) or back-dated against the server clock. Q-SPEC-13: whether an unparseable capacity timestamp over HTTP is a 422 or a per-tie CAPACITY_INVALID. Only REQ-TIECAP-1, -2, -8 and -13 depend on them. Spec pushed to agent/feature-tie-capacity/specify (d9e1605); no PR opened, matching the earlier attempts.",
+      "evidence": [
+        {
+          "kind": "file",
+          "ref": "docs/specs/feature-tie-capacity/specification.md@agent/feature-tie-capacity/specify",
+          "detail": "Full specification, attempt 3"
+        },
+        {
+          "kind": "commit",
+          "ref": "d9e16058a067db4c3672be54784e2682e7e206f7",
+          "detail": "Carries the trailer AI-Governance: run=feature-tie-capacity stage=specify agent=devin model=normal. The platform also adds a Co-Authored-By trailer with a personal name, which conflicts with STD-GOV-7. The agent cannot change the git identity, so this is reported as a compliance note."
+        },
+        {
+          "kind": "file",
+          "ref": "backend/app/flisr.py:98",
+          "detail": "tie_capacity_kw.get(switch.mrid, 0.0): an implicit treat-as-zero (STD-REQ-3). The skip test is strict (transferred > available)."
+        },
+        {
+          "kind": "command",
+          "ref": "PYTHONPATH=backend python -c 'build_plan(... CB-1201 open, cap=None/1490.0/1489.9)'",
+          "detail": "None: restoration [CB-1201], restored 0, remaining 437. 1490.0: [CB-1201, TIE-1201-1405], restored 341, remaining 96, 1490.0 kW. 1489.9: tie skipped."
+        },
+        {
+          "kind": "command",
+          "ref": "PYTHONPATH=backend python -c 'build_plan(... cap={TIE-1201-1405: nan|inf})'",
+          "detail": "Both give ['CB-1201','TIE-1201-1405']: NaN closes the tie today. Becomes CAPACITY_INVALID (REQ-TIECAP-8)."
+        },
+        {
+          "kind": "command",
+          "ref": "TestClient POST /flisr/plan with NaN, \"2000\" and an extra field",
+          "detail": "All three got past request validation and reached the planner (409 only because CB-1201 is not in lockout on the shipped model). This motivates the strict 422 rule in REQ-TIECAP-13."
+        },
+        {
+          "kind": "command",
+          "ref": "pytest backend -q",
+          "detail": "2 passed (baseline main@5f6b471)"
+        },
+        {
+          "kind": "command",
+          "ref": "ruff check backend tools",
+          "detail": "1 pre-existing error on main (UP017 in tools/); not touched, since this stage changes no code"
+        },
+        {
+          "kind": "file",
+          "ref": ".agents/skills/safety-critical-change/SKILL.md",
+          "detail": "Order of work and invariant requirement reflected in \u00a74"
+        },
+        {
+          "kind": "file",
+          "ref": "DEMO_NOTES.md",
+          "detail": "Read; no constraints on this change"
+        },
+        {
+          "kind": "requirement",
+          "ref": "Q-SPEC-1..Q-SPEC-11",
+          "detail": "Human answers applied and cited per requirement"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-1",
+          "detail": "22 ids matching (?:REQ|DEF)-[A-Z]+-\\d{1,3}, one shall-statement each"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-2",
+          "detail": "kW unit, tau 0.5 kW, 20 s staleness, 2 s future limit; behaviour at limits (=20 s fresh, =-2 s fresh, L = C + tau closes)"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-3",
+          "detail": "Missing \u2192 UNKNOWN, late \u2192 STALE, invalid \u2192 INVALID, malformed \u2192 422; no implicit zero. as_of invalid left open (Q-SPEC-12)"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-4",
+          "detail": "Q-SPEC-12 and Q-SPEC-13 raised, not assumed; independent requirements completed"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-5",
+          "detail": "Verification method per requirement; QA-owned BFS plus closed-form oracle (\u00a74)"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-6",
+          "detail": "safety-critical stated in \u00a70 and inherited"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-REQ-7",
+          "detail": "Scope exclusions in \u00a73"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-SAFETY-2",
+          "detail": "REQ-TIECAP-19 and REQ-TIECAP-22 are characterization tests pinned before any change"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-SAFETY-5",
+          "detail": "REQ-TIECAP-21: safety invariant checked over at least 500 seeded cases"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-SAFETY-6",
+          "detail": "Tolerance in engineering units; per-unit waiver (Q-SPEC-4) recorded for QA"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-SAFETY-7",
+          "detail": "No tool-certification credit claimed"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-GOV-1",
+          "detail": "agent/ branch, no merge, no PR approval"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-GOV-6",
+          "detail": "flisr.py protected; two reviewers stated"
+        },
+        {
+          "kind": "standard",
+          "ref": "STD-GOV-7",
+          "detail": "No customer identifiers in the spec. The commit's Co-Authored-By trailer is reported as a compliance note."
+        }
+      ],
+      "questions": [
+        {
+          "id": "Q-SPEC-12",
+          "question": "Invalid as_of. Q-SPEC-10 only covers a missing as_of. What happens when the supplied as_of is (a) timezone-naive, (b) aware but with a non-UTC offset such as +02:00 (accept it as the same instant, or reject?), or (c) unparseable? The two options are: reject with HTTP 422, so no plan and not even isolation; or build the plan with isolation and block every candidate tie as CAPACITY_INVALID. (d) Should a supplied as_of be bounded against the server clock? Without a bound, a caller can back-date as_of so that stale capacity looks fresh, which bypasses the 20 s staleness rule.",
+          "blocking_units": [
+            "REQ-TIECAP-2",
+            "REQ-TIECAP-13"
+          ]
+        },
+        {
+          "id": "Q-SPEC-13",
+          "question": "Unparseable capacity timestamp over HTTP. Q-SPEC-9 says an unparseable timestamp is CAPACITY_INVALID (per tie, HTTP 200) and that wrong types get HTTP 422 for the whole request. In JSON the timestamp is a string either way, so is a non-ISO-8601 string such as 'yesterday' (a) a per-tie CAPACITY_INVALID with HTTP 200, which means TieCapacity.timestamp must accept any string, or (b) a 422? And is a JSON number (Unix seconds) a wrong type (422) or accepted?",
+          "blocking_units": [
+            "REQ-TIECAP-1",
+            "REQ-TIECAP-8",
+            "REQ-TIECAP-13"
+          ]
+        }
+      ],
+      "artifacts": {
+        "specification": "# Specification \u2014 FLISR restoration respects tie-switch capacity\n\nRun: `feature-tie-capacity` \u00b7 Stage: SPECIFY \u00b7 Attempt: 3 \u00b7 Status: **BLOCKED** (open questions Q-SPEC-12, Q-SPEC-13; every other requirement is complete)\n\n## 0. Source, inputs and classification\n\n- Source: change request \"respect tie-switch capacity during FLISR restoration\", plus human answers Q-SPEC-1..Q-SPEC-11 (ops-lead-standin, recorded gate actions).\n- Safety classification (STD-REQ-6): **safety-critical** (IEC 61508-3 context). The change alters which tie switches FLISR commands closed. Every unit derived from this specification inherits the classification. `backend/app/flisr.py` is a protected path: two human reviewers (STD-GOV-6, STD-SAFETY-1).\n- Scope (Q-SPEC-8): `build_plan` in `backend/app/flisr.py`; `POST /flisr/plan` in `backend/app/api.py`; new types in `backend/app/models.py`.\n\n### Current behaviour (baseline, `main` @ 5f6b471, re-measured this attempt)\n\n- `build_plan(feeder, lockout_switch_mrid, tie_capacity_kw: dict[str, float] | None)`. A tie with no entry reads as `0.0` kW (`flisr.py:98`, `tie_capacity_kw.get(switch.mrid, 0.0)`): an implicit \"treat as zero\", forbidden by STD-REQ-3.\n- A tie is skipped when `transferred > available` (strict), so equality closes; there is no tolerance.\n- Shipped model, `CB-1201` open: isolation opens `SEC-SW-1201-1` and `REC-1201-2`; restoration re-closes `CB-1201`. Tie `TIE-1201-1405` has L = 1490 kW.\n  - no capacity \u2192 tie skipped, note `\"Hollow Creek tie to 1405 skipped: 1490 kW exceeds 0 kW available capacity\"`, `customers_restored = 0`, `customers_remaining = 437`, `transferred_load_kw = 0.0`.\n  - C = 1490.0 \u2192 tie closed, `customers_restored = 341`, `customers_remaining = 96`, `transferred_load_kw = 1490.0`, no notes.\n  - C = 1489.9 \u2192 tie skipped (note says \"exceeds 1490 kW\", rounding hides the 0.1 kW).\n- HTTP today (`FlisrRequest`, Pydantic lax mode, extra fields ignored): a JSON `NaN` capacity is accepted, a string `\"2000\"` is coerced to 2000.0, and an unknown body field is silently ignored. All three reach the planner.\n- No timestamp, no quality, no machine-readable reason for a skipped tie.\n\n### Definitions\n\n- **Candidate tie**: a `Switch` with `kind == tie` and `scada_controllable == True` for which `_nodes_restored_by` returns a non-empty node set. Other ties are skipped silently, as today (\u00a73).\n- **L (transferred load)**: sum of `Section.load_kw` over sections whose `to_node` is in the candidate node set. Unit kW; range L \u2265 0.\n- **C (tie capacity)**: `TieCapacity.kw` \u2014 the alternate feeder's spare capacity as delivered by the SCADA scan every 10 s, kW on the same basis as `load_kw`. No unit conversion, no per-unit base, not nameplate (Q-SPEC-1).\n- **\u03c4 (tolerance)**: 0.5 kW, the only tolerance; no additional safety margin (Q-SPEC-1, Q-SPEC-4). Per-unit statement waived by Q-SPEC-4.\n- **as_of**: the evaluation instant. The request's `as_of` (timezone-aware ISO-8601 UTC instant supplied by the caller); when absent, the server's UTC now (Q-SPEC-10).\n- **age**: `as_of \u2212 TieCapacity.timestamp`, in seconds (Q-SPEC-10). Negative when the timestamp is ahead of as_of.\n- **Usable capacity**: an entry that is present, valid (REQ-TIECAP-8), `quality == \"GOOD\"` and `age \u2264 20 s` (Q-SPEC-2).\n- **Present** (HTTP body field): the key appears in the JSON body, whatever its value.\n\n## 1. Requirements\n\n| ID | Requirement (one testable statement) | Inputs \u2192 outputs | Missing / late / invalid behaviour | Verification (oracle) | Depends on open Q |\n|---|---|---|---|---|---|\n| REQ-TIECAP-1 | `backend/app/models.py` shall define a Pydantic model `TieCapacity` with fields `kw` (kW, same basis as `Section.load_kw`), `timestamp` and `quality: str`, all required, and shall reject unknown fields. Model validation shall not range-check `kw` or require a timezone on `timestamp`; those checks are the planner's (REQ-TIECAP-8) so that they yield per-tie `CAPACITY_INVALID` and not a request error. | \u2014 \u2192 type | A missing or unknown field fails model validation (\u2192 HTTP 422, REQ-TIECAP-13). | Test: model validation unit tests; inspection of `models.py`. | Q-SPEC-13 (type of `timestamp` only) |\n| REQ-TIECAP-2 | `flisr.build_plan` shall accept `tie_capacity: dict[str, TieCapacity] \\| None` keyed by tie switch mRID, and `as_of: datetime \\| None`. When `as_of` is None it shall use the UTC now read once at the start of the call. | feeder, lockout mRID, tie_capacity, as_of \u2192 `RestorationPlan` | `tie_capacity` None or `{}` \u2192 every candidate tie is CAPACITY_UNKNOWN (REQ-TIECAP-5). Invalid `as_of` \u2192 open (Q-SPEC-12). | Test with an injected `as_of`; inspection. | Q-SPEC-12 (invalid as_of only) |\n| REQ-TIECAP-3 | For a candidate tie with usable capacity C, `build_plan` shall emit a `close` restoration step for that tie **if and only if** `L \u2264 C + 0.5 kW`. | L, C \u2192 close step present / absent | C not usable \u2192 REQ-TIECAP-5..8; never closed. | Test against an independent closed-form oracle: QA computes L with its own BFS over the test topology (not `network.load_on_nodes` or `_nodes_restored_by`) and evaluates `L_oracle \u2264 C + 0.5`. Shipped-model boundary (L = 1490 kW): C = 1490.0 closes; C = 1489.5 closes (L = C + \u03c4); C = 1489.4 blocked CAPACITY_EXCEEDED. Tolerance 0.5 kW engineering units; per-unit waived (Q-SPEC-4). | \u2014 |\n| REQ-TIECAP-4 | For a candidate tie with usable capacity and `L > C + 0.5 kW`, `build_plan` shall emit no step for that tie and shall record `BlockedTie(tie_id=<mRID>, reason=CAPACITY_EXCEEDED)`. No partial pick-up (Q-SPEC-6). | L, C \u2192 blocked_ties entry | \u2014 | Test (oracle as REQ-TIECAP-3). | \u2014 |\n| REQ-TIECAP-5 | For a candidate tie with no entry in `tie_capacity` (including None / `{}`), or whose entry has `quality != \"GOOD\"` (exact, case-sensitive match), `build_plan` shall emit no step for that tie and record `BlockedTie(reason=CAPACITY_UNKNOWN)`. A missing value shall never be read as 0 kW or any other value (Q-SPEC-2, Q-SPEC-9). | entry / quality \u2192 blocked_ties entry | Missing or non-GOOD \u2192 refuse for that tie only. | Test: missing key, `None`, `{}`, qualities `\"BAD\"`, `\"SUSPECT\"`, `\"good\"`, `\"\"`. Inspection that no default capacity remains at `flisr.py:98`. | \u2014 |\n| REQ-TIECAP-6 | For a candidate tie whose valid entry has `age > 20 s`, `build_plan` shall not use the value, emit no step for that tie and record `BlockedTie(reason=CAPACITY_STALE)`. `age \u2264 20 s` (exactly 20 s included) is fresh (Q-SPEC-2). | timestamp, as_of \u2192 usable / blocked | Late \u2192 refuse for that tie. | Test with injected as_of: age 19.999 s, 20.000 s (fresh), 20.001 s (stale). Oracle: closed-form `age > 20`. | \u2014 |\n| REQ-TIECAP-7 | A timestamp ahead of as_of by no more than 2 s (\u22122 s \u2264 age < 0) shall be treated as fresh; ahead by more than 2 s (age < \u22122 s) is CAPACITY_INVALID (Q-SPEC-10). | timestamp, as_of \u2192 usable / invalid | Future-dated \u2192 refuse for that tie. | Test: age \u22121.999 s, \u22122.000 s (fresh), \u22122.001 s (invalid). | \u2014 |\n| REQ-TIECAP-8 | For a candidate tie whose entry has `kw` NaN, +inf, \u2212inf, negative, or otherwise not a finite number, or a `timestamp` that is unparseable, timezone-naive, or more than 2 s ahead of as_of, `build_plan` shall emit no step for that tie and record `BlockedTie(reason=CAPACITY_INVALID)`. It shall never clamp or substitute a value (Q-SPEC-9, Q-SPEC-10). `kw = 0.0` and `kw = \u22120.0` are valid. | kw, timestamp \u2192 usable / blocked | Invalid \u2192 refuse for that tie. | Test: each listed class at `build_plan` level; NaN / \u00b1Infinity also through HTTP (accepted as JSON numbers today, see baseline). | Q-SPEC-13 (unparseable timestamp through HTTP only) |\n| REQ-TIECAP-9 | When several conditions apply to one tie, `build_plan` shall record only the first in the order CAPACITY_INVALID, CAPACITY_UNKNOWN, CAPACITY_STALE, CAPACITY_EXCEEDED (Q-SPEC-9). | entry \u2192 single reason | \u2014 | Test: every pair/combination of conditions, e.g. NaN + BAD + stale \u2192 INVALID; BAD + stale \u2192 UNKNOWN; stale + exceeded \u2192 STALE. Oracle: closed-form precedence function in the QA test. | \u2014 |\n| REQ-TIECAP-10 | A blocked tie shall not change the plan's isolation steps, the lockout re-close step, or how any other candidate tie is evaluated (per-tie blocking, Q-SPEC-5). | per-tie inputs \u2192 plan | \u2014 | Test: two-tie generated topology, one tie usable, one blocked; isolation and the other tie's step equal the plan built with the blocked tie's entry made usable-but-exceeded. | \u2014 |\n| REQ-TIECAP-11 | `RestorationPlan` shall gain `blocked_ties: list[BlockedTie]`, `BlockedTie{tie_id: str, reason}`, reason \u2208 {CAPACITY_UNKNOWN, CAPACITY_STALE, CAPACITY_INVALID, CAPACITY_EXCEEDED}, with exactly one entry per blocked candidate tie, in `feeder.switches` order, empty when none is blocked (Q-SPEC-5). | \u2014 \u2192 plan field | \u2014 | Test (schema + content); inspection of `models.py`. | \u2014 |\n| REQ-TIECAP-12 | For each blocked tie, `RestorationPlan.notes` shall contain one operator-readable entry naming the tie (`Switch.name`) and the reason; for CAPACITY_EXCEEDED it shall also state L and C in kW to at least 0.1 kW resolution; for CAPACITY_STALE the age in seconds. | blocked tie \u2192 note | \u2014 | Test: content asserted per reason. | \u2014 |\n| REQ-TIECAP-13 | `POST /flisr/plan` shall accept a body field `tie_capacity` (object: tie mRID \u2192 `TieCapacity`) and an optional `as_of`; it shall return HTTP 200 with the plan, including `blocked_ties`, when ties are blocked, never 409 for a blocked tie (Q-SPEC-5). It shall reject with HTTP 422, before the planner runs, a body with wrong JSON types (no string\u2192number or bool\u2192number coercion), missing required fields or unknown fields at body or `TieCapacity` level (Q-SPEC-9). Existing 404 (unknown feeder) and 409 (`FlisrError`) are unchanged. | HTTP body \u2192 status + plan | Malformed \u2192 422. | Test (FastAPI `TestClient`): `\"kw\": \"2000\"` \u2192 422; extra body field \u2192 422; `TieCapacity` missing `quality` \u2192 422; one blocked tie \u2192 200. | Q-SPEC-12 (as_of validation), Q-SPEC-13 (unparseable timestamp) |\n| REQ-TIECAP-14 | The response body shall always carry `as_of`: the instant used \u2014 the supplied value, or the server's UTC now when absent (Q-SPEC-10). | as_of \u2192 echoed as_of | \u2014 | Test: supplied value echoed; absent \u2192 a UTC instant between the request's send and receive times. | \u2014 |\n| REQ-TIECAP-15 | `tie_capacity` and the legacy `tie_capacity_kw` shall be mutually exclusive: both present in one body \u2192 HTTP 422 (Q-SPEC-11); both passed to `build_plan` \u2192 `build_plan` raises and returns no plan. | body \u2192 422 / raise | \u2014 | Test: both present (including both `{}`) \u2192 422; `build_plan` with both \u2192 raises. | \u2014 |\n| REQ-TIECAP-16 | For one release, a request carrying only `tie_capacity_kw` (`dict[str, float]`) \u2014 and `build_plan` called with only `tie_capacity_kw` \u2014 shall be evaluated as `TieCapacity(kw=value, timestamp=as_of, quality=\"GOOD\")` per entry through REQ-TIECAP-3..12, and the response shall carry `deprecations: [\"tie_capacity_kw\"]` (Q-SPEC-3, Q-SPEC-11). Otherwise `deprecations` is `[]`. | legacy map \u2192 same decisions + deprecations | Tie missing from the legacy map \u2192 CAPACITY_UNKNOWN. Legacy NaN / \u00b1inf / negative \u2192 CAPACITY_INVALID. Wrong JSON type \u2192 422. | Test: legacy-only with C = 2000.0 gives the same steps and totals as `tie_capacity` with GOOD/as_of; `deprecations` asserted. | \u2014 |\n| REQ-TIECAP-17 | The `POST /flisr/plan` OpenAPI description shall state that `tie_capacity_kw` is deprecated, is removed after one release, and is mutually exclusive with `tie_capacity` (Q-SPEC-11). The Document stage's docs page carries the same note. | \u2014 \u2192 OpenAPI text | \u2014 | Inspection: `app.openapi()` text for `/flisr/plan`. | \u2014 |\n| REQ-TIECAP-18 | For each blocked tie, `build_plan` shall add the customers of its candidate sections to `customers_remaining` and add nothing to `customers_restored` or `transferred_load_kw`. Closed-tie accounting is unchanged. | plan totals | \u2014 | Test; oracle: independent sums over the test topology. | \u2014 |\n| REQ-TIECAP-19 | When no fault indication is present (`faulted_section is None`), the plan shall be as today (no isolation, no restoration, manual-patrol note) with `blocked_ties` empty. | \u2014 | \u2014 | Test (characterization). | \u2014 |\n| REQ-TIECAP-20 | as_of shall be fixed once per `build_plan` call; every entry in one plan is aged against the same instant. | \u2014 | \u2014 | Test and inspection (no clock read inside the per-tie loop). | \u2014 |\n| REQ-TIECAP-21 | Safety invariant: no plan shall contain a `close` step for a tie unless that tie's capacity is usable and `L \u2264 C + 0.5 kW`; every candidate tie not closed shall appear exactly once in `blocked_ties` with the reason the REQ-TIECAP-9 precedence gives. | generated feeders + capacity maps + as_of \u2192 plans | Covers missing, non-GOOD, stale, boundary-age, future-dated, naive, non-finite, negative, below / at / above `L + \u03c4`. | Test (STD-SAFETY-5): \u2265 500 seeded `random` cases over radial and branched topologies with one or more ties (the seeded generator in `backend/tests/rca_def_flisr_7_sweep.py` on branch `agent/rca-backfeed/explore` may be reused). Oracle: the QA-owned BFS of REQ-TIECAP-3 plus closed-form usability and precedence checks. | \u2014 |\n| REQ-TIECAP-22 | For inputs where every candidate tie has usable capacity and `L \u2264 C` or `L > C + 0.5 kW`, the isolation steps, restoration steps and their order, `customers_restored`, `customers_remaining` and `transferred_load_kw` shall equal `main` @ 5f6b471. | \u2014 | \u2014 | Test: `@pytest.mark.characterization` tests pinned on unmodified code before any change (STD-SAFETY-2). | \u2014 |\n\n### Intended behaviour changes (blast radius)\n\n1. A candidate tie with no capacity entry was skipped with a \"0 kW available\" note; it is now blocked CAPACITY_UNKNOWN. Steps and accounting are identical; note text and `blocked_ties` are new.\n2. `C < L \u2264 C + 0.5 kW` used to skip the tie and now closes it (Q-SPEC-1/Q-SPEC-4). This is the **only** change that makes the planner more permissive; reviewers should confirm it.\n3. Legacy NaN / \u00b1inf / negative values were compared numerically. `L > NaN` is False, so on the shipped model a NaN capacity **closes** `TIE-1201-1405` today, and so does +inf (re-measured this attempt). Both are now CAPACITY_INVALID, which removes a latent unsafe close.\n4. HTTP: string\u2192number coercion and unknown fields, accepted today, become 422. Clients that relied on them break.\n5. Response schema gains `blocked_ties`, `as_of`, `deprecations` (additive).\n\n## 2. Open questions (STD-REQ-4) \u2014 not resolved by assumption\n\n- **Q-SPEC-12 \u2014 invalid `as_of`.** Q-SPEC-10 says `as_of` is a timezone-aware ISO-8601 UTC instant and covers only its absence. What happens when the supplied `as_of` is (a) timezone-naive, (b) aware with a non-UTC offset (e.g. `+02:00` \u2014 accept as the same instant, or reject?), (c) unparseable? Options: reject the request with 422 (no plan, not even isolation), or build the plan with isolation and block every candidate tie CAPACITY_INVALID (consistent with Q-SPEC-5 per-tie blocking). (d) Should a supplied `as_of` be bounded against the server clock? Without a bound a caller can make 10-minute-old capacity look fresh by back-dating `as_of`, which bypasses REQ-TIECAP-6. Blocks: REQ-TIECAP-2 (invalid as_of only), REQ-TIECAP-13 (as_of validation).\n- **Q-SPEC-13 \u2014 unparseable capacity timestamp over HTTP.** Q-SPEC-9 says an unparseable timestamp is CAPACITY_INVALID (per tie, HTTP 200), and that wrong types are 422 (whole request). Over JSON a timestamp is a string either way. Is a string that is not ISO-8601 (e.g. `\"yesterday\"`) (a) a per-tie CAPACITY_INVALID with HTTP 200 \u2014 which means `TieCapacity.timestamp` must accept arbitrary strings and the planner parses them \u2014 or (b) a 422, leaving CAPACITY_INVALID-unparseable reachable only from Python callers? Also, is a JSON number (Unix seconds) a wrong type (422) or accepted? Blocks: REQ-TIECAP-1 (timestamp type), REQ-TIECAP-8 (HTTP path only), REQ-TIECAP-13.\n\n## 3. Scope exclusions (STD-REQ-7)\n\n- SCADA adapter and telemetry ingestion: scan scheduling, quality mapping, timestamping (integration team, Q-SPEC-3).\n- Spare capacity of one alternate feeder shared by several ties (Q-SPEC-7); each tie is checked independently.\n- Partial pick-up or load shedding to fit within capacity (Q-SPEC-6).\n- Nameplate / thermal rating of the tie switch, unit conversion, per-unit bases, any safety margin beyond \u03c4 (Q-SPEC-1, Q-SPEC-4).\n- Removing legacy `tie_capacity_kw` (separate change after one release, Q-SPEC-11).\n- `tie_capacity` entries whose key is not a candidate tie of the feeder: ignored as today; not validated, not listed.\n- `locate_fault` / fault-location logic; `_isolation_switches` and DEF-FLISR-7 (a tie that is an isolation point back-feeds the faulted section) \u2014 separate defect run. This change shall neither fix nor mask DEF-FLISR-7.\n- Non-SCADA-controllable ties and ties with an empty candidate set: skipped silently as today, not in `blocked_ties`.\n- `console/**` (does not call `/flisr/plan`), `state_estimator.py`, `agc.py`, `savecase.py`, `firmware/**`, `legacy/**`.\n\n## 4. Verification notes for QA\n\n- Independent oracle: QA-owned BFS over the test topology plus closed-form `L \u2264 C + 0.5`, `age > 20`, `age < \u22122`, `quality == \"GOOD\"`, `math.isfinite(kw) and kw \u2265 0`, and the REQ-TIECAP-9 precedence. It must not import `app.network` or `app.flisr` helpers.\n- Tolerance 0.5 kW engineering units; per-unit tolerance waived by Q-SPEC-4 \u2014 record the waiver against STD-SAFETY-6.\n- Order of work (`.agents/skills/safety-critical-change/SKILL.md`): baseline \u2192 characterization (REQ-TIECAP-19, REQ-TIECAP-22) \u2192 failing reproductions (missing capacity read as 0 kW with no machine-readable reason; legacy NaN closes the tie) \u2192 minimal fix \u2192 invariant (REQ-TIECAP-21, \u2265 500 seeded cases).\n- Tool classification (STD-SAFETY-7) is the assessor's finding; this specification claims no tool-certification credit.\n",
+        "phases": "prepare: standards STD-GOV/STD-REQ/STD-SAFETY confirmed; instruction files read. execute: spec written. verify: clause-by-clause check (evidence). deliver: BLOCKED on Q-SPEC-12, Q-SPEC-13.",
+        "compliance_notes": "No `ai-generated` label exists in the repo and no PR was opened at this stage (spec delivered on the branch, as in attempts 1-2). The commit carries a platform-added Co-Authored-By trailer with a personal name (STD-GOV-7)."
+      },
+      "standards_loaded": [
+        "STD-GOV",
+        "STD-REQ",
+        "STD-SAFETY"
+      ],
+      "files_touched": [
+        "docs/specs/feature-tie-capacity/specification.md"
+      ],
+      "branch": "agent/feature-tie-capacity/specify",
+      "session_url": "https://devin-gtm.devinenterprise.com/sessions/0c9055fc5ef749ce8431617806aa8ac4",
+      "model": "normal"
+    }
   }
 }

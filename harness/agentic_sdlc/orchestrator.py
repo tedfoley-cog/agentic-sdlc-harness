@@ -94,9 +94,13 @@ class Orchestrator:
         """Advance until the run finishes or pauses. Returns the state."""
         if not self.state:
             raise RuntimeError("no run to resume")
+        self.state.setdefault("results", {})
+        if not self.state["results"] and self.state.get("attempts"):
+            self._backfill_results()
         try:
             while self.state["status"] == "running":
                 step = self.state["plan"][self.state["cursor"]]
+                self._replay: dict[str, int] = {}
                 self._execute(step)
         except Paused as p:
             self.state["paused_on"] = {"reason": p.reason, **p.detail}
@@ -154,9 +158,19 @@ class Orchestrator:
                    repos: list[str] | None = None) -> Verdict:
         unit_id = unit["id"] if unit else "-"
         key_base = f"{stage}:{unit_id}"
-        attempt = self.state["attempts"].get(key_base, 0) + 1
-        self.state["attempts"][key_base] = attempt
+        # Deterministic replay: every resume re-executes the current plan step from its start, so the n-th
+        # call for a stage/unit within the step maps onto the n-th recorded attempt. Completed attempts are
+        # answered from the ledger (no session, no new audit record); only the first unrecorded call runs.
+        replay = getattr(self, "_replay", None)
+        if replay is None:
+            replay = self._replay = {}
+        attempt = replay.get(key_base, 0) + 1
+        replay[key_base] = attempt
         stage_key = f"{key_base}:{attempt}"
+        stored = self.state.setdefault("results", {}).get(stage_key)
+        if stored is not None:
+            return Verdict.from_dict(stored)
+        self.state["attempts"][key_base] = max(self.state["attempts"].get(key_base, 0), attempt)
         model = self.cfg.model_for(stage)
         try:
             std_ids = (self.cfg.standards.get("by_stage") or {}).get(stage) or STAGE_STANDARDS_DEFAULT.get(stage, [])
@@ -173,9 +187,10 @@ class Orchestrator:
                               requirement=self.state["requirement"], feedback=feedback, unit=unit,
                               answers=self.state["answers"], model=model, evidence_only=evidence_only)
         brief_path = write_brief(self.run_dir, stage_key, brief)
-        self.log.append("stage.started", stage=stage, unit=unit_id, attempt=attempt, model=model,
-                        brief_ref=str(brief_path.relative_to(self.run_dir)), standards=[s.id for s in standards],
-                        artifacts_read=sorted((artifacts or {}).keys()), evidence_only=evidence_only)
+        if not (self.run_dir / "sessions" / f"{stage_key}.request.json").exists():  # first issue, not a relay pickup
+            self.log.append("stage.started", stage=stage, unit=unit_id, attempt=attempt, model=model,
+                            brief_ref=str(brief_path.relative_to(self.run_dir)), standards=[s.id for s in standards],
+                            artifacts_read=sorted((artifacts or {}).keys()), evidence_only=evidence_only)
         request = SessionRequest(
             title=f"[{self.state['run_id']}] {stage} {unit_id if unit else ''} #{attempt}".strip(),
             prompt=brief, repos=[] if evidence_only else (repos or [self.cfg.repo]), devin_mode=model,
@@ -233,7 +248,41 @@ class Orchestrator:
                 self.state["questions"].append({**q, "stage": stage, "status": "open"})
         for name, art in v.artifacts.items():
             self.state["artifacts"][f"{stage}.{name}" if unit_id == "-" else f"{stage}.{unit_id}.{name}"] = art
+        self.state.setdefault("results", {})[f"{stage}:{unit_id}:{attempt}"] = v.to_dict()
         self._save()
+
+    def _backfill_results(self) -> None:
+        """Rebuild the attempt ledger from the relay result files of a run recorded before the ledger existed."""
+        sess = self.run_dir / "sessions"
+        completed = {f"{r['stage']}:{r.get('unit', '-')}:{r['attempt']}" for r in self.log
+                     if r.get("event") == "stage.completed"}
+        for res_path in sorted(sess.glob("*.result.json")) if sess.exists() else []:
+            key = res_path.name[: -len(".result.json")]
+            if key not in completed:
+                continue  # a result the run has not consumed yet: let the stage run on it normally
+            data = json.loads(res_path.read_text())
+            stage = key.split(":", 1)[0]
+            self.state["results"][key] = self._verdict_from(
+                SessionResult(session_id=data["session_id"], session_url=data["session_url"],
+                              status=data.get("status", "finished"), structured_output=data.get("structured_output"),
+                              devin_mode=data.get("devin_mode", ""), acus=float(data.get("acus") or 0), raw=data),
+                stage).to_dict()
+        self.log.append("ledger.backfilled", attempts=sorted(self.state["results"]))
+
+    def _stage(self, stage: str, **kw: Any) -> Verdict:
+        """Run a stage, re-running it while it is BLOCKED on questions that humans have since answered
+        (answers travel in the next brief). Open questions pause the run; no answer is ever assumed."""
+        for _ in range(int((self.cfg.raw.get("loops") or {}).get("questions", 5))):
+            v = self._run_stage(stage, **kw)
+            if v.verdict != "BLOCKED":
+                return v
+            open_q = [q["id"] for q in self.state["questions"] if q["status"] == "open"]
+            if open_q:
+                detail = {"stage": stage, "questions": open_q}
+                if kw.get("unit"):
+                    detail["unit"] = kw["unit"]["id"]
+                raise Paused("questions-open", detail)
+        raise Paused("needs-human", {"stage": stage, "reason": "still BLOCKED after all answered question rounds"})
 
     def _skill_text(self, stage: str) -> str:
         p = self.skills_dir / stage / "SKILL.md"
@@ -245,7 +294,7 @@ class Orchestrator:
     # ------------------------------------------------------------------ feature stages
     def _specify(self) -> None:
         feedback = self.state.get("feedback", {}).pop("specify", None)
-        v = self._run_stage("specify", artifacts=self._arts("gate"), feedback=feedback)
+        v = self._stage("specify", artifacts=self._arts("gate"), feedback=feedback)
         if v.verdict == "PASS":
             spec = v.artifacts.get("specification") or v.summary
             self.state["artifacts"]["specification"] = spec
@@ -258,7 +307,7 @@ class Orchestrator:
         raise Paused("needs-human", {"stage": "specify", "summary": v.summary})
 
     def _decompose(self) -> None:
-        v = self._run_stage("decompose", artifacts=self._arts("specification"))
+        v = self._stage("decompose", artifacts=self._arts("specification"))
         units = v.artifacts.get("units")
         if isinstance(units, str):
             units = json.loads(units)
@@ -275,11 +324,11 @@ class Orchestrator:
         limit = self.cfg.loops["architect"]
         feedback = None
         for i in range(1, limit + 1):
-            d = self._run_stage("design", artifacts=self._arts("specification", "units"), feedback=feedback)
+            d = self._stage("design", artifacts=self._arts("specification", "units"), feedback=feedback)
             if d.verdict != "PASS":
                 raise Paused("needs-human", {"stage": "design", "summary": d.summary})
             self.state["artifacts"]["design"] = d.artifacts.get("design") or d.summary
-            a = self._run_stage("architect", artifacts=self._arts("specification", "units", "design"))
+            a = self._stage("architect", artifacts=self._arts("specification", "units", "design"))
             resolved = a.verdict == "CONFIRMED"
             self.log.append("loop.iteration", loop="design-architect", iteration=i, verdict=a.verdict,
                             resolved=resolved, findings=a.evidence)
@@ -327,7 +376,7 @@ class Orchestrator:
         feedback: list[dict[str, Any]] | None = None
         arts = self._arts("specification", "design", "architecture_review", "root_cause", "review")
         for i in range(1, limit + 1):
-            c = self._run_stage(stage, unit=unit, artifacts=arts, feedback=feedback)
+            c = self._stage(stage, unit=unit, artifacts=arts, feedback=feedback)
             if c.verdict == "BLOCKED":
                 raise Paused("questions-open", {"stage": stage, "unit": unit["id"], "summary": c.summary})
             if c.verdict != "PASS":
@@ -342,7 +391,7 @@ class Orchestrator:
                 self.log.append("loop.iteration", loop=f"{stage}-qa", unit=unit["id"], iteration=i,
                                 verdict="FAIL", resolved=False, source="verify")
                 continue
-            q = self._run_stage("qa", unit=unit, artifacts={**arts, "coding_report": c.to_dict(),
+            q = self._stage("qa", unit=unit, artifacts={**arts, "coding_report": c.to_dict(),
                                                             "deterministic_checks": vres})
             resolved = q.verdict == "PASS"
             self.log.append("loop.iteration", loop=f"{stage}-qa", unit=unit["id"], iteration=i,
@@ -427,13 +476,13 @@ class Orchestrator:
         limit = self.cfg.loops["rca"]
         feedback = None
         for i in range(1, limit + 1):
-            e = self._run_stage("explore", feedback=feedback)
+            e = self._stage("explore", feedback=feedback)
             if e.verdict != "PASS":
                 raise Paused("needs-human", {"stage": "explore", "summary": e.summary})
             package = {"hypothesis": e.artifacts.get("hypothesis") or e.summary,
                        "evidence_package": e.artifacts.get("evidence_package") or e.evidence}
             self.state["artifacts"]["evidence_package"] = package
-            ev = self._run_stage("evaluate", artifacts={"evidence_package": package}, evidence_only=True)
+            ev = self._stage("evaluate", artifacts={"evidence_package": package}, evidence_only=True)
             resolved = ev.verdict == "CONFIRMED"
             self.log.append("loop.iteration", loop="explore-evaluate", iteration=i, verdict=ev.verdict,
                             resolved=resolved, objections=ev.evidence)
@@ -465,7 +514,7 @@ class Orchestrator:
         arts["prs"] = self.state["prs"]
         arts["branches"] = self.state["branches"]
         arts["trace_matrix"] = self.trace.to_markdown()
-        v = self._run_stage(stage, artifacts=arts)
+        v = self._stage(stage, artifacts=arts)
         if v.verdict in ok:
             self.state["artifacts"][artifact] = v.artifacts.get(artifact) or v.summary
             self._advance()

@@ -122,3 +122,53 @@ def test_bot_gate_decision_is_ignored(tmp_path, cfg_dict, harness_root):
         {"decision": "approved", "actor": "devin[bot]", "actor_type": "Bot"}))
     st = o.resume()
     assert st["paused_on"]["reason"] == "gate-waiting"
+
+
+def _relay(tmp_path, cfg_dict, harness_root):
+    from agentic_sdlc.sessions import RelayBackend
+
+    cfg = HarnessConfig.from_dict(cfg_dict)
+    return Orchestrator(cfg=cfg, run_dir=tmp_path / "run", backend=RelayBackend(),
+                        standards=MarkdownStandardsStore(harness_root / "standards"),
+                        skills_dir=harness_root / "plugin/skills", gate_factory=lambda g, d, name: FileGate(d))
+
+
+def _deliver(run_dir, key, out):
+    (Path(run_dir) / "sessions" / f"{key}.result.json").write_text(json.dumps(
+        {"session_id": key, "session_url": f"https://devin.example/{key}", "status": "finished",
+         "structured_output": out, "devin_mode": "normal", "acus": 1.0}))
+
+
+def test_resume_replays_recorded_attempts_instead_of_rerunning_them(tmp_path, cfg_dict, harness_root):
+    """A pause inside a loop must not restart the loop: Explore ran once, Evaluate confirmed, Review is next."""
+    o = _relay(tmp_path, cfg_dict, harness_root)
+    o.start("rca", "Defect: back-feed", "DEFECT.md", run_id="r")
+    st = o.resume()
+    assert st["paused_on"]["request"] == "sessions/explore:-:1.request.json"
+    _deliver(o.run_dir, "explore:-:1", verdict("PASS", artifacts={"hypothesis": "h", "evidence_package": "e"}))
+    st = o.resume()
+    assert st["paused_on"]["request"] == "sessions/evaluate:-:1.request.json"
+    _deliver(o.run_dir, "evaluate:-:1", verdict("CONFIRMED"))
+    st = o.resume()
+    assert st["paused_on"]["request"] == "sessions/review:-:1.request.json"
+    requested = sorted(p.name for p in (o.run_dir / "sessions").glob("*.request.json"))
+    assert requested == ["evaluate:-:1.request.json", "explore:-:1.request.json", "review:-:1.request.json"]
+    assert st["attempts"]["explore:-"] == 1 and st["results"]["evaluate:-:1"]["verdict"] == "CONFIRMED"
+    started = [r for r in o.log if r["event"] == "stage.started"]
+    assert [(r["stage"], r["attempt"]) for r in started] == [("explore", 1), ("evaluate", 1), ("review", 1)]
+
+
+def test_blocked_stage_reruns_only_after_humans_answer(tmp_path, cfg_dict, harness_root):
+    o = _relay(tmp_path, cfg_dict, harness_root)
+    o.start("feature", REQ, "REQ.md", run_id="r")
+    o.resume()
+    _deliver(o.run_dir, "specify:-:1", verdict("BLOCKED", questions=[{"id": "Q-SPEC-1", "question": "unit?"}]))
+    st = o.resume()
+    assert st["paused_on"]["reason"] == "questions-open" and st["paused_on"]["questions"] == ["Q-SPEC-1"]
+    assert not (o.run_dir / "sessions" / "specify:-:2.request.json").exists()
+    st = o.resume()  # still waiting: silence is not an answer
+    assert st["paused_on"]["reason"] == "questions-open"
+    o.answer("Q-SPEC-1", "kW", actor="alice")
+    st = o.resume()
+    assert st["paused_on"]["request"] == "sessions/specify:-:2.request.json"
+    assert "alice" in (o.run_dir / "sessions" / "specify:-:2.request.json").read_text()

@@ -1,0 +1,138 @@
+{
+  "session_id": "f974b8a669de4f9686a59fb12732a86e",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/f974b8a669de4f9686a59fb12732a86e",
+  "status": "waiting_for_user",
+  "devin_mode": "ultra",
+  "acus": 2.11006587525,
+  "structured_output": {
+    "verdict": "CONFIRMED",
+    "summary": "DEF-FLISR-7 hypothesis CONFIRMED from the evidence package alone: build_plan treats no tie as a faulted-section boundary (tie skipped in isolation at flisr.py:42; restoration candidate set never excludes faulted nodes, flisr.py:91-122/141-151). Mechanism is shown, not just symptom: customers_restored == customers_remaining == 341 and transferred_load_kw == 1490 are SEC-1201-04's own figures; 1489/1490 kW threshold proves capacity is the only gate; counterfactual B proves the tie-skip alone is not the cause; 500-case sweep partitions back-feed exactly on 'faulted section ends at tie AND tie closed' (150/150 vs 0/350). Alternatives (mislocation, CB reclose, capacity bug, tie restoration in general) ruled out with data. Non-blocking notes: most code excerpts are paraphrased with file:line rather than quoted; Fix must address the restoration candidate set, not only isolation.",
+    "model": "ultra",
+    "standards_loaded": [
+      "STD-GOV",
+      "STD-RCA",
+      "STD-SAFETY"
+    ],
+    "branch": "agent/rca-backfeed/explore",
+    "files_touched": [],
+    "evidence": [
+      {
+        "kind": "standard",
+        "ref": "STD-GOV v1.1",
+        "detail": "Loaded from brief; STD-GOV-7 checked (no identifiers/credentials in package); STD-GOV-6 noted for protected path backend/app/flisr.py."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-RCA v1.2",
+        "detail": "Loaded from brief. STD-RCA-1 package completeness checked (hypothesis, repro, failing test, observed/expected, file:line excerpts, alternatives). STD-RCA-2 followed: judged without codebase access."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-SAFETY v3.1",
+        "detail": "Loaded from brief. STD-SAFETY-3 satisfied by Explore (failing tests before fix, no production change). STD-SAFETY-1/4/5 notes passed to Review/Fix."
+      },
+      {
+        "kind": "requirement",
+        "ref": "DEF-FLISR-7",
+        "detail": "Source defect; stand-in scenario FDR-1201 (fault SEC-1201-04, lockout CB-1201, tie TIE-1201-1405) per recorded answer Q-EXPLORE-1; function app.flisr.build_plan per Q-EXPLORE-2."
+      },
+      {
+        "kind": "commit",
+        "ref": "c43f8c42a2142b0043a5da5bf125e59258866547",
+        "detail": "Evidence package revision on agent/rca-backfeed/explore (as stated in the package; not independently verified \u2014 no repo access)."
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7.py:22",
+        "detail": "Failing: restoration=[('CB-1201','close'),('TIE-1201-1405','close')]; SEC-1201-04 nodes {N-1201-3A, N-1201-4} energised after plan. Matches hypothesis prediction exactly."
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7.py:52",
+        "detail": "Failing via POST /flisr/plan: customers_restored=341 == customers_remaining=341, transferred_load_kw=1490.0 == SEC-1201-04 load. Only explainable if the faulted section is the tie's pick-up set."
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend -q -> 2 failed, 2 passed",
+        "detail": "Both failures are the new DEF-FLISR-7 tests; existing tests unchanged (STD-SAFETY-3)."
+      },
+      {
+        "kind": "command",
+        "ref": "PYTHONPATH=backend python backend/tests/rca_def_flisr_7_sweep.py",
+        "detail": "Sweep A: SEC-1201-04 back-fed only at capacity >= 1490 kW (1489 -> no close); SEC-1201-02/03 never back-fed. Counterfactual B: tie in isolation still re-closed (flisr.py:145-146) -> tie-skip alone insufficient. Sweep C: 500 seeded feeders, back_fed iff faulted-adjacent-to-tie AND tie closed (150/150 vs 0/350)."
+      },
+      {
+        "kind": "file",
+        "ref": "backend/app/flisr.py:41-43",
+        "detail": "Quoted: ties skipped in _isolation_switches (`if not switch.scada_controllable or switch.kind.value == \"tie\": continue`)."
+      },
+      {
+        "kind": "file",
+        "ref": "backend/app/flisr.py:91-122, 141-151",
+        "detail": "Described (paraphrased with file:line): every SCADA tie is a restoration candidate gated only by capacity; _nodes_restored_by returns tie island minus source-energised nodes without subtracting the faulted section."
+      },
+      {
+        "kind": "file",
+        "ref": "backend/app/network.py:90-91",
+        "detail": "load_on_nodes counts section load at to_node; N-1201-4 in candidate set yields the 1490 kW 'transferred' figure."
+      },
+      {
+        "kind": "note",
+        "ref": "non-blocking: excerpt quotation depth",
+        "detail": "Only flisr.py:42 is quoted verbatim; other ranges are paraphrased. Verdict rests on behavioural evidence (341/341, 1490 kW, 1489/1490 threshold, counterfactual B, sweep C), so this is a spot-check item for Review, not an objection."
+      },
+      {
+        "kind": "note",
+        "ref": "for Fix (STD-SAFETY-4)",
+        "detail": "Counterfactual B shows adding ties to isolation is not sufficient; the restoration step must refuse a tie whose pick-up set contains the faulted section's nodes. Fail-safe = refuse the close."
+      },
+      {
+        "kind": "note",
+        "ref": "repo contract not read",
+        "detail": "Brief grants no codebase access and does not inline the repo contract; evaluation does not depend on it."
+      }
+    ],
+    "trace": [
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7.py:22"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7.py:52"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "code",
+        "ref": "backend/app/flisr.py:41-43"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "code",
+        "ref": "backend/app/flisr.py:91-122"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "code",
+        "ref": "backend/app/flisr.py:141-151"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "code",
+        "ref": "backend/app/network.py:90-91"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "doc",
+        "ref": "artifacts.evaluation"
+      }
+    ],
+    "questions": [],
+    "artifacts": {
+      "evaluation": "# DEF-FLISR-7 \u2014 Evaluate (run rca-backfeed, attempt 1)\n\n## Prepare\nStandards loaded from the brief: STD-GOV v1.1, STD-RCA v1.2, STD-SAFETY v3.1. All three present and readable.\nRepo contract: not included in the brief and the brief forbids codebase access, so it was not read. The verdict below does not depend on it (noted, not blocking).\n\n## Verdict: CONFIRMED\n\nHypothesis under test: `build_plan` never treats a tie switch as a boundary of the faulted section \u2014 (a) `_isolation_switches` skips ties (flisr.py:42), and (b) the restoration loop (flisr.py:91-122 via `_nodes_restored_by` flisr.py:136-151) never removes the faulted section's nodes from a tie's pick-up set \u2014 so when the faulted section's downstream end is a tie, the tie is closed onto it whenever tie capacity >= that section's load.\n\n### Does the evidence show the mechanism, not just the symptom?\nYes. Three observed numbers in the failing output are only explainable by the faulted section itself being the tie's pick-up set:\n- `customers_restored` == `customers_remaining` == 341 (SEC-1201-04's own customer count, counted both as lost and as restored);\n- `transferred_load_kw` == 1490.0 == SEC-1201-04's load (network.py:90-91 `load_on_nodes`, to_node N-1201-4 in the candidate set);\n- \"back-feed 3 nodes\" == the island {N-1201-4, N-1201-3A, ALT-1405} = both ends of SEC-1201-04 plus the alternate source, exactly what `_nodes_restored_by` returns with REC-1201-2 open and the tie closed.\nThe sweep A threshold (1489 kW -> no close, 1490 kW -> close) shows capacity is the only gate and that the gated quantity is the faulted section's load.\n\n### Does it rule out alternatives?\nYes, with data rather than argument:\n- Mislocation: faulted_section is SEC-1201-04 in every run.\n- CB-1201 reclose as the back-feed path: at 0/1489 kW the plan still closes CB-1201 and SEC-1201-04 stays dead (REC-1201-2 holds it).\n- Capacity check defect: 1489/1490 behaves exactly as written.\n- Tie restoration wrong in general: the same tie closed for SEC-1201-02/03 faults never back-feeds (sweep A, 0 cases).\n- Tie-skip at line 42 alone: the monkeypatched counterfactual (tie added to isolation) still yields TIE close + back_fed=True because flisr.py:145-146 re-closes the tie in the what-if and 91-122 never exclude faulted nodes. This establishes that both halves of the hypothesis are necessary \u2014 important for Fix.\n- Sweep C (500 seeded feeders): back-feed in 150/150 cases where faulted section ends at the tie and the tie is closed; 0/350 otherwise. A single-cause hypothesis predicts exactly this partition.\n\n### Would the hypothesis predict the failing test's observed value?\nYes. Predicted plan for SEC-1201-04 fault with 2000 kW tie capacity: isolation [REC-1201-2], restoration [CB-1201 close, TIE-1201-1405 close], SEC-1201-04 nodes {N-1201-3A, N-1201-4} energised. That is the recorded assertion failure, both direct and via POST /flisr/plan.\n\n### Falsifiability\nThree concrete predictions are stated with the counterexample condition; predictions 1-3 are each exercised by sweep A or C.\n\n## Checks against standards\n- STD-RCA-1: single hypothesis, reproduction steps, failing tests (2) with output, observed-vs-expected table, file:line excerpts, alternative-ruling data \u2014 all present.\n- STD-RCA-2: judged from the package only; no repository used.\n- STD-SAFETY-3: defect reproduced by failing tests before any fix; no production code changed in Explore.\n- STD-GOV-7: no customer identifiers, personal names or credentials in the package.\n\n## Non-blocking notes for the next stages\n1. Code excerpts: only flisr.py:42 is quoted verbatim; lines 44-59, 91-122, 141-151 and network.py:90-91 are paraphrased with file:line. The behavioural evidence (341/341, 1490 kW, 1489/1490 threshold, counterfactual B) independently establishes the mechanism, so this does not weaken the verdict, but Review should spot-check those ranges when it has codebase access.\n2. For Fix (STD-SAFETY-4): counterfactual B shows that adding ties to isolation is not sufficient; the restoration candidate set must exclude the faulted section's nodes (or the tie whose from_node/to_node is on the faulted section must be refused). The fail-safe direction is \"refuse the tie close\", not \"best-effort re-route\".\n3. The \"Expected\" column's \"TIE-1201-1405 kept open\" is a fix design choice, not evidence; it was not used in the judgement.\n4. `backend/app/flisr.py` is a protected, safety-critical path: two human reviewers (STD-GOV-6, STD-SAFETY-1).\n5. Invariant for STD-SAFETY-5 is already stated in the package: \"a de-energised fault section is never back-fed during restoration\"; the sweep C generator (random.Random(7), 500 cases) can be reused.\n"
+    },
+    "session_url": "https://devin-gtm.devinenterprise.com/sessions/f974b8a669de4f9686a59fb12732a86e"
+  }
+}
