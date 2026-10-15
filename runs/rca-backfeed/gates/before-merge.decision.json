@@ -1,0 +1,8 @@
+{
+  "decision": "approved",
+  "actor": "ops-lead-standin",
+  "actor_type": "User",
+  "reviewers": 2,
+  "at": "2026-10-15T23:43:15.398786+00:00",
+  "comment": "DRY RUN stand-in decision recorded by the parent Devin session on behalf of the two human reviewers of the protected path. Reviewed fixture PR #14 (fix + independent QA + operator doc; 38 tests, 500/600-case invariants, trace complete). Ready for human review/merge; the harness does not merge. Open item carried to the handoff: Devin Review finding on #14 (already-closed tie gets no open step) to be ticketed separately."
+}

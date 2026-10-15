@@ -14,7 +14,7 @@
     "gate:before-merge",
     "finish"
   ],
-  "cursor": 7,
+  "cursor": 8,
   "attempts": {
     "explore:-": 2,
     "evaluate:-": 0,
@@ -174,10 +174,12 @@
     "before-merge": {
       "ref": "/home/ubuntu/repos/agentic-sdlc-harness/runs/rca-backfeed/gates/before-merge.md",
       "opened": "2026-10-15T23:42:57Z",
-      "status": "waiting"
+      "status": "approved",
+      "actor": "ops-lead-standin",
+      "decided": "2026-10-15T23:43:15.398786+00:00"
     }
   },
-  "status": "running",
+  "status": "ready-to-merge",
   "story_points": 1.0,
   "prs": [
     "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13",
