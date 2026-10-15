@@ -1,0 +1,208 @@
+{
+  "session_id": "72e6564529214ab1a5061885bb28d14e",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/72e6564529214ab1a5061885bb28d14e",
+  "status": "waiting_for_user",
+  "devin_mode": "ultra",
+  "acus": 6.59675104031151,
+  "structured_output": {
+    "verdict": "PASS",
+    "model": "ultra",
+    "branch": "agent/rca-backfeed/qa",
+    "pr_url": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13",
+    "session_url": "https://devin-gtm.devinenterprise.com/sessions/72e6564529214ab1a5061885bb28d14e",
+    "standards_loaded": [
+      "STD-GOV",
+      "STD-QA",
+      "STD-SAFETY"
+    ],
+    "files_touched": [
+      "backend/tests/test_flisr_def_flisr_7_qa.py"
+    ],
+    "summary": "prepare: STD-GOV v1.1, STD-QA v1.3, STD-SAFETY v3.1 loaded; .agents/skills/safety-critical-change/SKILL.md and DEMO_NOTES.md read; unit agent/rca-backfeed/fix @ 20d2a30 (draft PR #13, label ai-generated) checked out; Coding's report treated as hypotheses, QA on model=ultra vs Coding model=normal. execute: re-ran console build (rc 0), ruff check backend (clean) and pytest backend -q (13 passed) myself; verified commit ordering against origin/main (932ccfb characterization 7 passed on unfixed code; 9863be7 reproduction 6 failed / 7 passed on unfixed code). Wrote an independent oracle (own BFS reachability, alternate-source-first pick-up, refuse-before-capacity, independent isolation set, live-node check energising every tie's alternate node, input-mutation check; tolerance 0 customers / 1e-6 kW) and 25 own vectors in backend/tests/test_flisr_def_flisr_7_qa.py on agent/rca-backfeed/qa @ 5fdd0fb: nominal drill-14 stand-in, capacity boundaries 0/1489/1490/1491/1e12 (refusal independent of capacity; healthy-tail gate unchanged at 1489 skip / 1490 close), missing input (None, {}, unrelated key -> refuse; healthy tail -> skip, never close), invalid input (NaN/inf/-1 cannot bypass the guard; FlisrError/KeyError/404/409 paths retained), review probe A1-A4, pick-up through a manual downstream switch, POST /flisr/plan, and a 600-case seeded sweep (seed 4242, radial+branched, 1-4 ties on any node incl. faulted endpoints, manual ties and switches, capacities 0/random/1e9/missing): 600/600 agree with the oracle, 0 back-fed, 416 cases exercised the refusal, 262 ties still closed. The same 25 tests give 18 failed / 7 passed on origin/main, so the oracle discriminates. Three failure modes: none introduced (diff is +11 additive lines in flisr.py only; pre-existing tie_capacity_kw.get(mrid, 0.0) is fail-safe in direction and unchanged). Coverage: 36 passing tests carry requirement('DEF-FLISR-7'). Governance: draft PR, ai-generated label, AI-Governance trailers on all commits, 0 reviews; two human reviewers still required for protected backend/app/flisr.py. verify: each loaded clause re-checked in artifacts.qa_report. deliver: PASS. Outside this unit, reported not fixed: (1) a manual upstream switch makes the lockout reclose energise the fault from the feeder source (125/415 plans in my sweep, matches Coding's follow-up) - needs its own DEF; (2) customers_remaining is a per-tie figure that can double-count healthy sections across refused ties (22/125 multi-refusal cases; pre-existing convention copied by the new branch); (3) platform-added Co-Authored-By trailer carries a personal name (STD-GOV-7), agent cannot change it. QA comment posted on PR #13.",
+    "evidence": [
+      {
+        "kind": "command",
+        "ref": "npm --prefix console ci --no-audit --no-fund && npm --prefix console run build",
+        "detail": "rc 0, built in 417ms; /home/ubuntu/evidence/qa_build.log (STD-QA-2)"
+      },
+      {
+        "kind": "command",
+        "ref": "ruff check backend",
+        "detail": "All checks passed! on 20d2a30 and again with the QA test file added; qa_lint.log, qa_lint_with_qa_tests.log (STD-QA-2)"
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend -q",
+        "detail": "13 passed on agent/rca-backfeed/fix @ 20d2a30; 38 passed on agent/rca-backfeed/qa @ 5fdd0fb; qa_pytest.log (STD-QA-2)"
+      },
+      {
+        "kind": "commit",
+        "ref": "932ccfb",
+        "detail": "backend/app identical to origin/main; 7 passed - characterization pinned before the fix (STD-SAFETY-2); qa_ordering.log"
+      },
+      {
+        "kind": "commit",
+        "ref": "9863be7",
+        "detail": "backend/app identical to origin/main; 6 failed / 7 passed - defect reproduced before the fix (STD-SAFETY-3); qa_ordering.log"
+      },
+      {
+        "kind": "commit",
+        "ref": "20d2a30",
+        "detail": "+11 additive lines in build_plan restoration loop (flisr.py:97-107), refuse-before-capacity; smallest fail-safe change, no re-routing (STD-SAFETY-4); characterization tests unchanged"
+      },
+      {
+        "kind": "file",
+        "ref": "backend/tests/test_flisr_def_flisr_7_qa.py",
+        "detail": "QA oracle + 25 own vectors (nominal, boundary, missing, invalid, probe, API, 600-case seeded) on agent/rca-backfeed/qa @ 5fdd0fb; all pass on the fix (STD-QA-3, STD-SAFETY-5)"
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7_qa.py::test_qa_def_flisr_7_seeded_plans_agree_with_oracle_and_never_back_feed",
+        "detail": "seed 4242, 600 feeders, ties on any node incl. faulted endpoints, manual switches/ties: 600/600 oracle agreement, 0 back-fed, 416 refusal cases, 262 closed ties; tolerance 0 customers / 1e-6 kW (STD-SAFETY-5, STD-SAFETY-6)"
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7_qa.py::test_qa_def_flisr_7_refusal_is_independent_of_tie_capacity",
+        "detail": "boundary vectors 0/1489/1490/1491/1e12 kW all refused (pre-fix threshold 1490) (STD-QA-3)"
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7_qa.py::test_qa_def_flisr_7_invalid_capacity_cannot_bypass_the_guard",
+        "detail": "NaN/inf/-1 capacity still refused; error paths (FlisrError, KeyError, 404, 409) retained (STD-QA-3, STD-QA-4 deleted-error-handling)"
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend/tests/test_flisr_def_flisr_7_qa.py (worktree at 932ccfb = origin/main app code)",
+        "detail": "18 failed / 7 passed: the QA oracle detects the defect on unfixed code; qa_tests_on_main.log (STD-QA-1)"
+      },
+      {
+        "kind": "command",
+        "ref": "pytest collection with requirement-marker plugin",
+        "detail": "DEF-FLISR-7: 36 tests reference it, all passing; only the 2 pre-existing test_flisr.py tests are unmarked; qa_requirement_coverage.log (STD-QA-6)"
+      },
+      {
+        "kind": "command",
+        "ref": "git diff origin/main...20d2a30",
+        "detail": "Only flisr.py (logic) + tests; models/network/api untouched; no removed except/raise; new code performs no default-to-zero (STD-QA-4)"
+      },
+      {
+        "kind": "command",
+        "ref": "gh api repos/tedfoley-cog/adms-test-automation-demo/pulls/13",
+        "detail": "draft=true, labels=[ai-generated], base=main, head=agent/rca-backfeed/fix, 0 reviews (STD-GOV-1, STD-GOV-2)"
+      },
+      {
+        "kind": "commit",
+        "ref": "5fdd0fb",
+        "detail": "QA commit on agent/rca-backfeed/qa with trailer AI-Governance: run=rca-backfeed stage=qa agent=devin model=ultra (STD-GOV-2)"
+      },
+      {
+        "kind": "url",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13#issuecomment-6204334428",
+        "detail": "QA verdict comment on the draft PR; no approval, no ready-for-review (STD-GOV-1)"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-GOV-6",
+        "detail": "backend/app/flisr.py is protected and safety-critical: two human reviewers required (also STD-SAFETY-1); QA did not approve or merge"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-SAFETY-7",
+        "detail": "QA oracle, generator and probes are T2 verification tools (could hide, cannot introduce a defect); no certification credit claimed"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-SAFETY-8",
+        "detail": "No production system, secret or field device accessed"
+      },
+      {
+        "kind": "note",
+        "ref": "follow-up defect (outside DEF-FLISR-7)",
+        "detail": "Manual upstream switch -> _isolation_switches returns only the downstream step and the lockout reclose energises the fault from the feeder source: 125/415 plans (seed 99 sweep, qa_adhoc_sweep.log), 0 via a tie. Confirms Coding's 55/412 finding; needs its own DEF and fail-safe fix"
+      },
+      {
+        "kind": "note",
+        "ref": "accounting convention (Sev 3, pre-existing)",
+        "detail": "customers_remaining adds each refused/skipped tie's healthy pick-up per tie: 22/125 multi-refusal cases double-count a healthy section (qa_adhoc_overlap.log); Q-REVIEW-2 constrains only the faulted section's customers, which are counted once"
+      },
+      {
+        "kind": "note",
+        "ref": "STD-GOV-7",
+        "detail": "Platform-added Co-Authored-By trailer with a personal name is on every agent commit including 5fdd0fb; agent cannot change its git identity"
+      },
+      {
+        "kind": "artifact",
+        "ref": "/home/ubuntu/evidence/qa_report.md",
+        "detail": "Full QA report (prepare/execute/verify/deliver)"
+      }
+    ],
+    "trace": [
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7_qa.py::test_qa_def_flisr_7_nominal_drill_14_stand_in"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7_qa.py::test_qa_def_flisr_7_refusal_is_independent_of_tie_capacity"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7_qa.py::test_qa_def_flisr_7_healthy_tail_capacity_boundary_unchanged"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7_qa.py::test_qa_def_flisr_7_missing_capacity_still_refuses_with_named_note"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7_qa.py::test_qa_def_flisr_7_invalid_capacity_cannot_bypass_the_guard"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7_qa.py::test_qa_def_flisr_7_error_paths_retained"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7_qa.py::test_qa_def_flisr_7_tie_on_any_faulted_endpoint_is_refused"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7_qa.py::test_qa_def_flisr_7_pick_up_through_non_scada_downstream_switch_is_refused"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7_qa.py::test_qa_def_flisr_7_api_plan_matches_direct_plan"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_def_flisr_7_qa.py::test_qa_def_flisr_7_seeded_plans_agree_with_oracle_and_never_back_feed"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "code",
+        "ref": "backend/app/flisr.py:97-107 (commit 20d2a30)"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13"
+      }
+    ],
+    "questions": [],
+    "artifacts": {
+      "qa_report": "# DEF-FLISR-7 \u2014 QA (run rca-backfeed, attempt 1)\n\n## Prepare\n- Standards loaded from the brief: STD-GOV v1.1, STD-QA v1.3, STD-SAFETY v3.1. All present and readable.\n- Instruction files read: `.agents/skills/safety-critical-change/SKILL.md`, `DEMO_NOTES.md`.\n- Unit under test: `agent/rca-backfeed/fix` @ 20d2a30 (draft PR #13), diff vs `origin/main`: `backend/app/flisr.py` (+11), `backend/tests/conftest.py`, `backend/tests/test_flisr_characterization.py`, `backend/tests/test_flisr_def_flisr_7.py`.\n- Coding's report was treated as hypotheses (STD-QA-1); QA ran on model=ultra, Coding on model=normal.\n\n## Verdict: PASS\n\n## Execute\n\n### 1. Build / lint / test re-run (STD-QA-2) \u2014 `/home/ubuntu/evidence/qa_*.log`\n| command | result |\n|---|---|\n| `npm --prefix console ci --no-audit --no-fund && npm --prefix console run build` | rc 0, `\u2713 built in 417ms` |\n| `ruff check backend` | `All checks passed!` (before and after adding the QA test file) |\n| `pytest backend -q` | 13 passed on the fix branch; 38 passed with the QA file added |\n\n### 2. Commit ordering (STD-SAFETY-2, STD-SAFETY-3) \u2014 `qa_ordering.log`\n- 932ccfb (characterization only; `backend/app` identical to `origin/main`): 7 passed.\n- 9863be7 (reproduction + invariant; `backend/app` identical to `origin/main`): 6 failed / 7 passed \u2014 the 6 DEF-FLISR-7 tests fail on the unfixed code, the 7 characterization/legacy tests pass.\n- 20d2a30 (fix): 13 passed; characterization tests unchanged by the fix commit.\n\n### 3. Independent oracle and vectors (STD-QA-3, STD-SAFETY-5/6) \u2014 `backend/tests/test_flisr_def_flisr_7_qa.py` on `agent/rca-backfeed/qa` @ 5fdd0fb\nOracle: reference model of the restoration contract written from the brief \u2014 own BFS over sections + closed switches, pick-up set computed from the alternate-source end (`reach(tie.to_node) \u2212 reach(source)`), refuse-before-capacity, faulted customers counted once (Q-REVIEW-2); isolation set re-derived independently; live-node check energises every tie's alternate node whether open or closed; `build_plan` must not mutate its input. Tolerance: 0 customers, 1e-6 kW (quantities are integer counts and sums of model kW, so agreement is exact).\n\n| vector class | vectors | result |\n|---|---|---|\n| nominal (drill-14 stand-in: SEC-1201-04, CB-1201, TIE-1201-1405 @ 2000 kW) | 1 | plan == expected dict; 0 restored / 341 remaining / 0 kW; tie held open with note naming tie + section |\n| boundary \u2014 refusal independent of capacity | 0, 1489, 1490, 1491, 1e12 kW | all refused (pre-fix threshold was 1490) |\n| boundary \u2014 unchanged capacity gate on healthy tail (SEC-1201-03) | 1489 \u2192 skip, 1490 \u2192 close, 1491 \u2192 close | matches `>` semantics, no \"held open\" note |\n| missing input | `None`, `{}`, unrelated key | refused with note; healthy-tail case with missing capacity is a *skip* (0 kW), never a close |\n| invalid input | NaN, +inf, \u22121 capacity | guard still refuses; lockout-closed \u2192 `FlisrError`; unknown switch \u2192 `KeyError`; no SCADA isolation \u2192 `FlisrError` |\n| non-SCADA tie | 1 | never a candidate, no note |\n| review probe A1\u2013A4 (extra TIE-X 5000 kW) | 4 | A1/A2/A3 refused (tie on either faulted endpoint); A4 control closes |\n| pick-up through manual downstream switch | 1 | TIE-1201-1405 refused for SEC-1201-03 fault with REC-1201-2 manual; 0 / 437 / 0 |\n| API `POST /flisr/plan` | 200 / 404 / 409 | JSON == direct plan; error statuses retained |\n| seeded invariant, seed 4242, 600 feeders (radial+branched, 1\u20134 ties on any node incl. BUS and faulted endpoints, 15 % manual ties, 20 % manual non-faulted switches, capacities 0 / random / 1e9 / missing) | 600 | 600/600 agree with oracle; 0 back-fed; 416 cases exercised the refusal (561 refused ties), 262 ties still closed (guard does not over-refuse) |\n\nDiscrimination check: the same 25 QA tests run against `origin/main` code give **18 failed / 7 passed** (`qa_tests_on_main.log`), so the oracle detects the defect and the 7 that pass are the behaviour the fix must preserve.\n\n### 4. Three failure modes (STD-QA-4) \u2014 read from `git diff origin/main...20d2a30`\n- Model/logic mixing: diff touches `backend/app/flisr.py` (logic) and tests only; `models.py`, `network.py`, `api.py` unchanged; layer map respected (logic \u2192 models only). None.\n- Deleted error handling: diff is purely additive (+11 lines); `FlisrError` raises at flisr.py:61/73 and the API 404/409 mapping are intact and re-tested. None.\n- Missing input treated as zero: the new guard runs before any capacity lookup and does not default anything. The pre-existing `tie_capacity_kw.get(switch.mrid, 0.0)` (flisr.py:109) and `tie_capacity_kw or {}` (flisr.py:70) do treat a missing capacity as 0 kW \u2014 this is unchanged by the fix and is fail-safe in direction (a missing capacity yields a skip, never a close; vector above). Noted, not a finding against this unit; the tie-capacity spec covers it.\n\n### 5. Requirement coverage (STD-QA-6) \u2014 `qa_requirement_coverage.log`\n`DEF-FLISR-7`: 36 collected tests carry `@pytest.mark.requirement(\"DEF-FLISR-7\")` (11 from Coding, 25 from QA), all passing. The 2 pre-existing tests in `test_flisr.py` are unmarked (they predate the marker). No `REQ-*` ids exist in the repo.\n\n### 6. Governance (STD-GOV-1/2/6)\n- Branch `agent/rca-backfeed/fix`; PR #13 is `draft: true`, label `ai-generated`, base `main`, 0 reviews, 0 requested reviewers.\n- Commits 932ccfb, 9863be7, 20d2a30 carry `AI-Governance: run=rca-backfeed stage=fix agent=devin model=normal`. QA commit 5fdd0fb carries `... stage=qa agent=devin model=ultra`.\n- `backend/app/flisr.py` is a protected, safety-critical path: two human reviewers required before merge (STD-GOV-6, STD-SAFETY-1). QA does not approve or mark ready.\n- STD-GOV-7: the platform appends `Co-Authored-By: <personal name> <email>` to every agent commit, including 5fdd0fb. The agent cannot change its git identity; carried forward as the same compliance note Review and Coding raised.\n\n## Verify (self-check against loaded clauses)\nSTD-QA-1 different mode + own start point \u2714; STD-QA-2 build/lint/test re-run with logs \u2714; STD-QA-3 independent oracle, boundary + invalid vectors, tolerance stated \u2714; STD-QA-4 three failure modes \u2714; STD-QA-5 no FAIL items; STD-QA-6 coverage \u2714; STD-QA-7 n/a (everything ran). STD-SAFETY-2/3/4 ordering verified from commits; STD-SAFETY-5 invariant over 600 seeded inputs with a wider generator than Coding's \u2714; STD-SAFETY-6 tolerance 0 customers / 1e-6 kW (integer counts and exact kW sums; no per-unit quantity exists in this planner) \u2714; STD-SAFETY-7 QA tests are T2 verification tools, no certification credit; STD-SAFETY-8 no production system touched. STD-GOV-1/2 \u2714; STD-GOV-7 note above.\n\n## Findings outside this unit (reported, not fixed)\n1. **Separate defect, confirmed independently (not DEF-FLISR-7):** when the faulted section's upstream switch is not SCADA-controllable, `_isolation_switches` returns only the downstream step and the lockout reclose re-energises the fault from the feeder source. My ad-hoc sweep (seed 99, ~50 % manual upstream switches): 125/415 plans energise the faulted section from the source; 0 via a tie (`qa_adhoc_sweep.log`). Matches Coding's 55/412 finding. Needs its own DEF and its own fail-safe fix (refuse the plan / manual action), like Q-REVIEW-1's precedent.\n2. **Accounting convention (Sev 3, pre-existing pattern):** `customers_remaining` adds each refused/skipped tie's healthy pick-up customers per tie, so two refused ties reaching the same healthy section count it twice (22/125 multi-refusal cases in my sweep, `qa_adhoc_overlap.log`); sections no tie can reach are not counted at all. The new refused branch copies the shipped skip branch's convention, which Q-REVIEW-2 constrains only for the faulted section's customers. Not a FAIL for this unit; a candidate for the tie-capacity spec work.\n3. Tool classification (STD-SAFETY-7): the QA oracle and generator are T2 (verification tools that could hide but not introduce a defect). No certification credit claimed.\n\n## Trace\n| requirement | kind | ref |\n|---|---|---|\n| DEF-FLISR-7 | test | backend/tests/test_flisr_def_flisr_7_qa.py (25 tests, branch agent/rca-backfeed/qa @ 5fdd0fb) |\n| DEF-FLISR-7 | code | backend/app/flisr.py:97-107 (20d2a30) |\n| DEF-FLISR-7 | pr | https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13 |\n",
+      "qa_branch": "agent/rca-backfeed/qa@5fdd0fb",
+      "pr_comment": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13#issuecomment-6204334428"
+    }
+  }
+}

@@ -339,7 +339,7 @@ Fail-safe means **refuse the tie** (STD-SAFETY-4). Do not re-route on a best-eff
     "build": {
       "cmd": "npm --prefix console ci --no-audit --no-fund && npm --prefix console run build",
       "returncode": 0,
-      "tail": "\nadded 68 packages in 589ms\n\n> qa-coverage-console@0.1.0 build\n> tsc -b && vite build\n\nvite v5.4.11 building for production...\ntransforming...\n\u2713 37 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                   0.43 kB \u2502 gzip:  0.29 kB\ndist/assets/index-BhRQqo7Z.css    5.29 kB \u2502 gzip:  1.63 kB\ndist/assets/index-DvMiGgeB.js   159.79 kB \u2502 gzip: 50.27 kB\n\u2713 built in 411ms\n"
+      "tail": "\nadded 68 packages in 592ms\n\n> qa-coverage-console@0.1.0 build\n> tsc -b && vite build\n\nvite v5.4.11 building for production...\ntransforming...\n\u2713 37 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                   0.43 kB \u2502 gzip:  0.29 kB\ndist/assets/index-BhRQqo7Z.css    5.29 kB \u2502 gzip:  1.63 kB\ndist/assets/index-DvMiGgeB.js   159.79 kB \u2502 gzip: 50.27 kB\n\u2713 built in 418ms\n"
     },
     "lint": {
       "cmd": "ruff check backend",
@@ -349,7 +349,7 @@ Fail-safe means **refuse the tie** (STD-SAFETY-4). Do not re-route on a best-eff
     "test": {
       "cmd": "pytest backend -q",
       "returncode": 0,
-      "tail": ".............                                                            [100%]\n=============================== warnings summary ===============================\ntests/test_flisr_def_flisr_7.py::test_def_flisr_7_post_flisr_plan_does_not_close_tie_onto_faulted_section\n  /home/ubuntu/.pyenv/versions/3.12.13/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n13 passed, 1 warning in 0.45s\n"
+      "tail": ".............                                                            [100%]\n=============================== warnings summary ===============================\ntests/test_flisr_def_flisr_7.py::test_def_flisr_7_post_flisr_plan_does_not_close_tie_onto_faulted_section\n  /home/ubuntu/.pyenv/versions/3.12.13/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n13 passed, 1 warning in 0.46s\n"
     }
   },
   "branch": "agent/rca-backfeed/fix",
