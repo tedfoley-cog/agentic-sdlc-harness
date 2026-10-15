@@ -17,7 +17,8 @@ jobs:
           harness check --diff tests/fixtures/bad_refactor.diff --brief-files backend/app/flisr.py > /tmp/check.json || true
           python -c "import json; r=json.load(open('/tmp/check.json')); assert any(x['verdict']=='FAIL' for x in r), r; print('checks fire as expected')"
       - name: audit replay of the committed worked examples
-        run: for d in runs/*/; do harness replay "$(basename "$d")" > /dev/null && echo "chain ok: $d"; done
+        run: |
+          for d in runs/*/; do harness replay "$(basename "$d")" > /dev/null && echo "chain ok $d"; done
   console:
     runs-on: ubuntu-latest
     steps:
