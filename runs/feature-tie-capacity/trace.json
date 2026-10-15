@@ -901,6 +901,30 @@
       "kind": "design",
       "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
       "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-9",
+      "kind": "design",
+      "ref": "design.md \u00a74 pseudocode L183-188, \u00a77 L327",
+      "stage": "architect"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-18",
+      "kind": "design",
+      "ref": "design.md \u00a74/\u00a77; spec amendment; resolved A-2",
+      "stage": "architect"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-21",
+      "kind": "design",
+      "ref": "design.md \u00a77; units.json U4",
+      "stage": "architect"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-22",
+      "kind": "design",
+      "ref": "design.md header, U1 base 20d2a30; resolved A-4.1",
+      "stage": "architect"
     }
   ],
   "coverage": {
@@ -1063,7 +1087,8 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` statement order; `TieBlockReason` order; test: planner: every combination of {invalid kw, future > 2 s, non-GOOD, stale, exceeded} vs `oracle_reason`",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-9: \u00a73 verdict statement order; TieBlockReason order",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row (amended Q-DESIGN-3), \u00a72 TieBlockReason, \u00a74 loop",
-          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+          "design.md \u00a74 pseudocode L183-188, \u00a77 L327"
         ],
         "code": [],
         "test": [],
@@ -1177,7 +1202,8 @@
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-18: \u00a74 tie loop accounting",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
           "design.md \u00a74, \u00a77 (A-2)",
-          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+          "design.md \u00a74/\u00a77; spec amendment; resolved A-2"
         ],
         "code": [],
         "test": [],
@@ -1221,7 +1247,8 @@
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-21: \u00a73 verdict + \u00a74 loop + L precondition; U4 invariant (open: Q-DESIGN-3)",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row (amended Q-DESIGN-2/3), \u00a79, \u00a76.1 U4",
           "design.md \u00a74, \u00a76.1, \u00a79; specification.md amended REQ-TIECAP-21 (A-3)",
-          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+          "design.md \u00a77; units.json U4"
         ],
         "code": [],
         "test": [],
@@ -1238,7 +1265,8 @@
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-22: unchanged isolation/restoration paths; U1 characterization",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row (amended Q-DESIGN-3), \u00a76.1 U1",
           "specification.md amended REQ-TIECAP-22; design.md \u00a76.1 (A-4)",
-          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6"
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
+          "design.md header, U1 base 20d2a30; resolved A-4.1"
         ],
         "code": [],
         "test": [],

@@ -1,0 +1,111 @@
+{
+  "session_id": "4dbf30e1800548d0aacf2715535ee078",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/4dbf30e1800548d0aacf2715535ee078",
+  "status": "waiting_for_user",
+  "devin_mode": "normal",
+  "acus": 2.4715498303064556,
+  "structured_output": {
+    "verdict": "VIOLATION",
+    "summary": "Architecture review attempt 3 of design attempt 5 (1238178): VIOLATION. A-2 and A-4 are resolved, and A-3 is resolved in the prose and units. Still open, A-5 (STD-ARCH-4, STD-GOV-3, STD-ARCH-6): the normative tie-loop pseudocode in design \u00a74 (lines 183-188), the \u00a77 REQ-TIECAP-9 row, \u00a79 Q-DESIGN-3 and \u00a710.1 O-2 put the DEF-FLISR-7 guard before the Q-DESIGN-2 section-load check. The \u00a74 table, the line-224 prose and units.json U3 say the opposite. Measured on base 20d2a30: a held tie with NaN or -120 load on SEC-1201-04 returns a plan instead of FlisrError. Also, the unamended scope notes in units.json U4 (neither assert nor exclude back-feed) and U3 (precedence without FAULTED_SECTION) contradict the amendments. The fix is a Design-stage change that keeps the design consistent with itself; no new question is needed. The design was not edited.",
+    "evidence": [
+      {
+        "kind": "file",
+        "ref": "docs/specs/feature-tie-capacity/design.md@1238178#L183-188",
+        "detail": "Pseudocode: the guard branch ends with 'continue  # before any load or capacity evaluation'; the section-load FlisrError check comes after it"
+      },
+      {
+        "kind": "file",
+        "ref": "docs/specs/feature-tie-capacity/design.md@1238178#L169,L224",
+        "detail": "Table and prose: the section-load check covers every candidate tie, held or not, before the guard"
+      },
+      {
+        "kind": "file",
+        "ref": "docs/specs/feature-tie-capacity/design.md@1238178#L327,L374,L389",
+        "detail": "\u00a77 REQ-TIECAP-9 'guard \u2192 section check \u2192 verdict'; \u00a79 and \u00a710.1 O-2 'guard ahead of load evaluation'"
+      },
+      {
+        "kind": "file",
+        "ref": "docs/specs/feature-tie-capacity/units.json@1238178 U4,U3",
+        "detail": "U4 'must neither assert nor exclude DEF-FLISR-7 back-feed' vs the amendment 'Held ties: FAULTED_SECTION'; U3 precedence INVALID>UNKNOWN>STALE>EXCEEDED vs the amended REQ-TIECAP-9"
+      },
+      {
+        "kind": "command",
+        "ref": "build_plan on 20d2a30, FDR-1201, CB-1201 open, fault SEC-1201-04, SEC-1201-04.load_kw in {NaN,-120}",
+        "detail": "Plan returned: restoration [CB-1201 close], customers_remaining 341, held-open note; no FlisrError"
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend -q (20d2a30)",
+        "detail": "13 passed, 1 warning"
+      },
+      {
+        "kind": "command",
+        "ref": "ruff check backend (20d2a30)",
+        "detail": "All checks passed!"
+      },
+      {
+        "kind": "command",
+        "ref": "prototype adding as_of/blocked_ties/deprecations to RestorationPlan on 20d2a30, reverted",
+        "detail": "Exactly 5 of 13 base tests fail, as design \u00a76.1 states"
+      },
+      {
+        "kind": "commit",
+        "ref": "e2339d5",
+        "detail": "architecture-review.md on agent/feature-tie-capacity/architect, AI-Governance trailer"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-ARCH-4",
+        "detail": "Same input stated with two behaviours"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-GOV-3",
+        "detail": "Pseudocode departs from the recorded Q-DESIGN-2 answer"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-ARCH-6",
+        "detail": "REQ-TIECAP-9 component mapping and U3/U4 unit scope notes are inconsistent"
+      }
+    ],
+    "trace": [
+      {
+        "requirement_id": "REQ-TIECAP-9",
+        "kind": "design",
+        "ref": "design.md \u00a74 pseudocode L183-188, \u00a77 L327"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-18",
+        "kind": "design",
+        "ref": "design.md \u00a74/\u00a77; spec amendment; resolved A-2"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "design",
+        "ref": "design.md \u00a77; units.json U4"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-22",
+        "kind": "design",
+        "ref": "design.md header, U1 base 20d2a30; resolved A-4.1"
+      }
+    ],
+    "branch": "agent/feature-tie-capacity/architect",
+    "model": "normal",
+    "session_url": "https://devin-gtm.devinenterprise.com/sessions/4dbf30e1800548d0aacf2715535ee078",
+    "files_touched": [
+      "docs/specs/feature-tie-capacity/architecture-review.md"
+    ],
+    "standards_loaded": [
+      "STD-ARCH",
+      "STD-SAFETY",
+      "STD-GOV"
+    ],
+    "artifacts": {
+      "review": "# Architecture review \u2014 FLISR restoration respects tie-switch capacity\n\nRun: `feature-tie-capacity` \u00b7 Stage: ARCHITECT \u00b7 Attempt: 3 \u00b7 Reviewed: `docs/specs/feature-tie-capacity/design.md`, `specification.md` amendments and `units.json` amendments @ `1238178` (design attempt 5, draft PR #15), against the declared base `agent/rca-backfeed/fix` @ `20d2a30` (PR #13) and `main` @ `5f6b471`\nStandards: STD-ARCH v2.0, STD-SAFETY v3.1, STD-GOV v1.1 \u00b7 Safety classification: **safety-critical**\nVerdict: **VIOLATION** (1 finding with two parts: A-5 STD-ARCH-4 / STD-GOV-3 / STD-ARCH-6). Attempt-2 findings A-2 and A-4 are resolved. A-3 is resolved in the prose and the units, but the normative loop pseudocode still has the carve-out (A-5). The design was not edited (STD-ARCH-7).\n\n## Prepare\n\n- Standards loaded from the brief: STD-ARCH (v2.0), STD-SAFETY (v3.1), STD-GOV (v1.1).\n- Repo instructions read: `.agents/skills/safety-critical-change/SKILL.md`, `DEMO_NOTES.md`.\n- Layer map (brief): `ui \u2192 api \u2192 logic \u2192 models`. logic = `flisr.py`, `state_estimator.py`, `agc.py`, `network.py`, `savecase.py`; models = `models.py`; api = `api.py`.\n- Baseline re-run this attempt on a worktree of `20d2a30`: `pytest backend -q` \u2192 **13 passed**, `ruff check backend` \u2192 all checks passed.\n\n## Attempt-2 items\n\n| Item | Status | Evidence |\n|---|---|---|\n| A-2 (STD-ARCH-6) | **Resolved** | REQ-TIECAP-18 amended in `specification.md` @ 1238178 (capacity-blocked: all candidate sections; FAULTED_SECTION: candidate sections other than the faulted one). This matches `flisr.py` @ 20d2a30 guard accounting (`section.mrid != faulted_section.mrid`). Measured: fault on `SEC-1201-04`, `customers_remaining` = 341. Design \u00a74 row, \u00a77 row and U3/U4 notes are consistent with it. |\n| A-3 (STD-GOV-3, STD-ARCH-4) | **Partly resolved, see A-5** | The header, the \u00a74 input table (line 169), the \u00a74 \"Integration with DEF-FLISR-7\" paragraph (line 224), \u00a76.3 (`oracle_sections_ok` checked before `oracle_held`), \u00a78, \u00a79, \u00a710.2 and `units.json` U3/U4 now apply Q-DESIGN-2 to every candidate tie, before the guard. REQ-TIECAP-21 now has only the Q-DESIGN-3 amendment, as Q-DESIGN-2 directs. |\n| A-4.1 (STD-SAFETY-2) | **Resolved** | Base named by SHA `20d2a303c9548f9f7170cb3dfef1487fb7e9a009` in the design header, REQ-TIECAP-22 and U1, with a base-drift STOP. PR #14's QA file is excluded. \"5 of 13\" re-measured: adding `as_of`, `blocked_ties` and `deprecations` to `RestorationPlan` on 20d2a30 fails exactly the 5 tests the design names (\u00a76.1). |\n| A-4.2 (STD-ARCH-6) | **Resolved** except U4, see A-5(b) | `units.json` @ 1238178: U1 base, U2 enum of 5 members, U3 files +2 base test files and +REQ-TIECAP-11, U3 loop-order note, U4 held-tie note. |\n| O-B (STD-ARCH-4) | Resolved | \u00a74 row for a non-datetime `as_of`. |\n| O-C (STD-GOV-7) | Open (platform) | see Observations. |\n| O-D (REQ-TIECAP-12) | Accepted | PR #13 note text unchanged; code in `blocked_ties`. |\n\n## Finding (VIOLATION)\n\n### A-5 \u2014 STD-ARCH-4, STD-GOV-3, STD-ARCH-6: the normative tie-loop pseudocode still exempts held ties from the Q-DESIGN-2 check\n\n**(a) design.md.** Attempt 5 says the tie-loop order is \"empty-candidate skip \u2192 section-load precondition (every candidate tie) \u2192 DEF-FLISR-7 guard \u2192 L precondition \u2192 `tie_capacity_verdict`\". This appears in the \u00a74 paragraph (line 224), in the \u00a74 table (line 169, \"held or not, checked before the guard\") and in units.json U3. Other parts of the design still give the old order:\n\n- **\u00a74 \"Tie loop\" pseudocode (lines 183\u2013188).** The loop that \"replaces `flisr.py:92-121`\" runs the guard first and ends its branch with `continue  # before any load or capacity evaluation`. The `for sec in sections \u2026: raise FlisrError` check comes after that `continue`. Implemented as written, a held tie's pick-up sections are never checked, which is exactly the attempt-4 carve-out that A-3 rejected.\n- **\u00a77 row REQ-TIECAP-9 (line 327)**: \"loop order: guard \u2192 section check \u2192 `tie_capacity_verdict`\".\n- **\u00a79 Q-DESIGN-3 (line 374)**: \"The guard runs before load and capacity evaluation\". **\u00a710.1 O-2 (line 389)**: \"first in the loop and ahead of load and capacity evaluation\".\n\nMeasured on the base @ 20d2a30, where the guard runs first and no load check exists, so this is the outcome the pseudocode keeps for a held tie. Setup: shipped `FDR-1201`, `CB-1201` open, fault indications on SEC-1201-01..03, so the fault is on `SEC-1201-04`; `TIE-1201-1405` = 2000 kW. With `SEC-1201-04.load_kw` = NaN, and again with \u2212120.0, a plan **is returned**: restoration `[CB-1201 close]`, `customers_remaining` 341, the held-open note. Q-DESIGN-2 as written, and the design's own \u00a74 table, require `FlisrError` with no plan.\n\nThe design states two different behaviours for the same input, so STD-ARCH-4 is not met: the stated behaviour must be the one that governs. The pseudocode is the part Coding implements, and it departs from the recorded human answer, which STD-GOV-3 forbids. The independent oracle (\u00a76.3) uses the prose order, so QA would probably catch the difference. But the design is the contract and must not depend on QA to settle its own contradiction.\n\n**(b) units.json U4.** The original U4 scope note was not amended: \"The invariant is about capacity gating only; it must neither assert nor exclude DEF-FLISR-7 back-feed (spec section 3)\". The amendment added next to it says \"Held ties: FAULTED_SECTION whatever the capacity \u2026\", and design \u00a77 REQ-TIECAP-21 says \"no close step unless the tie is not held\". So U4 now asserts the DEF-FLISR-7 hold, and its two scope notes contradict each other. The same applies to U3's unamended note \"per-tie usability with precedence INVALID > UNKNOWN > STALE > EXCEEDED\", which conflicts with the amended REQ-TIECAP-9 (FAULTED_SECTION first). The amended note is right next to it, so this one matters less. These are the unit-boundary consistency points A-4.2 asked for (STD-ARCH-6: requirement \u2192 component \u2192 test must agree).\n\n**Resolution (Design stage; no new scope, no new question):**\n\n1. Reorder the \u00a74 pseudocode to match line 224: the section-load check for each candidate tie comes before the guard branch.\n2. Make \u00a77 REQ-TIECAP-9, \u00a79 and \u00a710.1 O-2 consistent with that order. Note that the guard still comes before L and capacity, but after the section-load check.\n3. Mark the stale U4 and U3 scope notes in `units.json` as superseded, using the same `[Design attempt N amendment]` convention.\n\n## Clause-by-clause check\n\n| Clause | Result | Evidence |\n|---|---|---|\n| STD-ARCH-1 | Conforms | Constants, `IsoAwareDatetime`, `TieCapacity`, `TieBlockReason` (5), `BlockedTie` and the `RestorationPlan` fields are in `models.py` (\u00a72). Decisions are in `flisr.py` (\u00a73\u20134). `_require_iso_string` is a type parser (O-1). `FlisrRequest` is an API DTO (O-A). |\n| STD-ARCH-2 | Conforms under the scoped waiver | One production characteristic, `tie_capacity_verdict`, and one predicate, `_not_finite_nonneg`. Parameters come only from `models.py`, enforced by P1/P2. The oracle restatement is waived per Q-DESIGN-1 and limited to three `backend/tests` files (\u00a76.3). FAULTED_SECTION is not a verdict output. |\n| STD-ARCH-3 | Conforms | `models` imports pydantic/stdlib only, `flisr` imports `.models` and `.network`, `api` imports `.flisr`, `.models` and `.network`. This matches the imports in `flisr.py`/`api.py` @ 20d2a30. No upward import. |\n| STD-ARCH-4 | **VIOLATION (A-5a)** | The same input (a held tie with an invalid pick-up load) is stated two ways: \u00a74 table/line 224 say `FlisrError`, the \u00a74 pseudocode says plan returned. Every other row is stated. |\n| STD-ARCH-5 | Conforms | \u00a74 removed-guard table. The PR #13 guard is kept byte-for-byte, and its branch only adds a `blocked_ties.append`. |\n| STD-ARCH-6 | **VIOLATION (A-5a \u00a77 row, A-5b units)** | All REQ-TIECAP-1..23 are mapped in \u00a77 (checked id by id). The REQ-TIECAP-9 component mapping gives the wrong order, and U4/U3 carry contradictory scope notes. |\n| STD-ARCH-7 | Conforms | Review only. `design.md`, `specification.md` and `units.json` on this branch are byte-identical to `1238178` (`git diff 1238178` empty for the three files). |\n| STD-ARCH-8 | Conforms | No IEC 61850 LN/DO exposure. |\n| STD-SAFETY-1 | Conforms | Safety-critical. Protected `backend/app/flisr.py` needs two human reviewers (header, U1\u2013U4). |\n| STD-SAFETY-2 | Conforms | The characterization base is pinned by SHA with a drift STOP. The \u00a76.1 edit rule for the 5 affected base tests keeps every step and count unchanged. |\n| STD-SAFETY-3 | Conforms | U1 reproductions re-measured on 20d2a30, shipped model, `CB-1201` open, fault on SEC-1201-03. No entry: tie skipped with no machine-readable reason. Legacy NaN and +inf: `TIE-1201-1405` **closed**, `customers_restored` 341. Both fail as `xfail(strict=True)` intends. |\n| STD-SAFETY-4 | Conforms in the prose; at risk through A-5a | Fail-safe preconditions and per-tie blocking. A held tie with an invalid load must refuse the plan, as Q-DESIGN-2 requires. |\n| STD-SAFETY-5 | Conforms | U4 has \u2265 500 seeded cases, with \u2265 5 % each of out-of-range L, a negative section inside a positive total, and held ties. Seed and count are printed. |\n| STD-SAFETY-6 | Conforms (per-unit waived by Q-SPEC-4) | Independent `oracle_*` (\u00a76.3), O1 import/constant check, boundaries in \u00a76.2, 0.5 kW in engineering units. |\n| STD-SAFETY-7 | Conforms | \u00a78.1 tool-classification argument. No credit claimed. |\n| STD-SAFETY-8 | Conforms | Local worktrees and synthetic model copies only. |\n| STD-GOV-1/2 | Conforms | `agent/feature-tie-capacity/design`, draft PR #15. Commit `1238178` has the `AI-Governance` trailer. |\n| STD-GOV-3 | **VIOLATION (A-5a)** | The pseudocode departs from the recorded Q-DESIGN-2 answer. |\n| STD-GOV-6 | Conforms | Two human reviewers for the protected path. |\n| STD-GOV-7 | Note (O-C) | |\n\n## Observations (no verdict impact)\n\n- **O-C (STD-GOV-7).** The platform appends a `Co-Authored-By` trailer with a personal name and e-mail to agent commits (design `1238178` and this review's commits). The agent cannot change the commit identity. Carried forward as a compliance note.\n- **O-E (blast radius).** Applying Q-DESIGN-2 before the guard means a fault whose held tie's pick-up set (faulted section included) has an invalid load now returns 409 and no plan, where PR #13 returns isolation steps. The design states this blast radius (\u00a74), and reviewers should confirm it. It follows from the recorded answer, so it is not a finding.\n\n## Verify\n\n- Every finding cites a clause and a measured or quoted source (line numbers in `design.md` @ 1238178, scope notes in `units.json` @ 1238178, plans measured on 20d2a30). None asks for scope outside the specification. The resolution only aligns the design with its own stated order and with Q-DESIGN-2. The Architect makes no design choice.\n- No production or test code changed. Base re-run: `pytest backend -q` 13 passed, `ruff check backend` all checks passed (20d2a30). The prototype edit used to re-measure \"5 of 13\" was reverted in a throw-away worktree.\n",
+      "commit": "e2339d55c16a753af5259d441bbc849013a02eb6",
+      "reviewed_design_commit": "1238178"
+    }
+  }
+}
