@@ -439,6 +439,18 @@
       "kind": "design",
       "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `api.server_now`, `_check_as_of_bound` (`models.AS_OF_MAX_LAG` / `AS_OF_MAX_LEAD`), `IsoAwareDatetime`; test: API with overridden clock: \u00a76.2 bounds vs `oracle_as_of_ok`, naive, `\"yesterday\"`, `1790000000` \u2192 422, planner not called; O1, P1, P2",
       "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-3",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/architecture-review.md#a-1",
+      "stage": "architect"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-21",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/architecture-review.md#a-1",
+      "stage": "architect"
     }
   ],
   "coverage": {
@@ -522,7 +534,8 @@
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U3",
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.tie_capacity_verdict close branch",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `flisr.tie_capacity_verdict` (close branch); constants `models.TIE_CAPACITY_TOLERANCE_KW`; test: planner boundaries \u00a76.2 vs independent `oracle_reason` / `oracle_candidate_nodes` / `oracle_load_kw` (\u00a76.3); O1, P1, P2"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `flisr.tie_capacity_verdict` (close branch); constants `models.TIE_CAPACITY_TOLERANCE_KW`; test: planner boundaries \u00a76.2 vs independent `oracle_reason` / `oracle_candidate_nodes` / `oracle_load_kw` (\u00a76.3); O1, P1, P2",
+          "docs/specs/feature-tie-capacity/architecture-review.md#a-1"
         ],
         "code": [],
         "test": [],
@@ -687,7 +700,8 @@
         "design": [
           "docs/specs/feature-tie-capacity/units.json#U4",
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 tie_capacity_verdict + tie loop; U4 invariant",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` + tie loop; test: U4 invariant \u2265 500 seeded cases, generator places ties at any node (not tail-only); oracle restated in the invariant file (\u00a76.3 waiver), O1"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` + tie loop; test: U4 invariant \u2265 500 seeded cases, generator places ties at any node (not tail-only); oracle restated in the invariant file (\u00a76.3 waiver), O1",
+          "docs/specs/feature-tie-capacity/architecture-review.md#a-1"
         ],
         "code": [],
         "test": [],
