@@ -601,6 +601,21 @@ class Orchestrator:
         return {n: self.state["artifacts"][n] for n in names if n in self.state["artifacts"]}
 
     # ------------------------------------------------------------------ human actions
+    def extend_loop(self, loop: str, rounds: int, actor: str, reason: str) -> None:
+        """A human extends a bounded loop that escalated (NEEDS-HUMAN). Recorded with the actor; the run can
+        then resume into the next round with the escalation feedback attached. Agents cannot call this."""
+        import yaml
+
+        if loop not in self.cfg.loops:
+            raise KeyError(loop)
+        self.cfg.loops[loop] += int(rounds)
+        self.cfg.raw.setdefault("loops", {})[loop] = self.cfg.loops[loop]
+        (self.run_dir / "harness.yaml").write_text(yaml.safe_dump(self.cfg.raw, sort_keys=False))
+        self.log.append("loop.extended", loop=loop, rounds=int(rounds), new_limit=self.cfg.loops[loop],
+                        actor=actor, actor_type="User", reason=reason)
+        self.state["paused_on"] = None
+        self._save()
+
     def answer(self, question_id: str, answer: str, actor: str) -> None:
         for q in self.state["questions"]:
             if q["id"] == question_id:

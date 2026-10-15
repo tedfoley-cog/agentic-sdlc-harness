@@ -727,6 +727,42 @@
       "kind": "design",
       "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row",
       "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-18",
+      "kind": "design",
+      "ref": "design.md \u00a74, \u00a77 (A-2)",
+      "stage": "architect"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-21",
+      "kind": "design",
+      "ref": "design.md \u00a74, \u00a76.1, \u00a79; specification.md amended REQ-TIECAP-21 (A-3)",
+      "stage": "architect"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-22",
+      "kind": "design",
+      "ref": "specification.md amended REQ-TIECAP-22; design.md \u00a76.1 (A-4)",
+      "stage": "architect"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-11",
+      "kind": "design",
+      "ref": "units.json U2 vs design.md \u00a72 (A-4.2)",
+      "stage": "architect"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-3",
+      "kind": "design",
+      "ref": "design.md \u00a73 tie_capacity_verdict (A-1 resolved)",
+      "stage": "architect"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-21",
+      "kind": "doc",
+      "ref": "docs/specs/feature-tie-capacity/architecture-review.md@b897964",
+      "stage": "architect"
     }
   ],
   "coverage": {
@@ -825,7 +861,8 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `flisr.tie_capacity_verdict` (close branch); constants `models.TIE_CAPACITY_TOLERANCE_KW`; test: planner boundaries \u00a76.2 vs independent `oracle_reason` / `oracle_candidate_nodes` / `oracle_load_kw` (\u00a76.3); O1, P1, P2",
           "docs/specs/feature-tie-capacity/architecture-review.md#a-1",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-3: \u00a73 tie_capacity_verdict close branch + L precondition; \u00a74 FlisrError on out-of-range L",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row, \u00a73, \u00a74 section-load precondition (Q-DESIGN-2)"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row, \u00a73, \u00a74 section-load precondition (Q-DESIGN-2)",
+          "design.md \u00a73 tie_capacity_verdict (A-1 resolved)"
         ],
         "code": [],
         "test": [],
@@ -903,7 +940,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 models.BlockedTie, TieBlockReason, RestorationPlan.blocked_ties",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `models.BlockedTie`, `TieBlockReason`, `RestorationPlan.blocked_ties`; test: U2 schema test; planner content and order",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-11: \u00a72 BlockedTie, TieBlockReason, RestorationPlan.blocked_ties",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row (amended Q-DESIGN-3), \u00a72 TieBlockReason"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row (amended Q-DESIGN-3), \u00a72 TieBlockReason",
+          "units.json U2 vs design.md \u00a72 (A-4.2)"
         ],
         "code": [],
         "test": [],
@@ -981,7 +1019,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 flisr.build_plan tie-loop accounting",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: tie loop accounting; test: planner vs oracle sums",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-18: \u00a74 tie loop accounting",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row",
+          "design.md \u00a74, \u00a77 (A-2)"
         ],
         "code": [],
         "test": [],
@@ -1021,12 +1060,15 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: `tie_capacity_verdict` + tie loop; test: U4 invariant \u2265 500 seeded cases, generator places ties at any node (not tail-only); oracle restated in the invariant file (\u00a76.3 waiver), O1",
           "docs/specs/feature-tie-capacity/architecture-review.md#a-1",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-21: \u00a73 verdict + \u00a74 loop + L precondition; U4 invariant (open: Q-DESIGN-3)",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row (amended Q-DESIGN-2/3), \u00a79, \u00a76.1 U4"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row (amended Q-DESIGN-2/3), \u00a79, \u00a76.1 U4",
+          "design.md \u00a74, \u00a76.1, \u00a79; specification.md amended REQ-TIECAP-21 (A-3)"
         ],
         "code": [],
         "test": [],
         "pr": [],
-        "doc": []
+        "doc": [
+          "docs/specs/feature-tie-capacity/architecture-review.md@b897964"
+        ]
       },
       "REQ-TIECAP-22": {
         "design": [
@@ -1034,7 +1076,8 @@
           "docs/specs/feature-tie-capacity/design.md@agent/feature-tie-capacity/design#7 unchanged isolation/restoration paths; U1 characterization",
           "docs/specs/feature-tie-capacity/design.md \u00a77 \u2014 component: unchanged isolation/restoration code paths; test: U1 characterization pinned on `main` @ 5f6b471",
           "docs/specs/feature-tie-capacity/design.md@43ccfa2 \u00a77 row REQ-TIECAP-22: unchanged isolation/restoration paths; U1 characterization",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row (amended Q-DESIGN-3), \u00a76.1 U1"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row (amended Q-DESIGN-3), \u00a76.1 U1",
+          "specification.md amended REQ-TIECAP-22; design.md \u00a76.1 (A-4)"
         ],
         "code": [],
         "test": [],
