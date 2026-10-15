@@ -1,0 +1,8 @@
+{
+  "decision": "approved",
+  "actor": "protection-reviewer-standin",
+  "actor_type": "User",
+  "reviewers": 2,
+  "at": "2026-10-15T23:02:42.735886+00:00",
+  "comment": "DRY RUN stand-in decision recorded by the parent Devin session on behalf of the protection reviewer. Root cause (build_plan never excludes a tie whose pick-up set contains a faulted-section node) confirmed by evidence-only Evaluate and by Review's 500-case probe (194/194 vs 0/306). Fix shape approved: refuse the tie (fail-safe), characterise first, invariant over >=500 seeded feeders, Sev 0, two human reviewers on backend/app/flisr.py."
+}
