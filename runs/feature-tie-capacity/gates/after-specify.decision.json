@@ -1,0 +1,8 @@
+{
+  "decision": "approved",
+  "actor": "ops-lead-standin",
+  "actor_type": "User",
+  "reviewers": 2,
+  "at": "2026-10-15T23:01:26.983000+00:00",
+  "comment": "DRY RUN stand-in decision recorded by the parent Devin session on behalf of the ops lead. Reviewed docs/specs/feature-tie-capacity/specification.md @ d2fce1e (REQ-TIECAP-1..23): no implicit zero, per-tie blocked_ties with reasons, strict timestamps. Approved to proceed to Decompose/Design."
+}
