@@ -10,7 +10,8 @@ def test_runlog_is_append_only_and_tamper_evident(tmp_path):
     log.append("gate.decided", gate="after-specify", decision="approved", actor="alice", actor_type="User")
     assert log.verify_chain() == (True, "chain intact")
     lines = (tmp_path / "runlog.jsonl").read_text().splitlines()
-    rec = json.loads(lines[1]); rec["actor"] = "devin-bot"
+    rec = json.loads(lines[1])
+    rec["actor"] = "devin-bot"
     lines[1] = json.dumps(rec, sort_keys=True)
     (tmp_path / "runlog.jsonl").write_text("\n".join(lines) + "\n")
     ok, msg = RunLog(tmp_path / "runlog.jsonl").verify_chain()

@@ -2,13 +2,13 @@ import json
 from pathlib import Path
 
 import pytest
-from conftest import verdict
 
 from agentic_sdlc.config import ConfigError, HarnessConfig
 from agentic_sdlc.gates import FileGate
 from agentic_sdlc.orchestrator import Orchestrator
 from agentic_sdlc.sessions import FakeBackend
 from agentic_sdlc.standards import MarkdownStandardsStore
+from conftest import verdict
 
 REQ = "REQ-FLISR-001 The plan shall refuse when tie capacity is unknown.\nREQ-FLISR-002 Tie switches shall be considered."
 
