@@ -194,6 +194,12 @@
       "kind": "pr",
       "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13",
       "stage": "qa"
+    },
+    {
+      "requirement_id": "DEF-FLISR-7",
+      "kind": "pr",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/14",
+      "stage": "integrate"
     }
   ],
   "coverage": {
@@ -244,7 +250,8 @@
         ],
         "pr": [
           "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13",
-          "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13"
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/14"
         ],
         "doc": []
       }

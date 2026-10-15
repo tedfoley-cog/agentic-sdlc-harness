@@ -1,0 +1,172 @@
+{
+  "session_id": "39f92269baa549f1bbab2a9853d49efa",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/39f92269baa549f1bbab2a9853d49efa",
+  "status": "waiting_for_user",
+  "devin_mode": "normal",
+  "acus": 2.9341191429172455,
+  "structured_output": {
+    "verdict": "PASS",
+    "model": "normal",
+    "summary": "I combined the DEF-FLISR-7 fix and QA units into `agent/rca-backfeed/integration` (5fdd0fb, on the current main) and opened draft PR #14 with the ai-generated label, the requirement id, a summary of each unit, the evidence and the trace table. Build, `ruff check backend` and `pytest backend -q` (38 passed) are green. I then marked the PR ready for review as the last agent action; it is not merged. CI `backend` fails only on the UP017 error in tools/ that is already on main and accepted under Q-EXPLORE-4. #13 is marked as superseded by #14. Devin Review found 3 bugs, all marked needs_human. One is new and confirmed: an already-closed tie that would back-feed the fault gets no open step. A human should decide whether it goes back to Fix or gets its own ticket.",
+    "branch": "agent/rca-backfeed/integration",
+    "pr_url": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/14",
+    "session_url": "https://devin-gtm.devinenterprise.com/sessions/39f92269baa549f1bbab2a9853d49efa",
+    "standards_loaded": [
+      "STD-GOV",
+      "STD-SAFETY"
+    ],
+    "files_touched": [],
+    "trace": [
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/14"
+      }
+    ],
+    "evidence": [
+      {
+        "kind": "standard",
+        "ref": "STD-GOV-1",
+        "detail": "Branch prefix agent/; PR opened as a draft, then marked ready for review as the last action; not merged or approved."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-GOV-2",
+        "detail": "All 4 commits carry an AI-Governance trailer (stage=fix x3, stage=qa x1). PR #14 has the ai-generated label; its body has the requirement id, evidence and trace table."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-GOV-6",
+        "detail": "The protected path backend/app/flisr.py needs two human reviewers. This is stated in the PR; no reviewers were requested by the agent."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-GOV-7",
+        "detail": "No customer identifiers or credentials in the PR body. The platform's Co-Authored-By trailer (personal name) is flagged for a human."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-SAFETY-1",
+        "detail": "Safety-critical change: two human reviewers required before merge."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-SAFETY-2",
+        "detail": "5 characterization tests (commit 932ccfb) were committed before the fix and still pass on the integrated branch."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-SAFETY-3",
+        "detail": "Failing reproductions (9863be7) precede the fix (20d2a30)."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-SAFETY-5",
+        "detail": "500-case (fix) and 600-case (QA) seeded invariants pass on the integrated branch."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-SAFETY-7",
+        "detail": "T2 tool classification argument carried into the PR body."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-SAFETY-8",
+        "detail": "No production systems or field devices were accessed."
+      },
+      {
+        "kind": "command",
+        "ref": "git merge --no-edit origin/agent/rca-backfeed/fix (on integration branch from qa)",
+        "detail": "Already up to date; origin/main is an ancestor (no rebase needed)."
+      },
+      {
+        "kind": "command",
+        "ref": "npm --prefix console ci --no-audit --no-fund && npm --prefix console run build",
+        "detail": "built in 642ms"
+      },
+      {
+        "kind": "command",
+        "ref": "ruff check backend",
+        "detail": "All checks passed (ruff 0.17.0)"
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend -q",
+        "detail": "38 passed"
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend --cov=app.flisr --cov-branch",
+        "detail": "backend/app/flisr.py 95%"
+      },
+      {
+        "kind": "command",
+        "ref": "make -C firmware test",
+        "detail": "fault_detect: 2 cases, 0 failed"
+      },
+      {
+        "kind": "command",
+        "ref": "ruff check backend tools",
+        "detail": "1 error: UP017 tools/build_coverage_report.py:183. The line is identical on origin/main; accepted exception per Q-EXPLORE-4."
+      },
+      {
+        "kind": "url",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/actions/runs/37009402146",
+        "detail": "Last main CI run (5f6b471) succeeded, before ruff 0.17.1. PR #14 CI: ui and native pass; backend fails only on the UP017 line in tools/. #13 fails the same way."
+      },
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/14",
+        "detail": "Verified with gh api: draft=true + ai-generated label before marking ready; afterwards draft=false, state open, merged=false, requested_reviewers=[]."
+      },
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13#issuecomment-6204406403",
+        "detail": "Comment marking #13 as superseded by #14; #13 stays an open draft for a human to close."
+      },
+      {
+        "kind": "commit",
+        "ref": "932ccfb",
+        "detail": "Characterization tests (stage=fix)"
+      },
+      {
+        "kind": "commit",
+        "ref": "9863be7",
+        "detail": "Failing reproduction plus invariant (stage=fix)"
+      },
+      {
+        "kind": "commit",
+        "ref": "20d2a30",
+        "detail": "Fix: guard in the restoration loop (stage=fix)"
+      },
+      {
+        "kind": "commit",
+        "ref": "5fdd0fb",
+        "detail": "Independent QA oracle and vectors (stage=qa)"
+      },
+      {
+        "kind": "file",
+        "ref": ".agents/skills/safety-critical-change/SKILL.md",
+        "detail": "Repo instruction file read in the prepare phase."
+      },
+      {
+        "kind": "file",
+        "ref": "DEMO_NOTES.md",
+        "detail": "Repo instruction file read in the prepare phase."
+      },
+      {
+        "kind": "note",
+        "ref": "trace-matrix stale refs",
+        "detail": "test_def_flisr_7_post_flisr_plan_closes_tie_onto_faulted_section (explore name, renamed in the fix unit) and backend/tests/rca_def_flisr_7_review_probe.py (review branch only) are not in the integrated tree. Flagged in the PR; DEF-FLISR-7 coverage remains."
+      },
+      {
+        "kind": "note",
+        "ref": "Devin Review pr-review-job-ad94d92d090346acb1f0cae225e4a016 @ 5fdd0fb",
+        "detail": "3 bug findings, all triaged needs_human; no code changed, because integrate may not change behaviour and flisr.py is a protected path. (1) An already-closed SCADA tie whose pick-up set reaches the faulted section is refused, but no 'open' step is emitted and the note says 'held open'. Confirmed at flisr.py:97-107; this is new and needs its own ticket or a fix-loop decision. (2) Lockout reclose with a manual upstream switch: already a known out-of-scope finding in the PR body. (3) customers_remaining double-counted across overlapping refused ties: already a known out-of-scope finding in the PR body."
+      }
+    ],
+    "artifacts": {
+      "integrate": "# DEF-FLISR-7 \u2014 Integrate (run rca-backfeed, attempt 1)\n\n## Prepare\nI loaded both governing standards from the brief: STD-GOV v1.1 (clauses 1\u20137) and STD-SAFETY v3.1 (clauses 1\u20138). I also read the two repo instruction files, `.agents/skills/safety-critical-change/SKILL.md` and `DEMO_NOTES.md`.\n\n## Execute\n**Units, in dependency order.**\n- Fix unit: `agent/rca-backfeed/fix` (commits 932ccfb, 9863be7, 20d2a30).\n- QA unit: `agent/rca-backfeed/qa` (commit 5fdd0fb, whose parent is 20d2a30).\n\nThe fix unit is an ancestor of the QA unit.\n\n**Integration branch.** I created `agent/rca-backfeed/integration` from `origin/agent/rca-backfeed/qa` and then ran `git merge origin/agent/rca-backfeed/fix`, which reported \"Already up to date\". The branch is based on the current `origin/main` (5f6b471), so no rebase was needed. There were no conflicts and the integrate stage added no commits.\n\n**Branches not merged.** The explore and review branches are diagnostic stage branches, not units that passed QA:\n- `rca_*.py` are scripts, not collected tests.\n- Explore's `test_flisr_def_flisr_7.py` conflicts with the fix unit's file of the same name, which supersedes it.\n\n**PR.** Draft PR #14 was opened against `main` with the `ai-generated` label. Its body contains:\n- the requirement id DEF-FLISR-7\n- a summary of each unit\n- the fix pseudocode\n- the evidence table\n- the blast radius\n- the trace table copied verbatim from the brief, with stale references flagged\n- out-of-scope findings\n- governance notes\n\n**Fix-stage PR.** I commented on #13 that it is superseded by #14. It is left open as a draft for a human to close.\n\n**Ready for review.** I marked #14 ready for review as the last agent action. I requested no reviewers and did not merge.\n\n## Verify (on the integration branch at 5fdd0fb)\n| Check | Result |\n|---|---|\n| `npm --prefix console ci --no-audit --no-fund && npm --prefix console run build` | built |\n| `ruff check backend` | All checks passed |\n| `pytest backend -q` | 38 passed: 2 existing, 5 characterization, 6 fix, 25 QA |\n| Coverage of `app/flisr.py` (line + branch) | 95% |\n| `make -C firmware test` | 0 failed |\n| `ruff check backend tools` | 1 error: UP017 in `tools/build_coverage_report.py:183`. This line is unchanged from `main`; it is the existing exception in Q-EXPLORE-4 and was not fixed here |\n| CI on #14 | `ui` and `native` pass. `backend` fails on that same UP017 line: CI's ruff 0.17.1 flags it, while main's last green run (Oct 2) predates that ruff version. #13 fails the same way |\n| PR #14 state via `gh api`, before marking ready | draft=true, label `ai-generated`, merged=false |\n| PR #14 state via `gh api`, after marking ready | draft=false, state open, merged=false, no requested reviewers |\n| Commit trailers | All 4 commits carry `AI-Governance: run=rca-backfeed` with `stage=fix` (3 commits) or `stage=qa` (1 commit) |\n\n## Notes for humans (non-blocking)\n1. **Two reviewers required.** `backend/app/flisr.py` is a protected, safety-critical path, so the PR needs two human reviewers (STD-GOV-6, STD-SAFETY-1).\n2. **STD-GOV-7.** Every commit has a platform-added `Co-Authored-By` trailer containing a personal name and email. The agent cannot change its git identity, so this needs a human decision or a platform fix.\n3. **Stale trace references.** These references in the brief's trace matrix are not in the integrated tree:\n   - `test_def_flisr_7_post_flisr_plan_closes_tie_onto_faulted_section`: the fix unit renamed it to `..._does_not_close_tie_onto_faulted_section`.\n   - `backend/tests/rca_def_flisr_7_review_probe.py`: exists only on the review branch.\n\n   DEF-FLISR-7 is still covered by tests in the tree.\n4. **Duplicate PRs.** Only one of #13 and #14 should land.\n5. **QA model.** The QA commit trailer says `model=ultra` (a different model from the fix), as intended.\n\n## Devin Review (commit 5fdd0fb)\nDevin Review raised 3 bug findings. All are marked needs_human and posted to the PR; no code was changed in the integrate stage.\n1. **Already-closed tie gets no open step (new).** If a SCADA tie is already closed and its pick-up set reaches the faulted section, the plan refuses it but never emits an `open` step, and the note still says \"held open\". I confirmed this at flisr.py:97-107. A human needs to decide whether it goes back to Fix or gets its own ticket.\n2. **Lockout reclose energises an unisolated fault.** Already listed as out of scope.\n3. **Customers double-counted across refused ties.** Already listed as out of scope.\n"
+    }
+  }
+}
