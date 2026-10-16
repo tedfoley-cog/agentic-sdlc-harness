@@ -20,8 +20,9 @@ commands:
   check_protected_paths: python3 tools/check_protected_paths.py --base origin/main
   check_traceability: python3 tools/check_traceability.py
 # relay harness.yaml requirements.id_pattern is `^REQ-(PLT|SAF|[0-9]{2,3}[A-Z]?)-[0-9]{3}$`; the anchors are
-# dropped because the trace scanner searches ids inside prose (fullmatch is still applied to trace rows).
-requirement_id_pattern: REQ-(?:PLT|SAF|[0-9]{2,3}[A-Z]?)-[0-9]{3}
+# replaced by word boundaries because the trace scanner searches ids inside prose (fullmatch is still applied to
+# trace rows); `\b` stops `REQ-PLT-0010` from registering a phantom `REQ-PLT-001`.
+requirement_id_pattern: \bREQ-(?:PLT|SAF|[0-9]{2,3}[A-Z]?)-[0-9]{3}\b
 safety_classification: safety-critical   # relay contract: protection-function (IEC 61508 context)
 protected_paths:                           # relay harness.yaml: protected_paths (two human reviewers, CODEOWNERS)
 - pattern: firmware/src/prot/**
