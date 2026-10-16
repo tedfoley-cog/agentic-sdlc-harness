@@ -1,0 +1,145 @@
+{
+  "session_id": "71ac36b795514e3096dca665ae0f2f72",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/71ac36b795514e3096dca665ae0f2f72",
+  "status": "waiting_for_user",
+  "devin_mode": "normal",
+  "acus": 2.5964709551625,
+  "structured_output": {
+    "verdict": "CONFIRMED",
+    "summary": "Architecture review attempt 5 of design attempt 7 (de7e75c, draft PR #15) against STD-ARCH v2.0, STD-SAFETY v3.1 and STD-GOV v1.1. Result: CONFIRMED, no violation found. A-6 is resolved. REQ-TIECAP-3/4 are now scoped to ties the DEF-FLISR-7 guard does not hold, and a held tie is always FAULTED_SECTION and never closed. This now agrees with REQ-TIECAP-21, design \u00a73/\u00a74/\u00a77, the spec's \u00a72/\u00a74 notes and the units.json U3/U4 notes and oracles. Every live 'iff' wording is scoped; any other hits are in SUPERSEDED notes or history tables. Every STD-ARCH-1..8 and STD-SAFETY-1..8 clause conforms (STD-ARCH-2 test-oracle waiver per Q-DESIGN-1; STD-SAFETY-6 per-unit waiver per Q-SPEC-4). REQ-TIECAP-1..23 each map to a component and a test. On base 20d2a30: 13 tests pass, ruff is clean, and the U1 reproduction inputs measured as the design states (no entry \u2192 437 remaining; NaN \u2192 tie closes, 96 remaining; fault on SEC-1201-04 \u2192 held open whatever C is). Notes with no verdict impact: O-C (platform Co-Authored-By trailer, STD-GOV-7), O-F (stale 'fifth reason' rationale wording in design \u00a73), O-G (U3/U4 oracle strings replaced in place, earlier text still in git), O-E (reviewer confirmations still pending). The review file is on agent/feature-tie-capacity/architect @ 190fe5a. The design was not edited, and nothing was approved or merged.",
+    "branch": "agent/feature-tie-capacity/architect",
+    "pr_url": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/15",
+    "session_url": "https://devin-gtm.devinenterprise.com/sessions/71ac36b795514e3096dca665ae0f2f72",
+    "model": "normal",
+    "standards_loaded": [
+      "STD-ARCH v2.0",
+      "STD-GOV v1.1",
+      "STD-SAFETY v3.1"
+    ],
+    "files_touched": [],
+    "evidence": [
+      {
+        "kind": "commit",
+        "ref": "de7e75c00275716d4610016d82b5963287589326",
+        "detail": "Design attempt 7 (resolves A-6). Has the AI-Governance trailer. design.md, specification.md, units.json and decomposition.md are byte-identical after the merge into the architect branch (STD-ARCH-7)."
+      },
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/15",
+        "detail": "Draft, label ai-generated, head de7e75c (STD-GOV-1/2)."
+      },
+      {
+        "kind": "file",
+        "ref": "docs/specs/feature-tie-capacity/specification.md",
+        "detail": "REQ-TIECAP-3/4/9/11/18/21/22 carry amendment markers (Q-DESIGN-3). The REQ-TIECAP-3/4 scope excludes held ties, so REQ-3 and REQ-21 no longer conflict (A-6 resolved)."
+      },
+      {
+        "kind": "file",
+        "ref": "docs/specs/feature-tie-capacity/design.md",
+        "detail": "\u00a72 models (STD-ARCH-1), \u00a73 single characteristic (STD-ARCH-2/4), \u00a74 tie-loop order and removed-guard table (STD-ARCH-4/5), \u00a76.3 independent oracle (STD-SAFETY-6), \u00a77 maps REQ-TIECAP-1..23 (STD-ARCH-6), \u00a78.1 tool classification (STD-SAFETY-7)."
+      },
+      {
+        "kind": "file",
+        "ref": "docs/specs/feature-tie-capacity/units.json",
+        "detail": "The JSON parses: U1 has 10 scope notes, U2 3, U3 10, U4 5. The superseded U3 note is kept, with its replacement right after it. The U3/U4 oracles check the hold before capacity."
+      },
+      {
+        "kind": "command",
+        "ref": "PYTHONPATH=backend python -m pytest backend -q (worktree @ 20d2a30)",
+        "detail": "13 passed, 1 warning. Base is green (STD-SAFETY-2 precondition)."
+      },
+      {
+        "kind": "command",
+        "ref": "ruff check backend (worktree @ 20d2a30)",
+        "detail": "All checks passed!"
+      },
+      {
+        "kind": "command",
+        "ref": "read-only build_plan measurement on FDR-1201 @ 20d2a30",
+        "detail": "Shipped indicators, no entry: CB-1201 only, 437 remaining. NaN: TIE-1201-1405 closes, 96 remaining (repro b, STD-SAFETY-3). 1489.5: blocked. Fault on SEC-1201-04 with C=2000, C=10 or NaN load: held open, 341 remaining. Matches the amended REQ-TIECAP-3/4/18/22."
+      },
+      {
+        "kind": "artifact",
+        "ref": "docs/specs/feature-tie-capacity/architecture-review.md @ agent/feature-tie-capacity/architect 190fe5a",
+        "detail": "Attempt 5 section: clause table and observations O-C, O-E, O-F, O-G."
+      },
+      {
+        "kind": "file",
+        "ref": ".agents/skills/safety-critical-change/SKILL.md",
+        "detail": "Mandatory procedure read; U1\u2013U4 cover characterization, repro, minimal fix and the \u2265500-case invariant (STD-SAFETY-2..5)."
+      },
+      {
+        "kind": "file",
+        "ref": "DEMO_NOTES.md",
+        "detail": "Read as the repo contract."
+      },
+      {
+        "kind": "note",
+        "ref": "O-C",
+        "detail": "STD-GOV-7: the platform appends a Co-Authored-By trailer with a personal name to agent commits. The agent cannot change it; carried forward for a human."
+      },
+      {
+        "kind": "note",
+        "ref": "O-F",
+        "detail": "design.md \u00a73 'Adding a fifth reason would change REQ-TIECAP-11' is stale now that REQ-TIECAP-11 has five reasons. Rationale wording only; behaviour is consistent elsewhere."
+      }
+    ],
+    "trace": [
+      {
+        "requirement_id": "REQ-TIECAP-3",
+        "kind": "design",
+        "ref": "design.md \u00a74 tie loop (guard before verdict) and \u00a77 row; specification.md amended REQ-TIECAP-3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-4",
+        "kind": "design",
+        "ref": "design.md \u00a73 tie_capacity_verdict (EXCEEDED, unheld ties only) and \u00a77 row"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-9",
+        "kind": "design",
+        "ref": "design.md \u00a73 precedence; FAULTED_SECTION assigned by the guard first"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-11",
+        "kind": "design",
+        "ref": "design.md \u00a72 TieBlockReason (5) and BlockedTie in models.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-18",
+        "kind": "design",
+        "ref": "design.md \u00a74 held-tie accounting (PR #13 unchanged)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "test",
+        "ref": "units.json U4: \u2265500 seeded cases, independent oracle, held-tie check before capacity"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-22",
+        "kind": "test",
+        "ref": "units.json U1: characterization pinned on 20d2a303c9548f9f7170cb3dfef1487fb7e9a009"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-1..23",
+        "kind": "doc",
+        "ref": "design.md \u00a77 requirement \u2192 component \u2192 test table (all 23 present)"
+      }
+    ],
+    "artifacts": {
+      "review": "docs/specs/feature-tie-capacity/architecture-review.md (attempt 5 section) on agent/feature-tie-capacity/architect @ 190fe5a62f419bc62f55a88734e4f48cc1ce29c8",
+      "design_commit": "de7e75c00275716d4610016d82b5963287589326",
+      "base_commit": "20d2a303c9548f9f7170cb3dfef1487fb7e9a009",
+      "resolved_findings": [
+        "A-6"
+      ],
+      "observations": [
+        "O-C",
+        "O-E",
+        "O-F",
+        "O-G"
+      ]
+    },
+    "questions": []
+  }
+}

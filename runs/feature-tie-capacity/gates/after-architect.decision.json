@@ -1,0 +1,8 @@
+{
+  "decision": "approved",
+  "actor": "principal-engineer-standin",
+  "actor_type": "User",
+  "reviewers": 2,
+  "at": "2026-10-16T00:16:00+00:00",
+  "comment": "DRY RUN stand-in decision recorded by the parent Devin session on behalf of the principal engineer and the protection reviewer (protection-reviewer-standin). Reviewed design.md/specification.md/units.json @ de7e75c (draft PR #15) and architecture-review.md attempt 5 @ 190fe5a (CONFIRMED after 5 rounds, 3 recorded loop extensions). Open notes O-C (platform Co-Authored-By trailer), O-F (stale wording), O-G (oracle text replaced in place) carried forward; none block Coding. Approved to proceed to Coding waves U1..U4 on base 20d2a30."
+}
