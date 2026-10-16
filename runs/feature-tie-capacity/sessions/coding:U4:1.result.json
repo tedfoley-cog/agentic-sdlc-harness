@@ -1,0 +1,119 @@
+{
+  "session_id": "808d0aae9e6347f283fe38ed351719bc",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/808d0aae9e6347f283fe38ed351719bc",
+  "status": "waiting_for_user",
+  "devin_mode": "normal",
+  "acus": 4.560990307031662,
+  "structured_output": {
+    "verdict": "PASS",
+    "summary": "U4 adds one test file, backend/tests/test_flisr_tie_capacity_invariant.py (REQ-TIECAP-21), and changes no production code. It runs 1000 seeded cases (seed 20261016) over radial and branched feeders with 1-4 ties at any node and checks build_plan against an independent oracle: its own BFS, closed-form capacity usability and reason precedence (FAULTED_SECTION > INVALID > UNKNOWN > STALE > EXCEEDED), and the precondition that an invalid section load or out-of-range L raises FlisrError and returns no plan. Result: 0 violations. An AST check confirms the oracle uses nothing from app.flisr, app.network or the TIE_CAPACITY_*/AS_OF_* constants. Breaking U3 production code 8 ways, one at a time, made the test fail every time (11-430 violations). The test also fails on the pre-feature backend 20d2a30. Local results: pytest backend 355 passed, ruff check backend clean, console build OK. Draft PR #22 is labelled ai-generated. CI's backend job is red because of an existing UP017 lint error in tools/build_coverage_report.py, which is outside U4's allowed files. U3 fails the same way, and the PR comment documents this. CI never reaches pytest because lint fails first, so the 355-pass result is local only. Not merged or approved.",
+    "evidence": [
+      {
+        "kind": "command",
+        "ref": "pytest backend -q",
+        "detail": "355 passed, 1 warning (baseline U3 90da16a: 350 passed)"
+      },
+      {
+        "kind": "command",
+        "ref": "ruff check backend",
+        "detail": "All checks passed!"
+      },
+      {
+        "kind": "command",
+        "ref": "npm --prefix console ci --no-audit --no-fund && npm --prefix console run build",
+        "detail": "built OK"
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_invariant.py::test_req_tiecap_21_no_tie_closed_without_usable_capacity_over_seeded_feeders",
+        "detail": "seed=20261016 cases=1000 violations=0; CLOSED 203, FAULTED_SECTION 557, INVALID 386, UNKNOWN 318, STALE 42, EXCEEDED 138, refused 240, closed at L==C+0.5: 72, radial 500, branched 500"
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_invariant.py::test_req_tiecap_21_oracle_is_independent_of_production_code",
+        "detail": "AST O1 check passes; the negative self-test detects 5 kinds of violation"
+      },
+      {
+        "kind": "note",
+        "ref": "mutation testing in throwaway git worktree",
+        "detail": "tol 0.6:34, age 21s:11, lead 3s:24, quality 'good':248, no section-load check:150, no hold:430, no future check:40, STALE before UNKNOWN:26 violations; pre-feature 20d2a30 fails at collection"
+      },
+      {
+        "kind": "command",
+        "ref": "git diff --name-only origin/agent/feature-tie-capacity/U3...HEAD",
+        "detail": "backend/tests/test_flisr_tie_capacity_invariant.py only"
+      },
+      {
+        "kind": "commit",
+        "ref": "e2a90c4",
+        "detail": "Carries the trailer AI-Governance: run=feature-tie-capacity stage=coding agent=devin model=normal"
+      },
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/22",
+        "detail": "Draft PR into agent/feature-tie-capacity/U3, labelled ai-generated"
+      },
+      {
+        "kind": "url",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/22#issuecomment-6206083540",
+        "detail": "CI backend fails on an existing UP017 lint error in tools/build_coverage_report.py:183, which also fails on U3 90da16a; native and ui pass"
+      }
+    ],
+    "trace": [
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_invariant.py::test_req_tiecap_21_no_tie_closed_without_usable_capacity_over_seeded_feeders"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_invariant.py::test_req_tiecap_21_oracle_reproduces_shipped_model_hand_values"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_invariant.py::test_req_tiecap_21_plan_on_shipped_model_matches_oracle"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_invariant.py::test_req_tiecap_21_oracle_is_independent_of_production_code"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_invariant.py::test_req_tiecap_21_oracle_independence_check_detects_violations"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/22"
+      }
+    ],
+    "branch": "agent/feature-tie-capacity/U4",
+    "pr_url": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/22",
+    "files_touched": [
+      "backend/tests/test_flisr_tie_capacity_invariant.py"
+    ],
+    "standards_loaded": [
+      "STD-CODE",
+      "STD-GOV",
+      "STD-SAFETY"
+    ],
+    "artifacts": {
+      "commit": "e2a90c4",
+      "base": "agent/feature-tie-capacity/U3@90da16a",
+      "seed": 20261016,
+      "cases": 1000,
+      "violations": 0,
+      "ci": {
+        "backend": "failure (existing UP017 lint error in tools/, outside U4 scope)",
+        "native": "success",
+        "ui": "success"
+      }
+    },
+    "model": "normal",
+    "session_url": "https://devin-gtm.devinenterprise.com/sessions/808d0aae9e6347f283fe38ed351719bc"
+  }
+}

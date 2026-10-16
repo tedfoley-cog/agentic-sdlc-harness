@@ -2095,6 +2095,42 @@
       "kind": "pr",
       "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/21",
       "stage": "qa"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-21",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_invariant.py::test_req_tiecap_21_no_tie_closed_without_usable_capacity_over_seeded_feeders",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-21",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_invariant.py::test_req_tiecap_21_oracle_reproduces_shipped_model_hand_values",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-21",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_invariant.py::test_req_tiecap_21_plan_on_shipped_model_matches_oracle",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-21",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_invariant.py::test_req_tiecap_21_oracle_is_independent_of_production_code",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-21",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_invariant.py::test_req_tiecap_21_oracle_independence_check_detects_violations",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-21",
+      "kind": "pr",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/22",
+      "stage": "coding"
     }
   ],
   "coverage": {
@@ -2102,7 +2138,7 @@
     "with_design": 23,
     "with_code": 20,
     "with_test": 23,
-    "with_pr": 5,
+    "with_pr": 6,
     "test_coverage": 0.958,
     "orphans": [
       "DEF-FLISR-7"
@@ -2653,9 +2689,16 @@
         ],
         "code": [],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-21"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-21",
+          "backend/tests/test_flisr_tie_capacity_invariant.py::test_req_tiecap_21_no_tie_closed_without_usable_capacity_over_seeded_feeders",
+          "backend/tests/test_flisr_tie_capacity_invariant.py::test_req_tiecap_21_oracle_reproduces_shipped_model_hand_values",
+          "backend/tests/test_flisr_tie_capacity_invariant.py::test_req_tiecap_21_plan_on_shipped_model_matches_oracle",
+          "backend/tests/test_flisr_tie_capacity_invariant.py::test_req_tiecap_21_oracle_is_independent_of_production_code",
+          "backend/tests/test_flisr_tie_capacity_invariant.py::test_req_tiecap_21_oracle_independence_check_detects_violations"
         ],
-        "pr": [],
+        "pr": [
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/22"
+        ],
         "doc": [
           "docs/specs/feature-tie-capacity/architecture-review.md@b897964"
         ]
