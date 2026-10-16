@@ -1591,12 +1591,36 @@
       "kind": "pr",
       "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/17",
       "stage": "qa"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-1",
+      "kind": "code",
+      "ref": "backend/app/models.py@aa8b13b: TIE_CAPACITY_* / AS_OF_* constants, _require_iso_string, IsoAwareDatetime, TieCapacity",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-1",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_models.py@c4d7a62: test_req_tiecap_1_* (rejects JSON + HTTP 422, kw not range-checked, aware ISO-8601 accepted, quality, constants pin P1, stdlib/pydantic-only imports)",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-11",
+      "kind": "code",
+      "ref": "backend/app/models.py@aa8b13b: TieBlockReason (5 members, precedence order), BlockedTie, RestorationPlan.blocked_ties default []",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-11",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_models.py@c4d7a62: test_req_tiecap_11_* (enum order, round trip, unknown reason rejected, required fields, default empty, order preserved, existing fields unchanged)",
+      "stage": "coding"
     }
   ],
   "coverage": {
     "requirements": 24,
     "with_design": 23,
-    "with_code": 2,
+    "with_code": 4,
     "with_test": 23,
     "with_pr": 2,
     "test_coverage": 0.958,
@@ -1658,9 +1682,12 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-1 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-1"
         ],
-        "code": [],
+        "code": [
+          "backend/app/models.py@aa8b13b: TIE_CAPACITY_* / AS_OF_* constants, _require_iso_string, IsoAwareDatetime, TieCapacity"
+        ],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-1"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-1",
+          "backend/tests/test_flisr_tie_capacity_models.py@c4d7a62: test_req_tiecap_1_* (rejects JSON + HTTP 422, kw not range-checked, aware ISO-8601 accepted, quality, constants pin P1, stdlib/pydantic-only imports)"
         ],
         "pr": [],
         "doc": []
@@ -1863,9 +1890,12 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-11 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-11"
         ],
-        "code": [],
+        "code": [
+          "backend/app/models.py@aa8b13b: TieBlockReason (5 members, precedence order), BlockedTie, RestorationPlan.blocked_ties default []"
+        ],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-11"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-11",
+          "backend/tests/test_flisr_tie_capacity_models.py@c4d7a62: test_req_tiecap_11_* (enum order, round trip, unknown reason rejected, required fields, default empty, order preserved, existing fields unchanged)"
         ],
         "pr": [],
         "doc": []
