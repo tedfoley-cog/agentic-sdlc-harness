@@ -1,0 +1,136 @@
+{
+  "session_id": "b66ea84b7f1a4727b8073ce4ab60cfaa",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/b66ea84b7f1a4727b8073ce4ab60cfaa",
+  "status": "waiting_for_user",
+  "devin_mode": "normal",
+  "acus": 4.061123430656893,
+  "structured_output": {
+    "verdict": "PASS",
+    "summary": "U1 (test-only baseline) delivered as draft PR #16 with the ai-generated label, stacked on agent/rca-backfeed/fix @ 20d2a30 (DEF-FLISR-7, PR #13), which is the characterization base set by the design. Two new test files, no production changes. 23 characterization tests pin build_plan's isolation, restoration, ordering, customers_restored, customers_remaining and transferred_load_kw through legacy tie_capacity_kw (REQ-TIECAP-22), plus the no-fault plan with blocked_ties == [] (REQ-TIECAP-19). 4 strict-xfail reproductions cover missing capacity -> CAPACITY_UNKNOWN (REQ-TIECAP-5) and NaN/+inf -> no close (REQ-TIECAP-8); all 4 fail under --runxfail on the unmodified base and on main. pytest backend: 34 passed, 4 xfailed. ruff check backend: passes. Console build: passes. CI 'backend' job fails on a pre-existing UP017 in tools/build_coverage_report.py (ruff check backend tools). Base PR #13 fails identically, and the fix is outside this unit's allowed files.",
+    "branch": "agent/feature-tie-capacity/U1",
+    "pr_url": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/16",
+    "session_url": "https://devin-gtm.devinenterprise.com/sessions/b66ea84b7f1a4727b8073ce4ab60cfaa",
+    "model": "normal",
+    "files_touched": [
+      "backend/tests/test_flisr_tie_capacity_characterization.py",
+      "backend/tests/test_flisr_tie_capacity_repro.py"
+    ],
+    "standards_loaded": [
+      "STD-CODE-1",
+      "STD-CODE-2",
+      "STD-CODE-3",
+      "STD-CODE-4",
+      "STD-CODE-5",
+      "STD-CODE-6",
+      "STD-CODE-7",
+      "STD-CODE-8",
+      "STD-GOV-1",
+      "STD-GOV-2",
+      "STD-GOV-3",
+      "STD-GOV-4",
+      "STD-GOV-5",
+      "STD-GOV-6",
+      "STD-GOV-7",
+      "STD-SAFETY-1",
+      "STD-SAFETY-2",
+      "STD-SAFETY-3",
+      "STD-SAFETY-4",
+      "STD-SAFETY-5",
+      "STD-SAFETY-6",
+      "STD-SAFETY-7",
+      "STD-SAFETY-8",
+      ".agents/skills/safety-critical-change/SKILL.md"
+    ],
+    "trace": [
+      {
+        "requirement_id": "REQ-TIECAP-22",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_characterization.py::test_req_tiecap_22_char_*"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-19",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_characterization.py::test_req_tiecap_19_char_no_fault_indication_plan"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-5",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_repro.py::test_req_tiecap_5_repro_missing_capacity_blocks_tie_as_unknown"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-8",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_repro.py::test_req_tiecap_8_repro_non_finite_capacity_never_closes_tie"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-22",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/16"
+      }
+    ],
+    "evidence": [
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/16",
+        "detail": "Draft, label ai-generated, base agent/rca-backfeed/fix; diff 2 files +354/-0"
+      },
+      {
+        "kind": "commit",
+        "ref": "7e6453f",
+        "detail": "Characterization tests; carries AI-Governance trailer"
+      },
+      {
+        "kind": "commit",
+        "ref": "6b4c72d",
+        "detail": "Strict-xfail reproductions; carries AI-Governance trailer"
+      },
+      {
+        "kind": "command",
+        "ref": "git diff 20d2a30 <branch point> -- backend/",
+        "detail": "Empty: no base drift"
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend -q",
+        "detail": "34 passed, 4 xfailed on base+PR (13 passed before); on main @ 5f6b471 with the same files: 23 passed, 4 xfailed"
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend/tests/test_flisr_tie_capacity_repro.py -q --runxfail",
+        "detail": "4 failed, as intended: 'assert None == [{tie_id: TIE-1201-1405, reason: CAPACITY_UNKNOWN}]' and 'Left contains one more item: TIE-1201-1405 close' for nan/+inf; same on main"
+      },
+      {
+        "kind": "command",
+        "ref": "ruff check backend",
+        "detail": "All checks passed"
+      },
+      {
+        "kind": "command",
+        "ref": "npm --prefix console ci --no-audit --no-fund && npm --prefix console run build",
+        "detail": "Built in 439ms"
+      },
+      {
+        "kind": "command",
+        "ref": "pytest --cov=app --cov-branch",
+        "detail": "app/flisr.py coverage 95% (base 94%)"
+      },
+      {
+        "kind": "note",
+        "ref": "CI backend job 116742213242",
+        "detail": "Fails at 'ruff check backend tools': UP017 in tools/build_coverage_report.py:183 (ruff 0.17.1). Pre-existing; base PR #13 backend job also fails. Not fixable in U1 under STD-CODE-2. CI ui and native jobs pass."
+      }
+    ],
+    "questions": [
+      {
+        "id": "Q-CODE-U1-1",
+        "question": "CI 'backend' fails on a pre-existing ruff UP017 in tools/build_coverage_report.py, outside U1's allowed files, and PR #13 fails the same way. Should a separate change fix it?",
+        "blocking_units": []
+      },
+      {
+        "id": "Q-CODE-U1-2",
+        "question": "PR #16 targets agent/rca-backfeed/fix (stacked on PR #13, as the design requires). Retarget it to main after #13 lands?",
+        "blocking_units": []
+      }
+    ]
+  }
+}

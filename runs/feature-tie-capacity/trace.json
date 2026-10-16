@@ -1501,6 +1501,36 @@
       "kind": "pr",
       "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/15",
       "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-22",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_characterization.py::test_req_tiecap_22_char_*",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-19",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_characterization.py::test_req_tiecap_19_char_no_fault_indication_plan",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-5",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_repro.py::test_req_tiecap_5_repro_missing_capacity_blocks_tie_as_unknown",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-8",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_repro.py::test_req_tiecap_8_repro_non_finite_capacity_never_closes_tie",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-22",
+      "kind": "pr",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/16",
+      "stage": "coding"
     }
   ],
   "coverage": {
@@ -1508,7 +1538,7 @@
     "with_design": 23,
     "with_code": 0,
     "with_test": 23,
-    "with_pr": 1,
+    "with_pr": 2,
     "test_coverage": 0.958,
     "orphans": [
       "DEF-FLISR-7"
@@ -1547,7 +1577,8 @@
         ],
         "code": [],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-8"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-8",
+          "backend/tests/test_flisr_tie_capacity_repro.py::test_req_tiecap_8_repro_non_finite_capacity_never_closes_tie"
         ],
         "pr": [],
         "doc": []
@@ -1623,7 +1654,8 @@
         ],
         "code": [],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-5"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-5",
+          "backend/tests/test_flisr_tie_capacity_repro.py::test_req_tiecap_5_repro_missing_capacity_blocks_tie_as_unknown"
         ],
         "pr": [],
         "doc": []
@@ -1902,7 +1934,8 @@
         ],
         "code": [],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-19"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-19",
+          "backend/tests/test_flisr_tie_capacity_characterization.py::test_req_tiecap_19_char_no_fault_indication_plan"
         ],
         "pr": [],
         "doc": []
@@ -1966,9 +1999,12 @@
         ],
         "code": [],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-22"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-22",
+          "backend/tests/test_flisr_tie_capacity_characterization.py::test_req_tiecap_22_char_*"
         ],
-        "pr": [],
+        "pr": [
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/16"
+        ],
         "doc": []
       },
       "DEF-FLISR-7": {

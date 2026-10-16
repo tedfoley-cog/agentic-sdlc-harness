@@ -9,7 +9,7 @@
     "prs": [
       "https://github.com/example-org/product-repo/pull/101"
     ],
-    "updated": "2026-10-16T00:14:05Z"
+    "updated": "2026-10-16T00:21:00Z"
   },
   {
     "run_id": "example-rca-backfeed",
@@ -21,7 +21,7 @@
     "prs": [
       "https://github.com/example-org/product-repo/pull/102"
     ],
-    "updated": "2026-10-16T00:14:05Z"
+    "updated": "2026-10-16T00:21:00Z"
   },
   {
     "run_id": "feature-tie-capacity",
@@ -31,9 +31,10 @@
     "requirement_ref": "examples/targets/adms/requirements/REQ-tie-capacity.md",
     "dir": "feature-tie-capacity",
     "prs": [
-      "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/15"
+      "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/15",
+      "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/16"
     ],
-    "updated": "2026-10-16T00:14:05Z"
+    "updated": "2026-10-16T00:21:00Z"
   },
   {
     "run_id": "rca-backfeed",
@@ -46,6 +47,6 @@
       "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/13",
       "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/14"
     ],
-    "updated": "2026-10-16T00:14:05Z"
+    "updated": "2026-10-16T00:21:00Z"
   }
 ]
