@@ -1,0 +1,186 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="930" viewBox="0 0 1500 930" font-family="Inter, Helvetica, Arial, sans-serif">
+<defs><marker id="arr" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker><marker id="arrC" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0f766e"/></marker></defs>
+<rect x="0" y="0" width="1500" height="930" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="1.5"/>
+<text x="30" y="38" font-size="22" font-weight="700" fill="#1f4e79" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">Agentic SDLC harness — how a requirement becomes a reviewed, traced draft PR</text>
+<text x="30" y="60" font-size="13" font-weight="normal" fill="#4b5563" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">A mechanism, not a feature: agents run every stage; humans act only at the orange gates; agents never merge, approve, or un-draft a PR.</text>
+<rect x="1040" y="24" width="440" height="48" rx="8" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1.5"/>
+<rect x="1050" y="34" width="70" height="26" rx="7" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.3"/>
+<text x="1085.0" y="51.5" font-size="11" font-weight="600" fill="#312e81" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">agent stage</text>
+<polygon points="1145,37 1157,47 1145,57 1133,47" fill="#fff7ed" stroke="#ea580c" stroke-width="1.6"/>
+<text x="1164" y="51" font-size="11" font-weight="normal" fill="#9a3412" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">human gate / action</text>
+<rect x="1285" y="34" width="22" height="22" rx="5" fill="#ecfdf5" stroke="#0f766e" stroke-width="1.5"/>
+<text x="1313" y="50" font-size="11" font-weight="normal" fill="#115e59" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">deterministic check</text>
+<rect x="1415" y="34" width="22" height="22" rx="5" fill="#f5f3ff" stroke="#6d28d9" stroke-width="1.5"/>
+<text x="1443" y="50" font-size="11" font-weight="normal" fill="#4c1d95" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">output</text>
+<rect x="30" y="90" width="250" height="330" rx="12" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="45" y="115" font-size="15" font-weight="700" fill="#1f4e79" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">1 · Inputs</text>
+<rect x="45" y="128" width="220" height="56" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="55" y="147" font-size="12.5" font-weight="600" fill="#1f2937" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">Requirement</text>
+<text x="55" y="164" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">REQ-*.md (feature) or</text>
+<text x="55" y="178" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">DEF-*.md (defect / RCA)</text>
+<rect x="45" y="194" width="220" height="100" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="55" y="213" font-size="12.5" font-weight="600" fill="#1f2937" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">Per-repo contract  harness.yaml</text>
+<text x="55" y="231" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">target repo + commands</text>
+<text x="55" y="245" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">paths agents may / may not touch</text>
+<text x="55" y="259" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">loop bounds (architect 2, qa 2, rca 2)</text>
+<text x="55" y="273" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">Devin mode per stage, gate provider</text>
+<text x="55" y="287" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">(examples/targets/adms/harness.yaml)</text>
+<rect x="45" y="304" width="220" height="100" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="55" y="323" font-size="12.5" font-weight="600" fill="#1f2937" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">Standards store  standards/</text>
+<text x="55" y="341" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">STD-REQ · ARCH · CODE · QA · GOV ·</text>
+<text x="55" y="355" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">STD-RCA · SAFETY · DOC</text>
+<text x="55" y="369" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">clauses loaded at runtime and quoted</text>
+<text x="55" y="383" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">into each brief; a missing standard</text>
+<text x="55" y="397" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">→ BLOCKED, never improvised</text>
+<line x1="280" y1="255" x2="318" y2="255" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="320" y="90" width="1160" height="330" rx="12" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="335" y="115" font-size="15" font-weight="700" fill="#1f4e79" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">2 · Orchestrator  (harness/agentic_sdlc/orchestrator.py — state machine, persisted state.json, resumable)</text>
+<text x="335" y="145" font-size="12.5" font-weight="700" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">Feature workflow</text>
+<rect x="335" y="160" width="72" height="30" rx="7" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.3"/>
+<text x="371.0" y="179.5" font-size="12.5" font-weight="600" fill="#312e81" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">Specify</text>
+<line x1="407" y1="175" x2="421" y2="175" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<polygon points="445,159 461,175 445,191 429,175" fill="#fff7ed" stroke="#ea580c" stroke-width="1.8"/>
+<text x="445" y="204" font-size="10.5" font-weight="600" fill="#9a3412" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">after Specify</text>
+<line x1="463" y1="175" x2="477" y2="175" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="479" y="160" width="84" height="30" rx="7" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.3"/>
+<text x="521.0" y="179.5" font-size="12.5" font-weight="600" fill="#312e81" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">Decompose</text>
+<line x1="563" y1="175" x2="577" y2="175" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="579" y="160" width="142" height="30" rx="7" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.3"/>
+<text x="650.0" y="179.5" font-size="12.5" font-weight="600" fill="#312e81" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">Design ⇄ Architect</text>
+<line x1="721" y1="175" x2="735" y2="175" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<polygon points="759,159 775,175 759,191 743,175" fill="#fff7ed" stroke="#ea580c" stroke-width="1.8"/>
+<text x="759" y="204" font-size="10.5" font-weight="600" fill="#9a3412" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">after Architect</text>
+<line x1="777" y1="175" x2="791" y2="175" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="793" y="160" width="240" height="30" rx="7" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.3"/>
+<text x="913.0" y="179.5" font-size="12.5" font-weight="600" fill="#312e81" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">Coding ⇄ QA  (per unit, parallel waves)</text>
+<line x1="1033" y1="175" x2="1047" y2="175" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="1049" y="160" width="76" height="30" rx="7" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.3"/>
+<text x="1087.0" y="179.5" font-size="12.5" font-weight="600" fill="#312e81" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">Integrate</text>
+<line x1="1125" y1="175" x2="1139" y2="175" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="1141" y="160" width="78" height="30" rx="7" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.3"/>
+<text x="1180.0" y="179.5" font-size="12.5" font-weight="600" fill="#312e81" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">Document</text>
+<line x1="1219" y1="175" x2="1233" y2="175" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="1235" y="160" width="60" height="30" rx="7" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.3"/>
+<text x="1265.0" y="179.5" font-size="12.5" font-weight="600" fill="#312e81" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">Trace</text>
+<line x1="1295" y1="175" x2="1309" y2="175" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<polygon points="1333,159 1349,175 1333,191 1317,175" fill="#fff7ed" stroke="#ea580c" stroke-width="1.8"/>
+<text x="1333" y="204" font-size="10.5" font-weight="600" fill="#9a3412" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">before merge</text>
+<line x1="1351" y1="175" x2="1365" y2="175" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="1367" y="160" width="70" height="30" rx="7" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.3"/>
+<text x="1402.0" y="179.5" font-size="12.5" font-weight="600" fill="#312e81" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">Release</text>
+<text x="650.0" y="220" font-size="10.5" font-weight="normal" fill="#6b7280" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">bound: architect 2</text>
+<text x="913.0" y="220" font-size="10.5" font-weight="normal" fill="#6b7280" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">bound: qa 2 · QA runs on a different Devin mode with its own independent oracle</text>
+<text x="335" y="235" font-size="12.5" font-weight="700" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">RCA workflow</text>
+<rect x="335" y="250" width="225" height="30" rx="7" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.3"/>
+<text x="447.5" y="269.5" font-size="12.5" font-weight="600" fill="#312e81" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">Explore ⇄ Evaluate  (evidence-only)</text>
+<line x1="560" y1="265" x2="574" y2="265" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="576" y="250" width="70" height="30" rx="7" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.3"/>
+<text x="611.0" y="269.5" font-size="12.5" font-weight="600" fill="#312e81" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">Review</text>
+<line x1="646" y1="265" x2="660" y2="265" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<polygon points="684,249 700,265 684,281 668,265" fill="#fff7ed" stroke="#ea580c" stroke-width="1.8"/>
+<text x="684" y="294" font-size="10.5" font-weight="600" fill="#9a3412" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">after Review</text>
+<line x1="702" y1="265" x2="716" y2="265" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="718" y="250" width="96" height="30" rx="7" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.3"/>
+<text x="766.0" y="269.5" font-size="12.5" font-weight="600" fill="#312e81" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">Fix ⇄ QA</text>
+<line x1="814" y1="265" x2="828" y2="265" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="830" y="250" width="80" height="30" rx="7" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.3"/>
+<text x="870.0" y="269.5" font-size="12.5" font-weight="600" fill="#312e81" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">Integrate</text>
+<line x1="910" y1="265" x2="924" y2="265" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="926" y="250" width="82" height="30" rx="7" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.3"/>
+<text x="967.0" y="269.5" font-size="12.5" font-weight="600" fill="#312e81" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">Document</text>
+<line x1="1008" y1="265" x2="1022" y2="265" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="1024" y="250" width="64" height="30" rx="7" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.3"/>
+<text x="1056.0" y="269.5" font-size="12.5" font-weight="600" fill="#312e81" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">Trace</text>
+<line x1="1088" y1="265" x2="1102" y2="265" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<polygon points="1126,249 1142,265 1126,281 1110,265" fill="#fff7ed" stroke="#ea580c" stroke-width="1.8"/>
+<text x="1126" y="294" font-size="10.5" font-weight="600" fill="#9a3412" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">before merge</text>
+<text x="447" y="310" font-size="10.5" font-weight="normal" fill="#6b7280" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif">bound: rca 2 · Evaluate sees the evidence package, never the repo</text>
+<rect x="335" y="325" width="1130" height="80" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="348" y="345" font-size="12" font-weight="600" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">Every stage:  prepare → execute → verify → deliver      |      verdicts: PASS · FAIL · BLOCKED · CONFIRMED · VIOLATION · REFUTED · NEEDS-HUMAN</text>
+<text x="348" y="364" font-size="11.2" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">Unknowns become stable-ID questions (Q-SPEC-1 …) answered by a human via `harness answer` — never guessed.  Loops are bounded; at the bound the run pauses NEEDS-HUMAN and only a human can `harness extend`.</text>
+<text x="348" y="380" font-size="11.2" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">A gate pauses the run until a human decision is recorded (GitHub label/review or file provider); bot actors are rejected; before-merge enforces the reviewer count (2 on protected paths).</text>
+<rect x="30" y="450" width="700" height="220" rx="12" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="45" y="475" font-size="15" font-weight="700" fill="#1f4e79" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">3 · One Devin child session per stage attempt  (no shared memory between stages)</text>
+<rect x="45" y="490" width="200" height="160" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="55" y="510" font-size="12.5" font-weight="600" fill="#1f2937" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">Brief  (brief.py)</text>
+<text x="55" y="528" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">stage SKILL.md + CONTRACT.md</text>
+<text x="55" y="543" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">clauses from standards/</text>
+<text x="55" y="558" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">only the artifacts this stage may see</text>
+<text x="55" y="573" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">allowed files · commands · boundaries</text>
+<text x="55" y="588" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">Evaluate: repos = []  (evidence only)</text>
+<text x="55" y="603" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">feedback from the previous round</text>
+<line x1="245" y1="570" x2="275" y2="570" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="277" y="490" width="200" height="160" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="287" y="510" font-size="12.5" font-weight="600" fill="#1f2937" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">Session backend  (sessions/)</text>
+<text x="287" y="528" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">rest_v3 — Devin REST v3 (never v1)</text>
+<text x="287" y="543" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">relay    — parent session runs the child</text>
+<text x="287" y="558" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">fake      — scripted, used by CI</text>
+<text x="287" y="573" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">mode per stage: Coding normal, QA ultra</text>
+<text x="287" y="588" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">structured output = the stage report</text>
+<line x1="477" y1="570" x2="507" y2="570" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="509" y="490" width="205" height="160" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="519" y="510" font-size="12.5" font-weight="600" fill="#1f2937" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">Result ledger  (state.json)</text>
+<text x="519" y="528" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">verdict · summary · evidence · questions</text>
+<text x="519" y="543" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">session URL · branch · PR · ACUs</text>
+<text x="519" y="558" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">persisted per unit / attempt;</text>
+<text x="519" y="573" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">`harness resume` replays completed</text>
+<text x="519" y="588" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">attempts instead of re-running them</text>
+<line x1="380" y1="420" x2="380" y2="448" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<text x="392" y="440" font-size="10.5" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">stage brief</text>
+<line x1="600" y1="448" x2="600" y2="420" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<text x="612" y="440" font-size="10.5" font-weight="normal" fill="#6b7280" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">stage report</text>
+<rect x="750" y="450" width="730" height="220" rx="12" fill="#f0fdfa" stroke="#5eead4" stroke-width="1.5"/>
+<text x="765" y="475" font-size="15" font-weight="700" fill="#115e59" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">4 · Deterministic verify after every Coding / Fix PASS  (checks/)</text>
+<rect x="765" y="492" width="170" height="24" rx="5" fill="#ecfdf5" stroke="#0f766e" stroke-width="1.2"/>
+<text x="850" y="508" font-size="11" font-weight="600" fill="#115e59" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace">scope</text>
+<text x="945" y="508" font-size="11" font-weight="normal" fill="#134e4a" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">only files named in the brief changed</text>
+<rect x="765" y="521" width="170" height="24" rx="5" fill="#ecfdf5" stroke="#0f766e" stroke-width="1.2"/>
+<text x="850" y="537" font-size="11" font-weight="600" fill="#115e59" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace">governance</text>
+<text x="945" y="537" font-size="11" font-weight="normal" fill="#134e4a" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">agent/ branch · draft PR · AI-Governance trailer · no merge / approve</text>
+<rect x="765" y="550" width="170" height="24" rx="5" fill="#ecfdf5" stroke="#0f766e" stroke-width="1.2"/>
+<text x="850" y="566" font-size="11" font-weight="600" fill="#115e59" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace">missing_input_as_zero</text>
+<text x="945" y="566" font-size="11" font-weight="normal" fill="#134e4a" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">no silent `or 0` / default-to-zero on missing or late input</text>
+<rect x="765" y="579" width="170" height="24" rx="5" fill="#ecfdf5" stroke="#0f766e" stroke-width="1.2"/>
+<text x="850" y="595" font-size="11" font-weight="600" fill="#115e59" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace">model_logic_separation</text>
+<text x="945" y="595" font-size="11" font-weight="normal" fill="#134e4a" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">no control flow inside models / settings</text>
+<rect x="765" y="608" width="170" height="24" rx="5" fill="#ecfdf5" stroke="#0f766e" stroke-width="1.2"/>
+<text x="850" y="624" font-size="11" font-weight="600" fill="#115e59" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace">removed_error_handling</text>
+<text x="945" y="624" font-size="11" font-weight="normal" fill="#134e4a" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">no deleted guards or except blocks</text>
+<rect x="765" y="643" width="700" height="22" rx="6" fill="#ffffff" stroke="#99f6e4" stroke-width="1.5"/>
+<text x="775" y="658" font-size="10.8" font-weight="normal" fill="#134e4a" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">FAIL → fed back into the Coding ⇄ QA loop automatically (no human).  A false positive is fixed in the checker and logged as harness.corrected.</text>
+<line x1="1100" y1="420" x2="1100" y2="448" stroke="#0f766e" stroke-width="1.6" marker-end="url(#arrC)"/>
+<text x="1112" y="440" font-size="10.5" font-weight="normal" fill="#115e59" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">PR diff vs its base branch</text>
+<rect x="30" y="700" width="1450" height="200" rx="12" fill="#faf5ff" stroke="#c4b5fd" stroke-width="1.5"/>
+<text x="45" y="725" font-size="15" font-weight="700" fill="#4c1d95" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">5 · Outputs — every run leaves the same evidence set under runs/&lt;run-id&gt;/</text>
+<rect x="45" y="742" width="272.8" height="104" rx="8" fill="#ffffff" stroke="#ddd6fe" stroke-width="1.5"/>
+<text x="57" y="762" font-size="12.5" font-weight="600" fill="#4c1d95" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">Draft PR on agent/&lt;run&gt;/…</text>
+<text x="57" y="781" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">in the target repo, test-first, with the</text>
+<text x="57" y="796" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">AI-Governance trailer; stays a draft —</text>
+<text x="57" y="811" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">a human flips it to ready and merges</text>
+<rect x="331.8" y="742" width="272.8" height="104" rx="8" fill="#ffffff" stroke="#ddd6fe" stroke-width="1.5"/>
+<text x="343.8" y="762" font-size="12.5" font-weight="600" fill="#4c1d95" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">runlog.jsonl  (audit log)</text>
+<text x="343.8" y="781" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">hash-chained records (seq, prev, hash):</text>
+<text x="343.8" y="796" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">stage, gate, loop, question, waiver,</text>
+<text x="343.8" y="811" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">harness.corrected … `harness replay`</text>
+<text x="343.8" y="826" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">rebuilds state and proves the chain</text>
+<rect x="618.6" y="742" width="272.8" height="104" rx="8" fill="#ffffff" stroke="#ddd6fe" stroke-width="1.5"/>
+<text x="630.6" y="762" font-size="12.5" font-weight="600" fill="#4c1d95" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">trace.json / trace.md</text>
+<text x="630.6" y="781" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">requirement → design → code → test →</text>
+<text x="630.6" y="796" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">PR → doc, keyed by spec ids; human</text>
+<text x="630.6" y="811" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">waivers kept with actor + reason</text>
+<rect x="905.4000000000001" y="742" width="272.8" height="104" rx="8" fill="#ffffff" stroke="#ddd6fe" stroke-width="1.5"/>
+<text x="917.4000000000001" y="762" font-size="12.5" font-weight="600" fill="#4c1d95" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">kpis.json + kpi_history.jsonl</text>
+<text x="917.4000000000001" y="781" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">autonomy · first-pass approval · loop</text>
+<text x="917.4000000000001" y="796" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">resolution · test coverage · human</text>
+<text x="917.4000000000001" y="811" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">review time · cycle time · ACUs / $</text>
+<rect x="1192.2" y="742" width="272.8" height="104" rx="8" fill="#ffffff" stroke="#ddd6fe" stroke-width="1.5"/>
+<text x="1204.2" y="762" font-size="12.5" font-weight="600" fill="#4c1d95" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">Console + CLI</text>
+<text x="1204.2" y="781" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">Runs · Run (timeline, drawers) · Trace ·</text>
+<text x="1204.2" y="796" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">Audit (chain verified in browser) · KPIs</text>
+<text x="1204.2" y="811" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">trend · Gate form — 7 Playwright journeys</text>
+<text x="1204.2" y="826" font-size="11" font-weight="normal" fill="#374151" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">`harness run / resume / answer / extend / waive`</text>
+<line x1="380" y1="670" x2="380" y2="698" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arr)"/>
+<line x1="1100" y1="670" x2="1100" y2="698" stroke="#0f766e" stroke-width="1.6" marker-end="url(#arrC)"/>
+<rect x="45" y="856" width="1420" height="34" rx="8" fill="#fff7ed" stroke="#ea580c" stroke-width="1.4"/>
+<text x="58" y="878" font-size="11.5" font-weight="600" fill="#9a3412" text-anchor="start" font-family="Inter, Helvetica, Arial, sans-serif">Humans only:  answer questions · decide the gates · extend an escalated loop · waive a traced id · flip draft → ready · merge.   Each is recorded with the actor in the audit log; an agent cannot do any of them.</text>
+</svg>
