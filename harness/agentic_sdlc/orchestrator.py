@@ -408,6 +408,9 @@ class Orchestrator:
 
     def _verify(self, unit: dict[str, Any], c: Verdict) -> dict[str, Any]:
         """Deterministic checks on the branch the Coding session produced."""
+        key = f"{unit['id']}:{self.state['attempts'].get('coding:' + unit['id'], 0)}"
+        if key in self.state["verify_results"]:
+            return self.state["verify_results"][key]
         diff_text, commits, pr = "", [], {}
         commands: dict[str, Any] = {}
         if self.target_clone and c.branch:
@@ -422,7 +425,7 @@ class Orchestrator:
             verdict = "FAIL"
         out = {"verdict": verdict, "checks": [r.to_dict() for r in results], "commands": commands,
                "branch": c.branch, "files_in_diff": [f.path for f in checks.parse_unified_diff(diff_text)]}
-        self.state["verify_results"][f"{unit['id']}:{self.state['attempts'].get('coding:' + unit['id'], 0)}"] = out
+        self.state["verify_results"][key] = out
         self.log.append("stage.started", stage="verify", unit=unit["id"], attempt=1, model="deterministic")
         self.log.append("stage.completed", stage="verify", unit=unit["id"], attempt=1, verdict=verdict,
                         summary=f"{sum(1 for r in results if r.verdict == 'FAIL')} check(s) failed; "
@@ -433,25 +436,27 @@ class Orchestrator:
         return out
 
     def _fetch_branch(self, branch: str, pr_url: str | None) -> tuple[str, list[str], dict[str, Any]]:
+        """Diff the agent branch against the PR's base ref (a stacked PR is scoped against its own base,
+        not the default branch); fall back to the default branch when there is no PR."""
         clone = str(self.target_clone)
-        subprocess.run(["git", "-C", clone, "fetch", "origin", branch, self.cfg.default_branch], check=True,
-                       capture_output=True)
-        diff = subprocess.run(["git", "-C", clone, "diff", f"origin/{self.cfg.default_branch}...origin/{branch}"],
-                              check=True, capture_output=True, text=True).stdout
-        commits = subprocess.run(["git", "-C", clone, "log", "--format=%B%x00",
-                                  f"origin/{self.cfg.default_branch}..origin/{branch}"],
-                                 check=True, capture_output=True, text=True).stdout.split("\x00")
-        commits = [c.strip() for c in commits if c.strip()]
         pr: dict[str, Any] = {}
         if pr_url:
             try:
-                out = subprocess.run(["gh", "pr", "view", pr_url, "--json", "isDraft,labels,headRefName,mergedAt"],
+                out = subprocess.run(["gh", "pr", "view", pr_url, "--json",
+                                      "isDraft,labels,headRefName,baseRefName,mergedAt"],
                                      check=True, capture_output=True, text=True).stdout
                 d = json.loads(out)
                 pr = {"draft": d["isDraft"], "labels": [lbl["name"] for lbl in d["labels"]],
-                      "head": d["headRefName"], "merged": bool(d.get("mergedAt"))}
+                      "head": d["headRefName"], "base": d.get("baseRefName"), "merged": bool(d.get("mergedAt"))}
             except Exception as exc:  # pragma: no cover
                 pr = {"error": str(exc)}
+        base = pr.get("base") or self.cfg.default_branch
+        subprocess.run(["git", "-C", clone, "fetch", "origin", branch, base], check=True, capture_output=True)
+        diff = subprocess.run(["git", "-C", clone, "diff", f"origin/{base}...origin/{branch}"],
+                              check=True, capture_output=True, text=True).stdout
+        commits = subprocess.run(["git", "-C", clone, "log", "--format=%B%x00", f"origin/{base}..origin/{branch}"],
+                                 check=True, capture_output=True, text=True).stdout.split("\x00")
+        commits = [c.strip() for c in commits if c.strip()]
         return diff, commits, pr
 
     def _run_commands(self, branch: str) -> dict[str, Any]:
