@@ -78,12 +78,12 @@ export function deriveGates(log: LogRecord[]): GateRow[] {
   return [...gates.values()]
 }
 export function deriveLoops(log: LogRecord[]): LoopRow[] {
-  // Older logs (before loop.iteration became idempotent) may carry the same round twice after a
-  // pause/resume replay; keep one row per (loop, unit, iteration), the latest record winning.
+  // Older logs (before loop.iteration became idempotent) may carry the same record twice after a
+  // pause/resume replay; collapse exact repeats only — a round's FAIL (verify) and later PASS (qa) both stay.
   const byKey = new Map<string, LoopRow>()
   for (const r of log.filter((r) => r.event === 'loop.iteration')) {
     const unit = r.unit == null ? '-' : String(r.unit)
-    byKey.set(`${r.loop}:${unit}:${r.iteration}`, {
+    byKey.set(`${r.loop}:${unit}:${r.iteration}:${r.source ?? '-'}:${r.verdict}:${r.resolved}`, {
       loop: String(r.loop), unit, iteration: Number(r.iteration), verdict: String(r.verdict),
       resolved: Boolean(r.resolved), source: (r.source as string | undefined) ?? (Array.isArray(r.findings) && r.findings.length ? `${r.findings.length} finding(s)` : undefined),
     })
