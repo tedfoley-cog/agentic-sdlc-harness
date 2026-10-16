@@ -41,7 +41,12 @@ def parse_dump(text: str) -> dict:
 
 def main() -> None:
     dump, run_id, key = sys.argv[1:4]
-    meta, so = parse_dump(Path(dump).read_text())
+    text = Path(dump).read_text()
+    if text.lstrip().startswith("{"):  # a raw structured_output JSON (e.g. copied from the session) is accepted as-is
+        so = json.loads(text)
+        meta = {"url": so.get("session_url"), "devin_mode": so.get("model")}
+    else:
+        meta, so = parse_dump(text)
     sess_dir = Path("runs") / run_id / "sessions"
     res = {
         "session_id": meta.get("session_id"),

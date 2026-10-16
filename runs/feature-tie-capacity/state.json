@@ -531,6 +531,18 @@
       "blocking_units": [],
       "stage": "coding",
       "status": "open"
+    },
+    {
+      "id": "Q-CODE-1",
+      "question": "For U2, the brief's allowed files are backend/app/flisr.py and backend/tests/**, and backend/app/models.py is explicitly forbidden. U2's own file list, units.json and design section 2 all require backend/app/models.py. Should the U2 boundary be corrected to allow backend/app/models.py and backend/tests/test_flisr_tie_capacity_models.py, with models.py removed from the forbidden list? The current allowed list also leaves out backend/app/api.py, which U3 needs.",
+      "blocking_units": [
+        "U2",
+        "U3"
+      ],
+      "stage": "coding",
+      "status": "answered",
+      "answer": "Yes. The repo contract boundary was wrong for this feature: it predates the approved design. boundaries.coding now allows backend/app/models.py and backend/app/api.py (recorded as contract.amended in the audit log). U2: change backend/app/models.py and backend/tests/test_flisr_tie_capacity_models.py only, tests first. U3 may touch flisr.py, api.py, models.py, tests. firmware/** and legacy/** remain forbidden.",
+      "by": "principal-engineer-standin"
     }
   ],
   "answers": [
@@ -612,6 +624,11 @@
     {
       "id": "Q-DESIGN-3",
       "answer": "Draft PR #13 (DEF-FLISR-7 hold-open guard) lands first and is kept. Design on top of it: a tie refused because its pick-up set touches the faulted section is reported in blocked_ties with a new reason FAULTED_SECTION, evaluated before every capacity reason (precedence FAULTED_SECTION > CAPACITY_INVALID > CAPACITY_UNKNOWN > CAPACITY_STALE > CAPACITY_EXCEEDED). REQ-TIECAP-21 is amended accordingly in the spec by the Design stage (note the amendment in design.md and the trace); the guard's behaviour must not change.",
+      "by": "principal-engineer-standin"
+    },
+    {
+      "id": "Q-CODE-1",
+      "answer": "Yes. The repo contract boundary was wrong for this feature: it predates the approved design. boundaries.coding now allows backend/app/models.py and backend/app/api.py (recorded as contract.amended in the audit log). U2: change backend/app/models.py and backend/tests/test_flisr_tie_capacity_models.py only, tests first. U3 may touch flisr.py, api.py, models.py, tests. firmware/** and legacy/** remain forbidden.",
       "by": "principal-engineer-standin"
     }
   ],
@@ -707,11 +724,13 @@
     }
   },
   "paused_on": {
-    "reason": "awaiting-session",
+    "reason": "questions-open",
     "stage": "coding",
-    "unit": "U2",
-    "attempt": 2,
-    "request": "sessions/coding:U2:2.request.json"
+    "questions": [
+      "Q-CODE-U1-1",
+      "Q-CODE-U1-2"
+    ],
+    "unit": "U2"
   },
   "results": {
     "specify:-:1": {
@@ -4456,14 +4475,52 @@
       "model": "ultra"
     },
     "coding:U2:1": {
-      "verdict": "FAIL",
-      "summary": "session ended with status finished and no structured output",
+      "verdict": "BLOCKED",
+      "summary": "prepare: loaded STD-CODE (1.4), STD-GOV (1.1), STD-SAFETY (3.1); read safety-critical-change SKILL.md, DEMO_NOTES.md, design.md, units.json. execute: stopped before writing code because the brief contradicts itself: U2 exists to add TieCapacity, BlockedTie, the reason enum and RestorationPlan.blocked_ties to backend/app/models.py (units.json, design \u00a72), but the brief's access boundary forbids backend/app/models.py and allows only backend/app/flisr.py and backend/tests/**. STD-CODE-2 says stop with BLOCKED when the brief is wrong; committing only tests would break STD-CODE-1. verify: U1 head green (pytest backend -q: 34 passed, 4 xfailed; ruff clean). deliver: no branch, commit or PR created; no files changed.",
       "evidence": [
         {
-          "kind": "session",
-          "ref": null
+          "kind": "standard",
+          "ref": "STD-CODE-2",
+          "detail": "Change only the files named in the brief; if the brief is wrong, stop with BLOCKED and name the missing file."
+        },
+        {
+          "kind": "requirement",
+          "ref": "brief: Access and boundaries",
+          "detail": "Allowed: backend/app/flisr.py, backend/tests/**. Must not change: backend/app/models.py, firmware/**, legacy/**."
+        },
+        {
+          "kind": "file",
+          "ref": "origin/agent/feature-tie-capacity/design:docs/specs/feature-tie-capacity/units.json",
+          "detail": "U2 files are models.py and test_flisr_tie_capacity_models.py. U3 files are flisr.py, api.py, models.py and tests."
+        },
+        {
+          "kind": "command",
+          "ref": "PYTHONPATH=backend pytest backend -q (agent/feature-tie-capacity/U1 @ 6b4c72d)",
+          "detail": "34 passed, 4 xfailed"
+        },
+        {
+          "kind": "command",
+          "ref": "ruff check backend",
+          "detail": "All checks passed!"
         }
-      ]
+      ],
+      "questions": [
+        {
+          "id": "Q-CODE-1",
+          "question": "For U2, the brief's allowed files are backend/app/flisr.py and backend/tests/**, and backend/app/models.py is explicitly forbidden. U2's own file list, units.json and design section 2 all require backend/app/models.py. Should the U2 boundary be corrected to allow backend/app/models.py and backend/tests/test_flisr_tie_capacity_models.py, with models.py removed from the forbidden list? The current allowed list also leaves out backend/app/api.py, which U3 needs.",
+          "blocking_units": [
+            "U2",
+            "U3"
+          ]
+        }
+      ],
+      "standards_loaded": [
+        "STD-CODE",
+        "STD-GOV",
+        "STD-SAFETY"
+      ],
+      "session_url": "https://devin-gtm.devinenterprise.com/sessions/76c99a6acb2147f5b0f694510231c807",
+      "model": "normal"
     }
   }
 }

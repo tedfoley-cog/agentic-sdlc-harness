@@ -11,7 +11,7 @@ You never merge, approve, close a gate, or move a ticket past ready-for-review. 
 
 ## Access and boundaries
 Target repository: `tedfoley-cog/adms-test-automation-demo` (default branch `main`). Safety classification: **safety-critical**.
-Files you may change: ['backend/app/flisr.py', 'backend/tests/**']. Files you must not change: ['backend/app/models.py', 'firmware/**', 'legacy/**'].
+Files you may change: ['backend/app/flisr.py', 'backend/tests/**', 'backend/app/models.py', 'backend/app/api.py']. Files you must not change: ['firmware/**', 'legacy/**'].
 Commands — build: `npm --prefix console ci --no-audit --no-fund && npm --prefix console run build`; test: `pytest backend -q`; lint: `ruff check backend`.
 Requirement ids match `(?:REQ|DEF)-[A-Z]+-\d{1,3}`; reference them verbatim.
 Protected paths (two human reviewers): ['backend/app/flisr.py', 'firmware/src/**'].
