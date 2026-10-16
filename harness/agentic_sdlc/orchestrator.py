@@ -418,7 +418,12 @@ class Orchestrator:
             if self.verify_commands:
                 commands = self._run_commands(c.branch)
         model_globs = (self.cfg.raw.get("checks") or {}).get("model_globs", ["**/models.py", "**/settings*.py"])
-        results = checks.run_all(diff_text, brief_files=unit.get("files"), commit_messages=commits, pr=pr,
+        # a unit stacked on earlier units carries their files in its PR diff; those are in scope for them, not a leak
+        delivered = [f for u in self.state.get("units", []) if u["id"] != unit["id"]
+                     and (self.state["results"].get(f"coding:{u['id']}:{self.state['attempts'].get('coding:' + u['id'], 0)}") or {}).get("verdict") == "PASS"
+                     for f in u.get("files", [])]
+        brief_files = (unit.get("files") or []) + delivered if unit.get("files") else None
+        results = checks.run_all(diff_text, brief_files=brief_files, commit_messages=commits, pr=pr,
                                  governance=self.cfg.governance, model_globs=model_globs)
         verdict = checks.overall(results)
         if any(r.get("returncode", 0) != 0 for r in commands.values()):

@@ -278,20 +278,9 @@ docs/specs/feature-tie-capacity/architecture-review.md (attempt 5 section) on ag
       },
       {
         "name": "scope",
-        "verdict": "FAIL",
-        "findings": [
-          {
-            "file": "backend/tests/test_flisr_tie_capacity_characterization.py",
-            "rule": "outside-brief",
-            "fix": "Only files named in the brief may change; raise BLOCKED if the brief is wrong."
-          },
-          {
-            "file": "backend/tests/test_flisr_tie_capacity_repro.py",
-            "rule": "outside-brief",
-            "fix": "Only files named in the brief may change; raise BLOCKED if the brief is wrong."
-          }
-        ],
-        "detail": "2 finding(s)"
+        "verdict": "PASS",
+        "findings": [],
+        "detail": "no findings"
       },
       {
         "name": "governance",
@@ -304,7 +293,7 @@ docs/specs/feature-tie-capacity/architecture-review.md (attempt 5 section) on ag
       "build": {
         "cmd": "npm --prefix console ci --no-audit --no-fund && npm --prefix console run build",
         "returncode": 0,
-        "tail": "\nadded 68 packages in 565ms\n\n> qa-coverage-console@0.1.0 build\n> tsc -b && vite build\n\nvite v5.4.11 building for production...\ntransforming...\n\u2713 37 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                   0.43 kB \u2502 gzip:  0.29 kB\ndist/assets/index-BhRQqo7Z.css    5.29 kB \u2502 gzip:  1.63 kB\ndist/assets/index-DvMiGgeB.js   159.79 kB \u2502 gzip: 50.27 kB\n\u2713 built in 411ms\n"
+        "tail": "\nadded 68 packages in 591ms\n\n> qa-coverage-console@0.1.0 build\n> tsc -b && vite build\n\nvite v5.4.11 building for production...\ntransforming...\n\u2713 37 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                   0.43 kB \u2502 gzip:  0.29 kB\ndist/assets/index-BhRQqo7Z.css    5.29 kB \u2502 gzip:  1.63 kB\ndist/assets/index-DvMiGgeB.js   159.79 kB \u2502 gzip: 50.27 kB\n\u2713 built in 401ms\n"
       },
       "lint": {
         "cmd": "ruff check backend",
@@ -314,7 +303,7 @@ docs/specs/feature-tie-capacity/architecture-review.md (attempt 5 section) on ag
       "test": {
         "cmd": "pytest backend -q",
         "returncode": 0,
-        "tail": ".........x.............................................................. [ 60%]\n............................................xxxx                         [100%]\n=============================== warnings summary ===============================\n../../../../../../.pyenv/versions/3.12.13/lib/python3.12/site-packages/fastapi/testclient.py:1\n  /home/ubuntu/.pyenv/versions/3.12.13/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n115 passed, 5 xfailed, 1 warning in 0.66s\n"
+        "tail": ".........x.............................................................. [ 60%]\n............................................xxxx                         [100%]\n=============================== warnings summary ===============================\n../../../../../../.pyenv/versions/3.12.13/lib/python3.12/site-packages/fastapi/testclient.py:1\n  /home/ubuntu/.pyenv/versions/3.12.13/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n115 passed, 5 xfailed, 1 warning in 0.62s\n"
       }
     }
   }
