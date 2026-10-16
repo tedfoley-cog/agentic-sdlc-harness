@@ -1615,6 +1615,54 @@
       "kind": "test",
       "ref": "backend/tests/test_flisr_tie_capacity_models.py@c4d7a62: test_req_tiecap_11_* (enum order, round trip, unknown reason rejected, required fields, default empty, order preserved, existing fields unchanged)",
       "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-1",
+      "kind": "code",
+      "ref": "backend/app/models.py::TieCapacity",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-1",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_models.py::test_req_tiecap_1_*",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-11",
+      "kind": "code",
+      "ref": "backend/app/models.py::TieBlockReason, BlockedTie, RestorationPlan.blocked_ties",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-11",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_models.py::test_req_tiecap_11_*",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-11",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_def_flisr_7.py::test_req_tiecap_11_held_tie_reported_as_faulted_section (strict xfail, U3)",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-11",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_characterization.py (4 x blocked_ties == [])",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-1",
+      "kind": "pr",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/18",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-11",
+      "kind": "pr",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/18",
+      "stage": "coding"
     }
   ],
   "coverage": {
@@ -1622,7 +1670,7 @@
     "with_design": 23,
     "with_code": 4,
     "with_test": 23,
-    "with_pr": 2,
+    "with_pr": 4,
     "test_coverage": 0.958,
     "orphans": [
       "DEF-FLISR-7"
@@ -1683,13 +1731,17 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-1"
         ],
         "code": [
-          "backend/app/models.py@aa8b13b: TIE_CAPACITY_* / AS_OF_* constants, _require_iso_string, IsoAwareDatetime, TieCapacity"
+          "backend/app/models.py@aa8b13b: TIE_CAPACITY_* / AS_OF_* constants, _require_iso_string, IsoAwareDatetime, TieCapacity",
+          "backend/app/models.py::TieCapacity"
         ],
         "test": [
           "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-1",
-          "backend/tests/test_flisr_tie_capacity_models.py@c4d7a62: test_req_tiecap_1_* (rejects JSON + HTTP 422, kw not range-checked, aware ISO-8601 accepted, quality, constants pin P1, stdlib/pydantic-only imports)"
+          "backend/tests/test_flisr_tie_capacity_models.py@c4d7a62: test_req_tiecap_1_* (rejects JSON + HTTP 422, kw not range-checked, aware ISO-8601 accepted, quality, constants pin P1, stdlib/pydantic-only imports)",
+          "backend/tests/test_flisr_tie_capacity_models.py::test_req_tiecap_1_*"
         ],
-        "pr": [],
+        "pr": [
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/18"
+        ],
         "doc": []
       },
       "REQ-TIECAP-13": {
@@ -1891,13 +1943,19 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-11"
         ],
         "code": [
-          "backend/app/models.py@aa8b13b: TieBlockReason (5 members, precedence order), BlockedTie, RestorationPlan.blocked_ties default []"
+          "backend/app/models.py@aa8b13b: TieBlockReason (5 members, precedence order), BlockedTie, RestorationPlan.blocked_ties default []",
+          "backend/app/models.py::TieBlockReason, BlockedTie, RestorationPlan.blocked_ties"
         ],
         "test": [
           "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-11",
-          "backend/tests/test_flisr_tie_capacity_models.py@c4d7a62: test_req_tiecap_11_* (enum order, round trip, unknown reason rejected, required fields, default empty, order preserved, existing fields unchanged)"
+          "backend/tests/test_flisr_tie_capacity_models.py@c4d7a62: test_req_tiecap_11_* (enum order, round trip, unknown reason rejected, required fields, default empty, order preserved, existing fields unchanged)",
+          "backend/tests/test_flisr_tie_capacity_models.py::test_req_tiecap_11_*",
+          "backend/tests/test_flisr_def_flisr_7.py::test_req_tiecap_11_held_tie_reported_as_faulted_section (strict xfail, U3)",
+          "backend/tests/test_flisr_characterization.py (4 x blocked_ties == [])"
         ],
-        "pr": [],
+        "pr": [
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/18"
+        ],
         "doc": []
       },
       "REQ-TIECAP-12": {
