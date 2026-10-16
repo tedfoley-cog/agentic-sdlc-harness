@@ -21,9 +21,9 @@ commands:
   check_traceability: python3 tools/check_traceability.py
 # relay harness.yaml requirements.id_pattern is `^REQ-(PLT|SAF|[0-9]{2,3}[A-Z]?)-[0-9]{3}$`; the anchors are
 # replaced by lookarounds because the trace scanner searches ids inside prose (fullmatch is still applied to
-# trace rows): `REQ-PLT-0010` must not register a phantom `REQ-PLT-001`, and `_REQ-PLT-001_` (markdown italics)
+# trace rows): `REQ-PLT-0010` / `REQ-PLT-001A` must not register a phantom `REQ-PLT-001`, and `_REQ-PLT-001_` (markdown italics)
 # must still be found, which `\b` would miss since `_` is a word character.
-requirement_id_pattern: (?<![A-Za-z0-9])REQ-(?:PLT|SAF|[0-9]{2,3}[A-Z]?)-[0-9]{3}(?![0-9])
+requirement_id_pattern: (?<![A-Za-z0-9])REQ-(?:PLT|SAF|[0-9]{2,3}[A-Z]?)-[0-9]{3}(?![A-Za-z0-9])
 safety_classification: safety-critical   # relay contract: protection-function (IEC 61508 context)
 protected_paths:                           # relay harness.yaml: protected_paths (two human reviewers, CODEOWNERS)
 - pattern: firmware/src/prot/**
