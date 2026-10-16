@@ -7,7 +7,7 @@ const GATE_STAGE = /^gate:/
 export default function RunView({ b }: { b: RunBundle }) {
   const [open, setOpen] = useState<StageRow | null>(null)
   const cov = useMemo(() => {
-    const reqs = b.trace.requirements
+    const reqs = b.trace.requirements.filter((r) => !b.trace.waivers[r])
     const has = (k: string) => reqs.filter((r) => b.trace.rows.some((x) => x.requirement_id === r && x.kind === k)).length
     return { n: reqs.length, design: has('design'), code: has('code'), test: has('test'), pr: has('pr') }
   }, [b.trace])

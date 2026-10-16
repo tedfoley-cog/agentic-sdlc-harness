@@ -23,7 +23,7 @@ export interface GateRow {
 }
 export interface LoopRow { loop: string; unit: string; iteration: number; verdict: string; resolved: boolean; source?: string }
 export interface TraceRow { requirement_id: string; kind: string; ref: string; stage?: string; detail?: string }
-export interface TraceFile { requirements: string[]; rows: TraceRow[] }
+export interface TraceFile { requirements: string[]; rows: TraceRow[]; waivers: Record<string, { actor: string; reason: string }> }
 export interface Kpis {
   run_id: string; workflow: string; status: string; autonomy: number
   first_pass_approval: Record<string, boolean>; first_pass_rate: number
@@ -31,7 +31,7 @@ export interface Kpis {
   requirement_test_coverage: number; human_review_minutes: number; human_review_hours: number
   cycle_time_minutes: number | null; acus: number; inference_cost_usd: number
   inference_cost_per_story_point: number | null; story_points: number
-  gates: { gate: string; decision: string; actor: string; minutes: number }[]
+  gates: { gate: string; decision?: string; status?: string; actor?: string; minutes?: number | null }[]
   computed_at: string
 }
 export interface RunState {

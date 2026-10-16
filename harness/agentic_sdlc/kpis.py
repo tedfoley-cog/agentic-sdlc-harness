@@ -20,6 +20,15 @@ def _minutes(a: str, b: str) -> float:
     return round((fb - fa).total_seconds() / 60, 1)
 
 
+def _gate_minutes(g: dict[str, Any]) -> float | None:
+    """Explicit human time if recorded, else gate open -> decision elapsed; None while undecided."""
+    if g.get("review_minutes") is not None:
+        return float(g["review_minutes"])
+    if g.get("decided"):
+        return round(_minutes(g["opened"], g["decided"]), 1)
+    return None
+
+
 def compute(run_dir: str | Path, story_points: float = 1.0, acu_usd: float = ACU_USD_RATE,
             acus: float | None = None, human_minutes_override: float | None = None) -> dict[str, Any]:
     run_dir = Path(run_dir)
@@ -80,7 +89,8 @@ def compute(run_dir: str | Path, story_points: float = 1.0, acu_usd: float = ACU
         "inference_cost_usd": cost,
         "story_points": story_points,
         "inference_cost_per_story_point": round(cost / story_points, 2) if story_points else None,
-        "gates": [{"gate": g["gate"], "status": g["status"], "actor": g.get("actor")} for g in state["gates"]],
+        "gates": [{"gate": g["gate"], "status": g["status"], "decision": g["status"], "actor": g.get("actor"),
+                   "minutes": _gate_minutes(g)} for g in state["gates"]],
         "computed_at": records[-1]["ts"] if records else None,
     }
     (run_dir / "kpis.json").write_text(json.dumps(kpis, indent=2))

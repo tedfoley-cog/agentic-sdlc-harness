@@ -66,6 +66,9 @@ harness run --workflow feature --config examples/targets/adms/harness.yaml \
 harness status <run-id>; harness answer <run-id> Q-SPEC-1 --actor <login> --text "..."
 harness resume <run-id>                                  # after a gate label / session result lands
 harness replay <run-id>                                  # verify the chain, rebuild state from the log
+harness extend <run-id> --loop architect --rounds 1 --actor <login> --reason "..."   # human extends an escalated loop
+harness waive <run-id> --requirement DEF-X-1 --actor <login> --reason "..."        # human waives a traced id (Trace NEEDS-HUMAN)
+harness kpis <run-id>                                    # per-run KPIs, appended to runs/kpi_history.jsonl
 harness check --diff change.diff --brief-files backend/app/flisr.py   # deterministic checks alone
 harness export && npm --prefix console run dev           # console on :5173
 npx --prefix console playwright test                     # UI gauntlet (builds + serves on :4173)

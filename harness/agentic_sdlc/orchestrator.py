@@ -322,8 +322,10 @@ class Orchestrator:
         self._advance()
 
     def _log_iteration(self, **kw: Any) -> None:
-        """Replayed loop rounds (after a pause/resume) must not be logged twice; one record per round."""
-        key = f"{kw.get('loop')}:{kw.get('unit', '-')}:{kw.get('iteration')}"
+        """Replayed loop rounds (after a pause/resume) must not be logged twice. A round can legitimately
+        carry several records (coding FAIL from verify, then QA PASS), so the key includes the outcome."""
+        key = (f"{kw.get('loop')}:{kw.get('unit', '-')}:{kw.get('iteration')}:"
+               f"{kw.get('source', '-')}:{kw.get('verdict')}:{kw.get('resolved')}")
         if key in self.state.setdefault("logged_iterations", []):
             return
         self.state["logged_iterations"].append(key)
