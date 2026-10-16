@@ -1,0 +1,169 @@
+{
+  "session_id": "8fd9b71d2ce744299f7035366fc1b58a",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/8fd9b71d2ce744299f7035366fc1b58a",
+  "status": "waiting_for_user",
+  "devin_mode": "ultra",
+  "acus": 11.271102753114185,
+  "structured_output": {
+    "verdict": "PASS",
+    "model": "ultra",
+    "branch": "agent/feature-tie-capacity/qa-U4",
+    "pr_url": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/23",
+    "session_url": "https://devin-gtm.devinenterprise.com/sessions/8fd9b71d2ce744299f7035366fc1b58a",
+    "standards_loaded": [
+      "STD-GOV",
+      "STD-QA",
+      "STD-SAFETY",
+      ".agents/skills/safety-critical-change/SKILL.md",
+      "DEMO_NOTES.md"
+    ],
+    "summary": "Independent QA of U4 (REQ-TIECAP-21) on agent/feature-tie-capacity/U4 @ e2a90c4: build/lint/full pytest re-run by QA (421 passed, ruff clean, console build rc 0). QA-owned oracle in backend/tests/test_flisr_tie_capacity_qa_u4.py (own BFS topology, spec literals 0.5 kW / 20 s / -2 s / \"GOOD\", no app.network or app.flisr helpers, AST-enforced) over 800 seeded radial+branched cases (seed 7041016; 442 multi-tie plans, 41 closes at L == C + 0.5, 18 stale-by-1us, 185 expected FlisrError refusals, 120 legacy inputs) -> 0 violations. Hand boundary vectors on a two-island feeder all match spec; per-tie blocking keeps switch order with one entry each. 18 in-process planner mutants (tolerance, age, lead, quality casing, missing->0, validity/future checks deleted, EXCEEDED closes, precedence swap, DEF-FLISR-7 hold removed, section-load/L-range checks deleted, blocked-tie listing/accounting) each fail both Coding's U4 test and the QA sweep; identity mutant keeps both green. STD-QA-4 failure modes explicitly checked; REQ-TIECAP-21 marker present on Coding and QA files (STD-QA-6). No production code touched. Draft PR #23 into U4 with ai-generated label and AI-Governance trailer stage=qa model=ultra; nothing merged/approved/advanced. Findings for assessor (not failures): STD-SAFETY-7 uncertified tooling; backend CI red on both #22 and #23 due to pre-existing tools/build_coverage_report.py:183 UP017 outside U4 scope; ties sharing one island both count that island's customers in customers_remaining when one is blocked (accounting only).",
+    "evidence": [
+      {
+        "kind": "command",
+        "ref": "npm --prefix console ci --no-audit --no-fund && npm --prefix console run build",
+        "detail": "rc 0 on qa-U4 (re-run by QA; /tmp/qa_build2.log)"
+      },
+      {
+        "kind": "command",
+        "ref": "ruff check backend",
+        "detail": "All checks passed (qa-U4 @ 69aa86a)"
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend -q",
+        "detail": "421 passed, 1 warning (355 on U4 head before QA file + 66 QA tests)"
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u4.py::test_qa_u4_invariant_holds_over_qa_seeded_feeders",
+        "detail": "seed=7041016 cases=800 violations=0; radial 411 / branched 389; FAULTED_SECTION 546, CAPACITY_INVALID 261, CAPACITY_UNKNOWN 359, CAPACITY_STALE 142, CAPACITY_EXCEEDED 121, CLOSED 120; closed_at_L_eq_C_plus_0.5 41; expected_refusal 185"
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u4.py::test_qa_u4_boundary_vectors_on_tie_a",
+        "detail": "C=L-0.5 closes; nextafter below -> CAPACITY_EXCEEDED; age 20.0 fresh / 20.000001 STALE; lead 2.0 valid / 2.000001 INVALID; NaN/+-inf/negative INVALID; non-GOOD and missing UNKNOWN; STALE beats EXCEEDED"
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u4.py::test_qa_u4_per_tie_blocking_keeps_switch_order_and_one_entry_each",
+        "detail": "two-island feeder: TA 1000.125 kW, TB 600.25 kW; blocked_ties one entry each in switch order"
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u4.py::test_qa_u4_coding_test_fails_on_each_forbidden_planner_behaviour",
+        "detail": "18 mutants detected by both Coding U4 test (11-514/1000 cases) and QA sweep (4-173/300); 'L range check deleted' surfaces as tie_capacity_verdict ValueError precondition"
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u4.py::test_qa_u4_both_oracles_are_independent_and_never_default_a_missing_value",
+        "detail": "AST: neither QA nor Coding oracle imports app.network/app.flisr helpers, uses TIE_CAPACITY_* constants, or defaults a capacity lookup (STD-QA-4 missing-input-as-zero)"
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u4.py::test_qa_u4_coding_test_meets_std_safety_5_and_names_the_requirement",
+        "detail": "Coding U4 INVARIANT_CASES=1000 >= 500, requirement marker REQ-TIECAP-21, prints seed/cases"
+      },
+      {
+        "kind": "commit",
+        "ref": "69aa86a57b127eb720620ef2f06ee1dbe9d029d7",
+        "detail": "QA commit with trailer AI-Governance: run=feature-tie-capacity stage=qa agent=devin model=ultra; +722/-0, test file only"
+      },
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/23",
+        "detail": "draft=true, labels=[ai-generated], base=agent/feature-tie-capacity/U4, head=agent/feature-tie-capacity/qa-U4"
+      },
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/22",
+        "detail": "Coding U4 PR under review; draft, ai-generated, head e2a90c4"
+      },
+      {
+        "kind": "url",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/actions/runs/38837629665/job/116770187427",
+        "detail": "backend CI failure: ruff check backend tools -> UP017 tools/build_coverage_report.py:183:36; identical failure on U4 head e2a90c4; outside U4 scope, reported not fixed"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-SAFETY-7",
+        "detail": "Finding: pytest/ruff/this harness are uncertified tools; no certification credit claimed"
+      },
+      {
+        "kind": "note",
+        "ref": "customers_remaining accounting",
+        "detail": "Observation: when two ties pick up the same de-energized island, planner (and QA oracle) count the blocked tie's customers in customers_remaining even if another tie restored them; accounting only, not REQ-TIECAP-21"
+      },
+      {
+        "kind": "artifact",
+        "ref": "/home/ubuntu/qa_report_u4.md",
+        "detail": "QA report attached to session"
+      }
+    ],
+    "trace": [
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u4.py::test_qa_u4_invariant_holds_over_qa_seeded_feeders"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u4.py::test_qa_u4_boundary_vectors_on_tie_a"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u4.py::test_qa_u4_per_tie_blocking_keeps_switch_order_and_one_entry_each"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u4.py::test_qa_u4_coding_test_fails_on_each_forbidden_planner_behaviour"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_invariant.py::test_req_tiecap_21_no_tie_closed_without_usable_capacity_over_seeded_feeders"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "code",
+        "ref": "backend/app/flisr.py::build_plan / tie_capacity_verdict @ e2a90c4"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md (U4, amended precedence, invalid-load refusal)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/23"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "doc",
+        "ref": "/home/ubuntu/qa_report_u4.md"
+      }
+    ],
+    "artifacts": {
+      "qa_report": "/home/ubuntu/qa_report_u4.md",
+      "qa_test_file": "backend/tests/test_flisr_tie_capacity_qa_u4.py",
+      "qa_commit": "69aa86a57b127eb720620ef2f06ee1dbe9d029d7",
+      "under_test_commit": "e2a90c440908d707e22518ccb2e315fa77dfc68a",
+      "qa_seed": 7041016,
+      "qa_cases": 800,
+      "qa_violations": 0,
+      "mutants_detected": "18/18",
+      "pytest": "421 passed",
+      "ruff": "All checks passed",
+      "console_build_rc": 0,
+      "ci_note": "backend job red on #22 and #23: pre-existing tools/build_coverage_report.py:183 UP017, outside U4 scope"
+    },
+    "files_touched": [
+      "backend/tests/test_flisr_tie_capacity_qa_u4.py"
+    ],
+    "questions": []
+  }
+}
