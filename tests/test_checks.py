@@ -69,3 +69,11 @@ def test_governance_check():
     res2 = checks.run_all("", commit_messages=["no trailer"], pr={"draft": True, "labels": ["ai-generated"],
                                                                   "head": "agent/r1/U1"}, governance=gov)
     assert [f["rule"] for f in res2[-1].findings] == ["missing-governance-trailer"]
+
+
+def test_zero_pattern_in_docstring_or_comment_is_not_a_finding():
+    prose = DIFF_ZERO.replace('+    load = telemetry.get("load_kw", 0)\n+    margin = capacity or 0\n',
+                              '+    """Inspection: no `or 0` left in flisr.py."""\n+    load = telemetry.get("load_kw")  # was `or 0`\n')
+    assert prose != DIFF_ZERO
+    res = {r.name: r for r in checks.run_all(prose)}
+    assert res["missing_input_as_zero"].verdict == "PASS", res["missing_input_as_zero"].findings

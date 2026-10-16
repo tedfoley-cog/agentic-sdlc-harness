@@ -24,6 +24,13 @@ PATTERNS = [
     (re.compile(r"\|\s*None\s*=\s*0(\.0)?\b"), "nullable field defaults to zero"),
 ]
 ALLOW = re.compile(r"#\s*harness:\s*zero-ok\s+\S+")
+STRING_LITERAL = re.compile(r"(\"\"\"|\'\'\'|\"|\')(?:(?!\1).)*\1")
+
+
+def _code_only(text: str) -> str:
+    """Drop string-literal contents and trailing comments so prose about `or 0` is not a finding."""
+    text = STRING_LITERAL.sub('""', text)
+    return text.split("#", 1)[0] if "#" in text else text
 
 
 def check_missing_input_as_zero(files: list[DiffFile]) -> list[dict[str, Any]]:
@@ -34,7 +41,7 @@ def check_missing_input_as_zero(files: list[DiffFile]) -> list[dict[str, Any]]:
         pending_handler = False
         for no, text in f.added_lines:
             stripped = text.strip()
-            if ALLOW.search(text) or stripped.startswith(("#", "//", "*")):
+            if ALLOW.search(text) or stripped.startswith(("#", "//", "*", '"', "'")):
                 pending_handler = False
                 continue
             if re.match(r"^\s*(except\b.*:|catch\b.*\{?)\s*$", text):
@@ -47,8 +54,9 @@ def check_missing_input_as_zero(files: list[DiffFile]) -> list[dict[str, Any]]:
                 pending_handler = False
                 continue
             pending_handler = False
+            code = _code_only(text)
             for pat, why in PATTERNS:
-                if pat.search(text):
+                if pat.search(code):
                     findings.append({"file": f.path, "line": no, "rule": "missing-input-as-zero",
                                      "text": stripped, "why": why,
                                      "fix": "Refuse or flag the missing/invalid input (raise, return None/Unavailable, "
