@@ -1,0 +1,189 @@
+# Harness target config for tedfoley-cog/protection-relay-platform-demo.
+# Translated from the relay repo's own `harness.yaml` (schema relay-platform-harness/1) and
+# `docs/HARNESS_CONTRACT.md` into this harness's contract format (see examples/targets/adms/harness.yaml).
+repo: tedfoley-cog/protection-relay-platform-demo
+default_branch: main
+commands:
+  # The orchestrator runs build -> lint -> test in a fresh worktree of the agent branch, so build
+  # installs the setting tool's dependencies first. The relay repo's CI runs the same commands.
+  build: make -C shared/relay_math all && npm --prefix tool ci --no-audit --no-fund && npm --prefix tool run build
+  lint: npm --prefix tool run lint
+  test: make -C firmware test && npm --prefix tool run test:e2e && python3 tools/check_failure_modes.py --base origin/main && python3 tools/check_traceability.py && python3 tools/check_protected_paths.py --base origin/main
+  # Individual commands as the relay contract names them (relay harness.yaml: commands); the three
+  # check_*.py scripts take the arguments the relay CI passes (`--base <PR base>`, none for traceability).
+  test_firmware_host: make -C firmware test
+  build_shared: make -C shared/relay_math all
+  lint_tool: npm --prefix tool run lint
+  build_tool: npm --prefix tool run build
+  test_tool_e2e: npm --prefix tool run test:e2e
+  check_failure_modes: python3 tools/check_failure_modes.py --base origin/main
+  check_protected_paths: python3 tools/check_protected_paths.py --base origin/main
+  check_traceability: python3 tools/check_traceability.py
+# relay harness.yaml requirements.id_pattern is `^REQ-(PLT|SAF|[0-9]{2,3}[A-Z]?)-[0-9]{3}$`; the anchors are
+# replaced by lookarounds because the trace scanner searches ids inside prose (fullmatch is still applied to
+# trace rows): `REQ-PLT-0010` / `REQ-PLT-001A` must not register a phantom `REQ-PLT-001`, and `_REQ-PLT-001_` (markdown italics)
+# must still be found, which `\b` would miss since `_` is a word character.
+requirement_id_pattern: (?<![A-Za-z0-9])REQ-(?:PLT|SAF|[0-9]{2,3}[A-Z]?)-[0-9]{3}(?![A-Za-z0-9])
+safety_classification: safety-critical   # relay contract: protection-function (IEC 61508 context)
+protected_paths:                           # relay harness.yaml: protected_paths (two human reviewers, CODEOWNERS)
+- pattern: firmware/src/prot/**
+  reviewers: 2
+  reason: protection elements
+- pattern: firmware/src/ied/ied_app.c
+  reviewers: 2
+  reason: protection / trip logic
+- pattern: firmware/src/rt/**
+  reviewers: 2
+  reason: measurement chain
+- pattern: firmware/src/dsp/**
+  reviewers: 2
+  reason: measurement chain
+- pattern: firmware/include/ied_config.h
+  reviewers: 2
+  reason: measurement chain (platform figures)
+- pattern: firmware/include/bay_config.h
+  reviewers: 2
+  reason: measurement chain (bay configuration)
+- pattern: firmware/src/ied/event_recorder.c
+  reviewers: 2
+  reason: trip logic (SOE)
+- pattern: shared/relay_math/**
+  reviewers: 2
+  reason: shared relay math (firmware + WASM)
+- pattern: firmware/src/ied/settings_file.c
+  reviewers: 2
+  reason: settings path
+standards:
+  # The governing standards are the relay repo's own docs/standards/*.md, loaded at runtime from a sibling
+  # clone (path relative to the harness root). Mapping of the ids this harness requires onto that directory:
+  #   STD-REQ    -> REQUIREMENTS_CONVENTION  (docs/standards/REQUIREMENTS_CONVENTION.md)
+  #   STD-ARCH   -> INTERFACE_CONTRACTS      (docs/standards/INTERFACE_CONTRACTS.md)
+  #   STD-CODE   -> CODING_STANDARD          (docs/standards/CODING_STANDARD.md)
+  #   STD-GOV    -> no counterpart in docs/standards/  => stage loads BLOCKED (standard-missing)
+  #   STD-SAFETY -> no counterpart in docs/standards/  (the safety procedure is a skill, .agents/skills/safety-critical-change, not a standard)
+  #   STD-QA     -> no counterpart in docs/standards/
+  #   STD-DOC    -> no counterpart in docs/standards/
+  # Missing standards are listed under their harness ids so the run blocks on them instead of assuming them.
+  provider: markdown
+  location: ../protection-relay-platform-demo/docs/standards
+  required:
+  - STD-GOV
+  - STD-SAFETY
+  by_stage:
+    specify:
+    - REQUIREMENTS_CONVENTION
+    decompose:
+    - REQUIREMENTS_CONVENTION
+    design:
+    - INTERFACE_CONTRACTS
+    architect:
+    - INTERFACE_CONTRACTS
+    coding:
+    - CODING_STANDARD
+    fix:
+    - CODING_STANDARD
+    qa:
+    - STD-QA
+    integrate:
+    - STD-GOV
+    document:
+    - STD-DOC
+    trace:
+    - REQUIREMENTS_CONVENTION
+    - STD-GOV
+    release:
+    - STD-GOV
+instructions:                              # relay harness.yaml: safety.* paths and docs/HARNESS_CONTRACT.md
+- .agents/skills/safety-critical-change/SKILL.md
+- docs/HARNESS_CONTRACT.md
+- docs/standards/REQUIREMENTS_CONVENTION.md
+- docs/platform/OPEN_QUESTIONS.md
+- docs/platform/PERFORMANCE_TARGETS.md
+- docs/platform/PLATFORM_FIGURES.md
+- docs/templates/DESIGN_SPEC_TEMPLATE.md
+- docs/templates/VALIDATION_PLAN_TEMPLATE.md
+boundaries:
+  coding:
+    allowed:
+    - firmware/src/prot/**
+    - shared/relay_math/**
+    - firmware/tests/**
+    - firmware/testset/**
+    - docs/elements/87B/**
+    - settings/**
+    - tool/src/**
+    forbidden:
+    - firmware/src/rt/**
+    - firmware/src/dsp/**
+    - firmware/include/**
+  fix:
+    allowed:
+    - firmware/src/prot/**
+    - shared/relay_math/**
+    - firmware/tests/**
+    - firmware/testset/**
+    forbidden:
+    - firmware/src/rt/**
+    - firmware/src/dsp/**
+    - firmware/include/**
+  document:
+    allowed:
+    - docs/**
+    - README.md
+layers:                                    # relay repo structure (docs/platform/MEASUREMENT_CHAIN.md, INTERFACE_CONTRACTS.md)
+  models:
+  - firmware/include/**
+  - firmware/src/ied/settings_file.c
+  measurement:
+  - firmware/src/rt/**
+  - firmware/src/dsp/**
+  logic:
+  - firmware/src/prot/**
+  - firmware/src/ied/**
+  - shared/relay_math/**
+  ui:
+  - tool/**
+  visibility:
+    logic:
+    - measurement
+    - models
+    measurement:
+    - models
+    ui:
+    - models
+loops:
+  architect: 2
+  qa: 2
+  rca: 2
+models:
+  default: normal
+  coding: normal
+  qa: ultra
+  evaluate: ultra
+gates:
+  # File provider, as in runs/feature-tie-capacity: the only GitHub identity available to the dry run is a bot,
+  # which the GitHub gate provider correctly ignores. Decisions are recorded in runs/<id>/gates/*.decision.json
+  # by the human (actor login), never by the agent.
+  provider: file
+  repo: tedfoley-cog/protection-relay-platform-demo
+  approve_label: gate:approved
+  reject_label: gate:rejected
+  min_reviewers: 1
+governance:
+  branch_prefix: agent/
+  draft_only: true
+  pr_label: ai-generated
+  trailer: AI-Governance
+checks:                                    # relay failure_mode_checks F1: data model mixed with settings, scaling or logic
+  model_globs:
+  - firmware/include/**
+  - '**/settings_file.c'
+rca:
+  fix_files:
+  - firmware/src/prot/**
+  - shared/relay_math/**
+  - firmware/tests/**
+release:
+  enabled: false
+limits:
+  max_acu_per_stage: 15
