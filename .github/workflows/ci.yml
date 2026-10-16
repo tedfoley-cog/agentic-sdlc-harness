@@ -29,7 +29,7 @@ jobs:
       - run: npm --prefix console run typecheck
       - run: npm --prefix console run build
       - run: npx --prefix console playwright install --with-deps chromium
-      - run: npx --prefix console playwright test
+      - run: npx --prefix console playwright test -c console/playwright.config.ts
         env: { CI: '1' }
       - uses: actions/upload-artifact@v4
         if: failure()
