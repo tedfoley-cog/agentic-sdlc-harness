@@ -87,7 +87,7 @@ layers:
     ui:
     - api
 loops:
-  architect: 4
+  architect: 5
   qa: 2
   rca: 2
 models:
