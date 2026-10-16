@@ -1741,14 +1741,248 @@
       "kind": "pr",
       "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/19",
       "stage": "qa"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-2",
+      "kind": "code",
+      "ref": "backend/app/flisr.py::build_plan (as_of resolution)",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-2",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_2_*",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-3",
+      "kind": "code",
+      "ref": "backend/app/flisr.py::tie_capacity_verdict",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-3",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_3_*",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-4",
+      "kind": "code",
+      "ref": "backend/app/flisr.py::tie_capacity_verdict",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-4",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_3_4_*",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-5",
+      "kind": "code",
+      "ref": "backend/app/flisr.py::build_plan (no default capacity)",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-5",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_5_*; test_flisr_tie_capacity_repro.py",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-6",
+      "kind": "code",
+      "ref": "backend/app/flisr.py::tie_capacity_verdict",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-6",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_6_stale_boundary",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-7",
+      "kind": "code",
+      "ref": "backend/app/flisr.py::tie_capacity_verdict",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-7",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_7_future_dated_boundary",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-8",
+      "kind": "code",
+      "ref": "backend/app/flisr.py::_not_finite_nonneg",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-8",
+      "kind": "test",
+      "ref": "test_flisr_tie_capacity_planner.py::test_req_tiecap_8_*; test_flisr_tie_capacity_api.py::test_req_tiecap_8_*",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-9",
+      "kind": "code",
+      "ref": "backend/app/flisr.py::build_plan tie loop order + tie_capacity_verdict",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-9",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_9_*",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-10",
+      "kind": "code",
+      "ref": "backend/app/flisr.py::build_plan",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-10",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_10_*",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-12",
+      "kind": "code",
+      "ref": "backend/app/flisr.py::_blocked_note",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-12",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_12_*",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-13",
+      "kind": "code",
+      "ref": "backend/app/api.py::FlisrRequest, flisr_plan, _request_validation_error",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-13",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_api.py::test_req_tiecap_13_*",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-14",
+      "kind": "code",
+      "ref": "backend/app/models.py::RestorationPlan.as_of",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-14",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_api.py::test_req_tiecap_14_*",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-15",
+      "kind": "code",
+      "ref": "backend/app/api.py::FlisrRequest._mutually_exclusive; flisr.build_plan",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-15",
+      "kind": "test",
+      "ref": "test_flisr_tie_capacity_planner.py::test_req_tiecap_15_both_maps_raise; test_flisr_tie_capacity_api.py both_maps cases",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-16",
+      "kind": "code",
+      "ref": "backend/app/flisr.py::_legacy_to_tie_capacity; models.RestorationPlan.deprecations",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-16",
+      "kind": "test",
+      "ref": "test_flisr_tie_capacity_planner.py::test_req_tiecap_16_*; test_flisr_tie_capacity_api.py::test_req_tiecap_16_*",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-17",
+      "kind": "code",
+      "ref": "backend/app/api.py::_flisr_plan_description",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-17",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_api.py::test_req_tiecap_17_openapi_description_carries_deprecation_note",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-18",
+      "kind": "code",
+      "ref": "backend/app/flisr.py::build_plan accounting",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-18",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_18_*",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-20",
+      "kind": "code",
+      "ref": "backend/app/flisr.py::_utc_now (read once in build_plan)",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-20",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_20_*",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-23",
+      "kind": "code",
+      "ref": "backend/app/api.py::server_now, _check_as_of_bound",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-23",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_api.py::test_req_tiecap_23_*",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-11",
+      "kind": "code",
+      "ref": "backend/app/flisr.py::build_plan guard branch (FAULTED_SECTION)",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-11",
+      "kind": "test",
+      "ref": "test_flisr_def_flisr_7.py::test_req_tiecap_11_held_tie_reported_as_faulted_section; test_flisr_tie_capacity_planner.py::test_req_tiecap_11_*",
+      "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-2",
+      "kind": "pr",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/20",
+      "stage": "coding"
     }
   ],
   "coverage": {
     "requirements": 24,
     "with_design": 23,
-    "with_code": 4,
+    "with_code": 20,
     "with_test": 23,
-    "with_pr": 4,
+    "with_pr": 5,
     "test_coverage": 0.958,
     "orphans": [
       "DEF-FLISR-7"
@@ -1766,9 +2000,12 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-23 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-23"
         ],
-        "code": [],
+        "code": [
+          "backend/app/api.py::server_now, _check_as_of_bound"
+        ],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-23"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-23",
+          "backend/tests/test_flisr_tie_capacity_api.py::test_req_tiecap_23_*"
         ],
         "pr": [],
         "doc": []
@@ -1786,12 +2023,14 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-8"
         ],
         "code": [
-          "backend/app/flisr.py `if transferred > available` (NaN/inf never exceeded)"
+          "backend/app/flisr.py `if transferred > available` (NaN/inf never exceeded)",
+          "backend/app/flisr.py::_not_finite_nonneg"
         ],
         "test": [
           "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-8",
           "backend/tests/test_flisr_tie_capacity_repro.py::test_req_tiecap_8_repro_non_finite_capacity_never_closes_tie",
-          "backend/tests/test_flisr_tie_capacity_repro.py (strict xfail, NaN and +inf capacity)"
+          "backend/tests/test_flisr_tie_capacity_repro.py (strict xfail, NaN and +inf capacity)",
+          "test_flisr_tie_capacity_planner.py::test_req_tiecap_8_*; test_flisr_tie_capacity_api.py::test_req_tiecap_8_*"
         ],
         "pr": [],
         "doc": []
@@ -1842,9 +2081,12 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-13 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-13"
         ],
-        "code": [],
+        "code": [
+          "backend/app/api.py::FlisrRequest, flisr_plan, _request_validation_error"
+        ],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-13"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-13",
+          "backend/tests/test_flisr_tie_capacity_api.py::test_req_tiecap_13_*"
         ],
         "pr": [],
         "doc": []
@@ -1861,11 +2103,16 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-2 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-2"
         ],
-        "code": [],
-        "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-2"
+        "code": [
+          "backend/app/flisr.py::build_plan (as_of resolution)"
         ],
-        "pr": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-2",
+          "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_2_*"
+        ],
+        "pr": [
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/20"
+        ],
         "doc": []
       },
       "REQ-TIECAP-5": {
@@ -1881,12 +2128,14 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-5"
         ],
         "code": [
-          "backend/app/flisr.py `tie_capacity_kw.get(switch.mrid, 0.0)`"
+          "backend/app/flisr.py `tie_capacity_kw.get(switch.mrid, 0.0)`",
+          "backend/app/flisr.py::build_plan (no default capacity)"
         ],
         "test": [
           "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-5",
           "backend/tests/test_flisr_tie_capacity_repro.py::test_req_tiecap_5_repro_missing_capacity_blocks_tie_as_unknown",
-          "backend/tests/test_flisr_tie_capacity_repro.py (strict xfail, None and {} capacity)"
+          "backend/tests/test_flisr_tie_capacity_repro.py (strict xfail, None and {} capacity)",
+          "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_5_*; test_flisr_tie_capacity_repro.py"
         ],
         "pr": [],
         "doc": []
@@ -1905,9 +2154,12 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-3 @ 8d49338 \u2014 A-6: contradicts REQ-TIECAP-21 for guard-held ties",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-3"
         ],
-        "code": [],
+        "code": [
+          "backend/app/flisr.py::tie_capacity_verdict"
+        ],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-3"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-3",
+          "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_3_*"
         ],
         "pr": [
           "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/15"
@@ -1929,9 +2181,12 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-4 @ 8d49338 \u2014 A-6: contradicts REQ-TIECAP-21 for guard-held ties",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-4"
         ],
-        "code": [],
+        "code": [
+          "backend/app/flisr.py::tie_capacity_verdict"
+        ],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-4"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-4",
+          "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_3_4_*"
         ],
         "pr": [],
         "doc": [
@@ -1950,9 +2205,12 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-6 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-6"
         ],
-        "code": [],
+        "code": [
+          "backend/app/flisr.py::tie_capacity_verdict"
+        ],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-6"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-6",
+          "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_6_stale_boundary"
         ],
         "pr": [],
         "doc": []
@@ -1969,9 +2227,12 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-7 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-7"
         ],
-        "code": [],
+        "code": [
+          "backend/app/flisr.py::tie_capacity_verdict"
+        ],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-7"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-7",
+          "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_7_future_dated_boundary"
         ],
         "pr": [],
         "doc": []
@@ -1989,9 +2250,12 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-9 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-9"
         ],
-        "code": [],
+        "code": [
+          "backend/app/flisr.py::build_plan tie loop order + tie_capacity_verdict"
+        ],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-9"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-9",
+          "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_9_*"
         ],
         "pr": [],
         "doc": []
@@ -2008,9 +2272,12 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-10 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-10"
         ],
-        "code": [],
+        "code": [
+          "backend/app/flisr.py::build_plan"
+        ],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-10"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-10",
+          "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_10_*"
         ],
         "pr": [],
         "doc": []
@@ -2031,7 +2298,8 @@
         "code": [
           "backend/app/models.py@aa8b13b: TieBlockReason (5 members, precedence order), BlockedTie, RestorationPlan.blocked_ties default []",
           "backend/app/models.py::TieBlockReason, BlockedTie, RestorationPlan.blocked_ties",
-          "backend/app/models.py::TieBlockReason, BlockedTie, RestorationPlan.blocked_ties (d9235f0, inspected)"
+          "backend/app/models.py::TieBlockReason, BlockedTie, RestorationPlan.blocked_ties (d9235f0, inspected)",
+          "backend/app/flisr.py::build_plan guard branch (FAULTED_SECTION)"
         ],
         "test": [
           "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-11",
@@ -2041,7 +2309,8 @@
           "backend/tests/test_flisr_characterization.py (4 x blocked_ties == [])",
           "backend/tests/test_flisr_tie_capacity_models.py::test_req_tiecap_11_*; backend/tests/test_flisr_characterization.py (blocked_ties == []); backend/tests/test_flisr_def_flisr_7.py::test_req_tiecap_11_held_tie_reported_as_faulted_section (strict xfail -> U3)",
           "backend/tests/test_flisr_tie_capacity_qa_u2.py::test_qa_u2_block_reason_enum_members_and_order / test_qa_u2_blocked_tie_accepts_each_reason_by_value / test_qa_u2_blocked_tie_rejects_malformed",
-          "backend/tests/test_flisr_tie_capacity_qa_u2.py::test_qa_u2_restoration_plan_is_additive_with_empty_default / test_qa_u2_restoration_plan_blocked_ties_round_trip_over_http_preserves_order / test_qa_u2_restoration_plan_rejects_malformed_blocked_ties"
+          "backend/tests/test_flisr_tie_capacity_qa_u2.py::test_qa_u2_restoration_plan_is_additive_with_empty_default / test_qa_u2_restoration_plan_blocked_ties_round_trip_over_http_preserves_order / test_qa_u2_restoration_plan_rejects_malformed_blocked_ties",
+          "test_flisr_def_flisr_7.py::test_req_tiecap_11_held_tie_reported_as_faulted_section; test_flisr_tie_capacity_planner.py::test_req_tiecap_11_*"
         ],
         "pr": [
           "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/18",
@@ -2061,9 +2330,12 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-12 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-12"
         ],
-        "code": [],
+        "code": [
+          "backend/app/flisr.py::_blocked_note"
+        ],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-12"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-12",
+          "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_12_*"
         ],
         "pr": [],
         "doc": []
@@ -2080,9 +2352,12 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-14 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-14"
         ],
-        "code": [],
+        "code": [
+          "backend/app/models.py::RestorationPlan.as_of"
+        ],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-14"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-14",
+          "backend/tests/test_flisr_tie_capacity_api.py::test_req_tiecap_14_*"
         ],
         "pr": [],
         "doc": []
@@ -2099,9 +2374,12 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-15 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-15"
         ],
-        "code": [],
+        "code": [
+          "backend/app/api.py::FlisrRequest._mutually_exclusive; flisr.build_plan"
+        ],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-15"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-15",
+          "test_flisr_tie_capacity_planner.py::test_req_tiecap_15_both_maps_raise; test_flisr_tie_capacity_api.py both_maps cases"
         ],
         "pr": [],
         "doc": []
@@ -2118,9 +2396,12 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-16 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-16"
         ],
-        "code": [],
+        "code": [
+          "backend/app/flisr.py::_legacy_to_tie_capacity; models.RestorationPlan.deprecations"
+        ],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-16"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-16",
+          "test_flisr_tie_capacity_planner.py::test_req_tiecap_16_*; test_flisr_tie_capacity_api.py::test_req_tiecap_16_*"
         ],
         "pr": [],
         "doc": []
@@ -2137,9 +2418,12 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-17 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-17"
         ],
-        "code": [],
+        "code": [
+          "backend/app/api.py::_flisr_plan_description"
+        ],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-17"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-17",
+          "backend/tests/test_flisr_tie_capacity_api.py::test_req_tiecap_17_openapi_description_carries_deprecation_note"
         ],
         "pr": [],
         "doc": []
@@ -2158,9 +2442,12 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-18 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-18"
         ],
-        "code": [],
+        "code": [
+          "backend/app/flisr.py::build_plan accounting"
+        ],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-18"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-18",
+          "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_18_*"
         ],
         "pr": [],
         "doc": []
@@ -2199,9 +2486,12 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-20 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-20"
         ],
-        "code": [],
+        "code": [
+          "backend/app/flisr.py::_utc_now (read once in build_plan)"
+        ],
         "test": [
-          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-20"
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-20",
+          "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_20_*"
         ],
         "pr": [],
         "doc": []

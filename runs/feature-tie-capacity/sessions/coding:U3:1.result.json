@@ -1,0 +1,335 @@
+{
+  "session_id": "d2c83d3297b74edab94c4f79f88524bf",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/d2c83d3297b74edab94c4f79f88524bf",
+  "status": "waiting_for_user",
+  "devin_mode": "normal",
+  "acus": 7.4582870173937375,
+  "structured_output": {
+    "verdict": "PASS",
+    "model": "normal",
+    "summary": "PREPARE: loaded STD-CODE v1.4, STD-GOV v1.1 and STD-SAFETY v3.1. Read .agents/skills/safety-critical-change/SKILL.md, DEMO_NOTES.md, design.md (attempt 7), units.json U3 and architecture-review attempt 5 (CONFIRMED). Base-drift check: git diff 20d2a30 against origin/agent/rca-backfeed/fix -- backend/ is empty. EXECUTE: branched agent/feature-tie-capacity/U3 from the U2 head d9235f0. Baseline was 116 passed, 5 xfailed. Wrote the failing tests first and committed them in 2f7b09f (red: 10 failed, 69 errors). Commit 90da16a then made the change. flisr.py adds tie_capacity_verdict, _not_finite_nonneg, _legacy_to_tie_capacity, _blocked_note and _utc_now. build_plan gains keyword-only tie_capacity and as_of, removes the implicit 0.0 default and runs the tie loop in this order: section-load check for every candidate tie (FlisrError), then the unchanged DEF-FLISR-7 guard (now also recording FAULTED_SECTION), then the L check, then the verdict. models.py adds RestorationPlan.as_of and deprecations. api.py adds a strict FlisrRequest (extra=forbid, no null, mutually exclusive maps), a server_now dependency, _check_as_of_bound, an OpenAPI deprecation text built from the models.py constants, and a 422 handler that does not echo input (fixes F-QA-U2-1). VERIFY: pytest backend -q gives 350 passed; ruff check backend passes; the console build passes; U1 characterization and test_flisr.py are unchanged and green. Branch coverage: flisr.py 95% to 97%, api.py 78% to 93%. The O1 oracle-independence check and the P2 no-restated-literal check both pass. DELIVER: draft PR #20 with label ai-generated, base agent/rca-backfeed/fix (Q-CODE-U1-2). The CI backend job fails only on the pre-existing UP017 in tools/ (Q-CODE-U1-1); pytest does not run in CI because of it. The ui and native CI jobs pass.",
+    "branch": "agent/feature-tie-capacity/U3",
+    "pr_url": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/20",
+    "session_url": "https://devin-gtm.devinenterprise.com/sessions/d2c83d3297b74edab94c4f79f88524bf",
+    "standards_loaded": [
+      "STD-CODE",
+      "STD-GOV",
+      "STD-SAFETY"
+    ],
+    "files_touched": [
+      "backend/app/flisr.py",
+      "backend/app/api.py",
+      "backend/app/models.py",
+      "backend/tests/test_flisr_tie_capacity_planner.py",
+      "backend/tests/test_flisr_tie_capacity_api.py",
+      "backend/tests/test_flisr_tie_capacity_repro.py",
+      "backend/tests/test_flisr_characterization.py",
+      "backend/tests/test_flisr_def_flisr_7.py",
+      "backend/tests/test_flisr_tie_capacity_models.py"
+    ],
+    "evidence": [
+      {
+        "kind": "commit",
+        "ref": "2f7b09f",
+        "detail": "Failing tests committed first (STD-CODE-1, STD-SAFETY-3). Red: 10 failed, 69 errors (U1 repros, U2 FAULTED_SECTION xfail removed, tie_capacity_verdict and api.server_now missing)."
+      },
+      {
+        "kind": "commit",
+        "ref": "90da16a5e64d4fb1c219056795f5931851300acb",
+        "detail": "Production change plus one test-assertion fix. Trailer: AI-Governance: run=feature-tie-capacity stage=coding agent=devin model=normal."
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend -q",
+        "detail": "350 passed, 1 warning (StarletteDeprecationWarning, pre-existing). Baseline at d9235f0: 116 passed, 5 xfailed."
+      },
+      {
+        "kind": "command",
+        "ref": "ruff check backend",
+        "detail": "All checks passed!"
+      },
+      {
+        "kind": "command",
+        "ref": "npm --prefix console ci --no-audit --no-fund && npm --prefix console run build",
+        "detail": "exit 0; vite built in 486ms"
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend -q --cov=app --cov-branch",
+        "detail": "flisr.py 95% -> 97%, api.py 78% -> 93%, models.py 100%"
+      },
+      {
+        "kind": "command",
+        "ref": "git diff 20d2a30 origin/agent/rca-backfeed/fix -- backend/",
+        "detail": "Empty: no base drift (design header STOP condition not triggered)."
+      },
+      {
+        "kind": "command",
+        "ref": "git diff --name-only origin/agent/feature-tie-capacity/U2 HEAD",
+        "detail": "9 files changed, all within the brief's allowed paths (backend/app/flisr.py, api.py, models.py, backend/tests/**). No firmware/** or legacy/** changes."
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_planner.py",
+        "detail": "Covers boundaries C 1490.0/1489.5 close and 1489.4 EXCEEDED; ages 19.999/20.000/20.001 s and -1.999/-2.000/-2.001 s; precedence combinations; held tie FAULTED_SECTION for every capacity state; Q-DESIGN-2 invalid-load refusal; legacy parity; clock read once; O1 and P2 ast checks."
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_api.py",
+        "detail": "28 malformed bodies return 422 with the planner not called; non-finite input inside a rejected body returns 422, not 500 (F-QA-U2-1); as_of bound tested at -60.001/-60.000/+2.000/+2.001 s with an injected server clock; as_of echo; deprecations; OpenAPI text; 409 for an invalid section load."
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_repro.py",
+        "detail": "xfail markers removed only; the 4 reproductions now pass with unmodified bodies."
+      },
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/20",
+        "detail": "Draft, label ai-generated, base agent/rca-backfeed/fix. Body has requirement ids, edited-test before/after table, blast radius and trace table."
+      },
+      {
+        "kind": "url",
+        "ref": "CI job 116759376730 (backend)",
+        "detail": "Fails only on UP017 in tools/build_coverage_report.py:183, the pre-existing failure accepted under Q-CODE-U1-1. The ui and native jobs pass."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-CODE-3",
+        "detail": "Implicit .get(mrid, 0.0) removed. The ast inspection test asserts no .get with a default and no 'or {}'/'or 0' in flisr.py."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-CODE-4",
+        "detail": "The removed 'transferred > available' guard is replaced by the verdict's positive close condition; the DEF-FLISR-7 guard is kept byte-for-byte."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-SAFETY-6",
+        "detail": "Independent oracle_* functions using spec literals, with the O1 check. Tolerance 0.5 kW in engineering units; per-unit statement waived by Q-SPEC-4."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-SAFETY-7",
+        "detail": "No tool-certification credit claimed. Tool-classification argument (agent T3-like; pytest, ruff and ast checks T2) given in the PR as a finding for the assessor."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-GOV-6",
+        "detail": "Protected path backend/app/flisr.py: two human reviewers required. Recorded in the PR."
+      },
+      {
+        "kind": "note",
+        "ref": "STD-GOV-7",
+        "detail": "The platform adds a Co-Authored-By trailer with a personal name to commits; the agent cannot change the commit identity."
+      },
+      {
+        "kind": "note",
+        "ref": "test_flisr_tie_capacity_models.py",
+        "detail": "Three U2 RestorationPlan tests edited to pass the now-required as_of. This is allowed by the brief's backend/tests/**, but the file is not in the units.json U3 list. The QA-U2 file on PR #19 (lines 508/518/548) will need the same update."
+      }
+    ],
+    "trace": [
+      {
+        "requirement_id": "REQ-TIECAP-2",
+        "kind": "code",
+        "ref": "backend/app/flisr.py::build_plan (as_of resolution)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-2",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_2_*"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-3",
+        "kind": "code",
+        "ref": "backend/app/flisr.py::tie_capacity_verdict"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-3",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_3_*"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-4",
+        "kind": "code",
+        "ref": "backend/app/flisr.py::tie_capacity_verdict"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-4",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_3_4_*"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-5",
+        "kind": "code",
+        "ref": "backend/app/flisr.py::build_plan (no default capacity)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-5",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_5_*; test_flisr_tie_capacity_repro.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-6",
+        "kind": "code",
+        "ref": "backend/app/flisr.py::tie_capacity_verdict"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-6",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_6_stale_boundary"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-7",
+        "kind": "code",
+        "ref": "backend/app/flisr.py::tie_capacity_verdict"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-7",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_7_future_dated_boundary"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-8",
+        "kind": "code",
+        "ref": "backend/app/flisr.py::_not_finite_nonneg"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-8",
+        "kind": "test",
+        "ref": "test_flisr_tie_capacity_planner.py::test_req_tiecap_8_*; test_flisr_tie_capacity_api.py::test_req_tiecap_8_*"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-9",
+        "kind": "code",
+        "ref": "backend/app/flisr.py::build_plan tie loop order + tie_capacity_verdict"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-9",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_9_*"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-10",
+        "kind": "code",
+        "ref": "backend/app/flisr.py::build_plan"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-10",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_10_*"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-12",
+        "kind": "code",
+        "ref": "backend/app/flisr.py::_blocked_note"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-12",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_12_*"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-13",
+        "kind": "code",
+        "ref": "backend/app/api.py::FlisrRequest, flisr_plan, _request_validation_error"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-13",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_api.py::test_req_tiecap_13_*"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-14",
+        "kind": "code",
+        "ref": "backend/app/models.py::RestorationPlan.as_of"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-14",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_api.py::test_req_tiecap_14_*"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-15",
+        "kind": "code",
+        "ref": "backend/app/api.py::FlisrRequest._mutually_exclusive; flisr.build_plan"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-15",
+        "kind": "test",
+        "ref": "test_flisr_tie_capacity_planner.py::test_req_tiecap_15_both_maps_raise; test_flisr_tie_capacity_api.py both_maps cases"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-16",
+        "kind": "code",
+        "ref": "backend/app/flisr.py::_legacy_to_tie_capacity; models.RestorationPlan.deprecations"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-16",
+        "kind": "test",
+        "ref": "test_flisr_tie_capacity_planner.py::test_req_tiecap_16_*; test_flisr_tie_capacity_api.py::test_req_tiecap_16_*"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-17",
+        "kind": "code",
+        "ref": "backend/app/api.py::_flisr_plan_description"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-17",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_api.py::test_req_tiecap_17_openapi_description_carries_deprecation_note"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-18",
+        "kind": "code",
+        "ref": "backend/app/flisr.py::build_plan accounting"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-18",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_18_*"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-20",
+        "kind": "code",
+        "ref": "backend/app/flisr.py::_utc_now (read once in build_plan)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-20",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_planner.py::test_req_tiecap_20_*"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-23",
+        "kind": "code",
+        "ref": "backend/app/api.py::server_now, _check_as_of_bound"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-23",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_api.py::test_req_tiecap_23_*"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-11",
+        "kind": "code",
+        "ref": "backend/app/flisr.py::build_plan guard branch (FAULTED_SECTION)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-11",
+        "kind": "test",
+        "ref": "test_flisr_def_flisr_7.py::test_req_tiecap_11_held_tie_reported_as_faulted_section; test_flisr_tie_capacity_planner.py::test_req_tiecap_11_*"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-2",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/20"
+      }
+    ],
+    "questions": [],
+    "artifacts": {
+      "phases": "prepare: standards STD-CODE/STD-GOV/STD-SAFETY confirmed; repo instructions read; no base drift. execute: tests first (2f7b09f, red), then the fix (90da16a). verify: 350 passed, ruff clean, console build ok, coverage up, files_touched within the brief's allowed paths. deliver: draft PR #20 with label ai-generated.",
+      "findings": "1) The QA-U2 file test_flisr_tie_capacity_qa_u2.py (PR #19) builds RestorationPlan without the now-required as_of and will fail when stacked on U3. 2) The brief's unit JSON lacks REQ-TIECAP-11 and the two DEF-FLISR-7 test files that the amended units.json adds; I followed units.json, and both are within the allowed paths. 3) The 500-case invariant (REQ-TIECAP-21) belongs to U4. 4) The CI backend job is red on the pre-existing UP017 in tools/ (Q-CODE-U1-1). 5) The Co-Authored-By trailer clashes with STD-GOV-7 (platform behaviour)."
+    }
+  }
+}
