@@ -321,6 +321,14 @@ class Orchestrator:
         self.state["artifacts"]["units"] = units
         self._advance()
 
+    def _log_iteration(self, **kw: Any) -> None:
+        """Replayed loop rounds (after a pause/resume) must not be logged twice; one record per round."""
+        key = f"{kw.get('loop')}:{kw.get('unit', '-')}:{kw.get('iteration')}"
+        if key in self.state.setdefault("logged_iterations", []):
+            return
+        self.state["logged_iterations"].append(key)
+        self.log.append("loop.iteration", **kw)
+
     def _design_architect_loop(self) -> None:
         limit = self.cfg.loops["architect"]
         feedback = None
@@ -331,7 +339,7 @@ class Orchestrator:
             self.state["artifacts"]["design"] = d.artifacts.get("design") or d.summary
             a = self._stage("architect", artifacts=self._arts("specification", "units", "design"))
             resolved = a.verdict == "CONFIRMED"
-            self.log.append("loop.iteration", loop="design-architect", iteration=i, verdict=a.verdict,
+            self._log_iteration(loop="design-architect", iteration=i, verdict=a.verdict,
                             resolved=resolved, findings=a.evidence)
             if resolved:
                 self.state["artifacts"]["architecture_review"] = a.artifacts.get("review") or a.summary
@@ -382,20 +390,20 @@ class Orchestrator:
                 raise Paused("questions-open", {"stage": stage, "unit": unit["id"], "summary": c.summary})
             if c.verdict != "PASS":
                 feedback = [{"from": stage, "iteration": i, "summary": c.summary, "evidence": c.evidence}]
-                self.log.append("loop.iteration", loop=f"{stage}-qa", unit=unit["id"], iteration=i,
+                self._log_iteration(loop=f"{stage}-qa", unit=unit["id"], iteration=i,
                                 verdict=c.verdict, resolved=False)
                 continue
             # deterministic verification — results go straight back to the next attempt
             vres = self._verify(unit, c)
             if vres["verdict"] == "FAIL":
                 feedback = [{"from": "verify", "iteration": i, "checks": vres["checks"], "commands": vres["commands"]}]
-                self.log.append("loop.iteration", loop=f"{stage}-qa", unit=unit["id"], iteration=i,
+                self._log_iteration(loop=f"{stage}-qa", unit=unit["id"], iteration=i,
                                 verdict="FAIL", resolved=False, source="verify")
                 continue
             q = self._stage("qa", unit=unit, artifacts={**arts, "coding_report": c.to_dict(),
                                                             "deterministic_checks": vres})
             resolved = q.verdict == "PASS"
-            self.log.append("loop.iteration", loop=f"{stage}-qa", unit=unit["id"], iteration=i,
+            self._log_iteration(loop=f"{stage}-qa", unit=unit["id"], iteration=i,
                             verdict=q.verdict, resolved=resolved, source="qa")
             if resolved:
                 return
@@ -495,7 +503,7 @@ class Orchestrator:
             self.state["artifacts"]["evidence_package"] = package
             ev = self._stage("evaluate", artifacts={"evidence_package": package}, evidence_only=True)
             resolved = ev.verdict == "CONFIRMED"
-            self.log.append("loop.iteration", loop="explore-evaluate", iteration=i, verdict=ev.verdict,
+            self._log_iteration(loop="explore-evaluate", iteration=i, verdict=ev.verdict,
                             resolved=resolved, objections=ev.evidence)
             if resolved:
                 self.state["artifacts"]["root_cause"] = {"hypothesis": package["hypothesis"],
@@ -623,6 +631,15 @@ class Orchestrator:
         (self.run_dir / "harness.yaml").write_text(yaml.safe_dump(self.cfg.raw, sort_keys=False))
         self.log.append("loop.extended", loop=loop, rounds=int(rounds), new_limit=self.cfg.loops[loop],
                         actor=actor, actor_type="User", reason=reason)
+        self.state["paused_on"] = None
+        self._save()
+
+    def waive_requirement(self, requirement_id: str, actor: str, reason: str) -> None:
+        """A human waives test coverage for one traced id (Trace stopped at NEEDS-HUMAN). Recorded with actor
+        and reason in the trace matrix and the audit log; the run can then resume. Agents cannot call this."""
+        self.trace.waive(requirement_id, actor, reason)
+        self.log.append("trace.waived", requirement_id=requirement_id, actor=actor, actor_type="User",
+                        reason=reason, coverage=self.trace.coverage()["test_coverage"])
         self.state["paused_on"] = None
         self._save()
 

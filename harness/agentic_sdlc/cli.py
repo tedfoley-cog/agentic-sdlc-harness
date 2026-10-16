@@ -93,6 +93,11 @@ def main(argv: list[str] | None = None) -> int:
     x.add_argument("--rounds", type=int, default=1)
     x.add_argument("--actor", required=True)
     x.add_argument("--reason", required=True)
+    w = sub.add_parser("waive", help="human waives test coverage for one traced id (Trace NEEDS-HUMAN)")
+    w.add_argument("run_id")
+    w.add_argument("--requirement", required=True)
+    w.add_argument("--actor", required=True)
+    w.add_argument("--reason", required=True)
     t = sub.add_parser("time")
     t.add_argument("run_id")
     t.add_argument("--minutes", type=float, required=True)
@@ -137,6 +142,11 @@ def main(argv: list[str] | None = None) -> int:
         orch = _orch(RUNS_DIR / args.run_id, None, "relay", None)
         orch.extend_loop(args.loop, args.rounds, args.actor, args.reason)
         print(f"loop {args.loop} extended by {args.rounds} by {args.actor}")
+        return 0
+    if args.cmd == "waive":
+        orch = _orch(RUNS_DIR / args.run_id, None, "relay", None)
+        orch.waive_requirement(args.requirement, args.actor, args.reason)
+        print(f"{args.requirement} waived from test coverage by {args.actor}")
         return 0
     if args.cmd == "time":
         orch = _orch(RUNS_DIR / args.run_id, None, "relay", None)

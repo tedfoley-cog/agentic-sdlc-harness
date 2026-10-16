@@ -88,6 +88,10 @@ scan every 10 s.
 - **Q-CODE-U1-1** (ops-lead-standin): Yes, but not by an agent unit. The pre-existing UP017 in tools/build_coverage_report.py is outside every unit's allowed files; accept the red 'backend' CI job as a known pre-existing failure for this run and raise a separate human chore PR on the fixture repo. Do not touch tools/ in any unit.
 - **Q-CODE-U1-2** (ops-lead-standin): Keep PR #16 (and the rest of the feature stack) targeted at agent/rca-backfeed/fix as the design requires. Retargeting to main is a human action at the before-merge gate once #14 lands; agents do not retarget or merge.
 - **Q-CODE-U2-1** (principal-engineer-standin): Option (a). U2's file list now also includes backend/tests/test_flisr_characterization.py and backend/tests/test_flisr_def_flisr_7.py (recorded as units.amended). Edits in those two files are limited to design 6.1 rules (1) and (2): compare with model_dump(exclude={'blocked_ties'}) and additionally assert blocked_ties == [] (or FAULTED_SECTION where the DEF-FLISR-7 guard holds the tie). No expected switching step, order, customer count or transferred_load_kw may change. U3 extends the exclusion to as_of/deprecations. Deliver U2 as a draft PR with pytest backend -q fully green.
+- **Q-INTEGRATE-READY** (principal-engineer-standin): No. Stay draft. Draft->ready is a human action taken at the before-merge gate; the Integrate skill text 'mark ready' is a harness defect, recorded.
+- **Q-INTEGRATE-BASE** (principal-engineer-standin): Yes, but by a human after #13/#14 land; agents do not retarget.
+- **Q-INTEGRATE-PR14** (principal-engineer-standin): The PR that lands second adjusts test_flisr_def_flisr_7_qa.py to exclude the additive fields; scheduled as a human chore at before-merge, not in this run.
+- **Q-INTEGRATE-UP017** (principal-engineer-standin): Pre-existing; separate human chore PR (Q-CODE-U1-1). Not in scope of any agent in this run.
 
 ## Prior artifact: specification
 

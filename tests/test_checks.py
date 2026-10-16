@@ -77,3 +77,24 @@ def test_zero_pattern_in_docstring_or_comment_is_not_a_finding():
     assert prose != DIFF_ZERO
     res = {r.name: r for r in checks.run_all(prose)}
     assert res["missing_input_as_zero"].verdict == "PASS", res["missing_input_as_zero"].findings
+
+
+def test_waived_id_leaves_test_coverage_but_stays_in_matrix(tmp_path):
+    from agentic_sdlc.trace import TraceMatrix
+    tm = TraceMatrix(tmp_path / "trace.json", r"REQ-X-\d+|DEF-Y-\d+")
+    tm.register_requirements("REQ-X-1 shall ...\nDEF-Y-7 is out of scope ...")
+    tm.append("coding", [{"requirement_id": "REQ-X-1", "kind": "test", "ref": "tests/test_x.py"}])
+    assert tm.coverage()["with_test"] == 1 and tm.coverage()["requirements"] == 2
+    tm.waive("DEF-Y-7", actor="ops-lead", reason="scope exclusion picked up by the id scanner")
+    cov = TraceMatrix(tmp_path / "trace.json", r"REQ-X-\d+|DEF-Y-\d+").coverage()
+    assert cov["requirements"] == 1 and cov["test_coverage"] == 1.0 and cov["waived"] == ["DEF-Y-7"]
+
+
+def test_replayed_loop_rounds_count_once(tmp_path):
+    from agentic_sdlc import kpis
+    from agentic_sdlc.runlog import RunLog
+    log = RunLog(tmp_path / "runlog.jsonl")
+    log.append("run.started", run_id="r", workflow="feature", target="x", requirement="y")
+    for it, resolved in ((1, False), (1, False), (2, True)):  # round 1 replayed once after a pause
+        log.append("loop.iteration", loop="design-architect", iteration=it, verdict="X", resolved=resolved)
+    assert kpis.compute(tmp_path)["loop_iterations"]["design-architect"] == 2

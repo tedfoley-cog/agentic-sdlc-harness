@@ -42,7 +42,8 @@ def compute(run_dir: str | Path, story_points: float = 1.0, acu_usd: float = ACU
         elif s["attempt"] == 1:
             first_pass[s["stage"]] = False
 
-    loops = {name: len(v) for name, v in state["loops"].items()}
+    # a round replayed after pause/resume is recorded again in state; count distinct rounds, not records
+    loops = {name: len({(r.get("unit"), r.get("iteration")) for r in v}) for name, v in state["loops"].items()}
     resolved = {name: any(r.get("resolved") for r in v) for name, v in state["loops"].items()}
     loop_resolution_rate = round(sum(resolved.values()) / len(resolved), 3) if resolved else None
 

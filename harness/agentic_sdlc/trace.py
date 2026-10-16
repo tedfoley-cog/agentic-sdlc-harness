@@ -18,10 +18,20 @@ class TraceMatrix:
         self.pattern = re.compile(requirement_id_pattern)
         self.rows: list[dict[str, Any]] = []
         self.requirements: dict[str, str] = {}
+        self.waivers: dict[str, dict[str, str]] = {}
         if self.path.exists():
             data = json.loads(self.path.read_text())
             self.rows = data.get("rows", [])
             self.requirements = data.get("requirements", {})
+            self.waivers = data.get("waivers", {})
+
+    def waive(self, requirement_id: str, actor: str, reason: str) -> None:
+        """A human excludes an id from test coverage (e.g. a scope exclusion the id scanner picked up).
+        Kept in the matrix with actor and reason; never inferred by an agent."""
+        if requirement_id not in self.requirements:
+            raise KeyError(requirement_id)
+        self.waivers[requirement_id] = {"actor": actor, "reason": reason}
+        self._save()
 
     def register_requirements(self, text: str) -> list[str]:
         """Pull requirement ids (and their sentence) out of a specification."""
@@ -53,6 +63,8 @@ class TraceMatrix:
             rid: {k: [] for k in self.KINDS} for rid in self.requirements}
         for r in self.rows:
             per_req.setdefault(r["requirement_id"], {k: [] for k in self.KINDS})[r["kind"]].append(r["ref"])
+        for rid in self.waivers:
+            per_req.pop(rid, None)
         total = len(per_req)
         with_test = sum(1 for v in per_req.values() if v["test"])
         with_code = sum(1 for v in per_req.values() if v["code"])
@@ -64,13 +76,15 @@ class TraceMatrix:
             "with_pr": sum(1 for v in per_req.values() if v["pr"]),
             "test_coverage": round(with_test / total, 3) if total else 0.0,
             "orphans": sorted(rid for rid, v in per_req.items() if not any(v.values())),
+            "waived": sorted(self.waivers),
             "matrix": per_req,
         }
 
     def _save(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.path.write_text(json.dumps(
-            {"requirements": self.requirements, "rows": self.rows, "coverage": self.coverage()}, indent=2))
+            {"requirements": self.requirements, "rows": self.rows, "waivers": self.waivers,
+             "coverage": self.coverage()}, indent=2))
 
     def to_markdown(self) -> str:
         cov = self.coverage()

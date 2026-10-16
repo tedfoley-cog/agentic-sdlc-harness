@@ -1,0 +1,50 @@
+{
+  "run_id": "feature-tie-capacity",
+  "workflow": "feature",
+  "status": "ready-to-merge",
+  "autonomy": 0.7,
+  "first_pass_approval": {
+    "specify": false,
+    "decompose": true,
+    "design": false,
+    "architect": false,
+    "coding": true,
+    "verify": false,
+    "qa": true,
+    "integrate": true,
+    "document": true,
+    "trace": false
+  },
+  "first_pass_rate": 0.5,
+  "loop_iterations": {
+    "design-architect": 5,
+    "coding-qa": 4
+  },
+  "loop_resolution_rate": 1.0,
+  "requirement_test_coverage": 1.0,
+  "human_review_minutes": 0.7,
+  "human_review_hours": 0.01,
+  "cycle_time_minutes": 214.2,
+  "acus": 124.34174444031588,
+  "inference_cost_usd": 279.77,
+  "story_points": 1.0,
+  "inference_cost_per_story_point": 279.77,
+  "gates": [
+    {
+      "gate": "after-specify",
+      "status": "approved",
+      "actor": "ops-lead-standin"
+    },
+    {
+      "gate": "after-architect",
+      "status": "approved",
+      "actor": "principal-engineer-standin"
+    },
+    {
+      "gate": "before-merge",
+      "status": "approved",
+      "actor": "ops-lead-standin"
+    }
+  ],
+  "computed_at": "2026-10-16T02:13:23Z"
+}

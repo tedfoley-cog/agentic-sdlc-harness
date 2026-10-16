@@ -1,0 +1,260 @@
+{
+  "session_id": "df9b4b413adf4ef2851e06b63d3133e3",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/df9b4b413adf4ef2851e06b63d3133e3",
+  "status": "waiting_for_user",
+  "devin_mode": "normal",
+  "acus": 3.686799662219997,
+  "structured_output": {
+    "verdict": "PASS",
+    "summary": "DOCUMENT stage for feature-tie-capacity. PREPARE: loaded STD-DOC-1..4, STD-GOV-1..7 and STD-SAFETY-1..8 from the brief, read .agents/skills/safety-critical-change/SKILL.md and DEMO_NOTES.md; checked out agent/feature-tie-capacity/integration (PR #24). EXECUTE: added docs/flisr/tie-capacity.md (what changed, block reasons + precedence with real operator notes, accounting, request/response fields, tie_capacity_kw deprecation, a boundary/missing/invalid input table with requirement id and pinning test per row, settings tables generated from the Pydantic models and models.py constants with the regeneration script inline, scope exclusions) and linked it from README.md. Only docs/** and README.md changed. VERIFY: every numeric value and note in the doc was re-measured on the shipped model (boundaries 1490.0/1489.5/1489.4 kW, age 20.000/20.001 s, lead 2.000/2.001 s, quality, NaN, -0.0, missing, held tie, no fault, HTTP 422/404/409 cases); the regeneration script output matches the committed tables byte-for-byte; pytest backend -q 793 passed / 8 skipped; ruff check backend clean; console npm ci + build OK; no trailing whitespace. DELIVER: commit efbadb0 with the AI-Governance trailer pushed to the integration branch; PR #24 body updated, still draft, label ai-generated; nothing merged, approved or retargeted.",
+    "branch": "agent/feature-tie-capacity/integration",
+    "pr_url": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24",
+    "session_url": "https://devin-gtm.devinenterprise.com/sessions/df9b4b413adf4ef2851e06b63d3133e3",
+    "model": "normal",
+    "standards_loaded": [
+      "STD-DOC-1",
+      "STD-DOC-2",
+      "STD-DOC-3",
+      "STD-DOC-4",
+      "STD-GOV-1",
+      "STD-GOV-2",
+      "STD-GOV-3",
+      "STD-GOV-4",
+      "STD-GOV-5",
+      "STD-GOV-6",
+      "STD-GOV-7",
+      "STD-SAFETY-1",
+      "STD-SAFETY-2",
+      "STD-SAFETY-3",
+      "STD-SAFETY-4",
+      "STD-SAFETY-5",
+      "STD-SAFETY-6",
+      "STD-SAFETY-7",
+      "STD-SAFETY-8"
+    ],
+    "files_touched": [
+      "docs/flisr/tie-capacity.md",
+      "README.md"
+    ],
+    "trace": [
+      {
+        "requirement_id": "REQ-TIECAP-1",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 Request > tie_capacity; Settings tables"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-2",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 Request > as_of"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-3",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 What changed (L <= C + 0.5 kW)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-4",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 Block reasons: CAPACITY_EXCEEDED"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-5",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 Block reasons: CAPACITY_UNKNOWN"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-6",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 Block reasons: CAPACITY_STALE"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-7",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 Block reasons: CAPACITY_INVALID (lead)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-8",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 Block reasons: CAPACITY_INVALID (kw)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-9",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 Block reasons and precedence"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-10",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 What changed (per-tie blocking)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-11",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 New response fields: blocked_ties"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-12",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 Block reasons table: operator notes"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-13",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 Malformed body row; HTTP 200 for blocked ties"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-14",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 New response fields: as_of"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-15",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 Deprecated: tie_capacity_kw (mutual exclusion)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-16",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 Deprecated: tie_capacity_kw"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-17",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 Deprecated: tie_capacity_kw (removal note, OpenAPI)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-18",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 Plan accounting for a blocked tie"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-19",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 No fault indication row"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-20",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 Request > server clock read once"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 Safety invariant paragraph"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-22",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 Unchanged behaviour paragraph"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-23",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 as_of bound row"
+      },
+      {
+        "requirement_id": "DEF-FLISR-7",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 FAULTED_SECTION reason and held-tie row"
+      },
+      {
+        "requirement_id": "STD-DOC-4",
+        "kind": "doc",
+        "ref": "docs/flisr/tie-capacity.md \u2014 What this change does not do"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-17",
+        "kind": "doc",
+        "ref": "README.md \u2014 Operator documentation link"
+      }
+    ],
+    "evidence": [
+      {
+        "kind": "commit",
+        "ref": "efbadb0",
+        "detail": "docs(flisr): operator guide; trailer AI-Governance: run=feature-tie-capacity stage=document agent=devin model=normal; files README.md, docs/flisr/tie-capacity.md only"
+      },
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24",
+        "detail": "draft=true, labels=[ai-generated], base agent/rca-backfeed/fix, head efbadb0; body gained a Documentation section"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-DOC-1",
+        "detail": "'Behaviour for missing, boundary and invalid input' table: 16 rows, each with result, requirement and the test that pins it (planner/api/models/repro/characterization/invariant test files)"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-DOC-2",
+        "detail": "Field and constant tables generated from FlisrRequest (api.py) and models.py (TieCapacity, BlockedTie, RestorationPlan, Section, TIE_CAPACITY_* / AS_OF_* constants, TieBlockReason order); the inline script regenerates them identically (REGEN_OK)"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-DOC-3",
+        "detail": "Every behaviour section and table row cites REQ-TIECAP-n or DEF-FLISR-7; REQ-TIECAP-1..23 all cited"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-DOC-4",
+        "detail": "'What this change does not do': SCADA adapter, shared alternate-feeder capacity, partial pick-up, rating/units/margins, legacy removal, non-candidate ties, locate_fault/isolation/DEF-FLISR-7 unchanged, 80 s back-dating window, customers_remaining over-count, console"
+      },
+      {
+        "kind": "command",
+        "ref": "PYTHONPATH=backend python <probe> (build_plan on FDR-1201, CB-1201 open)",
+        "detail": "C=1490.0/1489.5 close 341/96/1490.0; C=1489.4 CAPACITY_EXCEEDED 0/437; age 20.0 fresh, 20.001 STALE; lead 2.0 fresh, 2.001 INVALID; BAD/SUSPECT/good/'' UNKNOWN; NaN INVALID; -0.0 EXCEEDED; missing UNKNOWN; fault on SEC-1201-04 FAULTED_SECTION 0/341 for GOOD/NaN/10 kW; no fault -> manual patrol note, blocked_ties []; note strings match the doc"
+      },
+      {
+        "kind": "command",
+        "ref": "TestClient POST /flisr/plan",
+        "detail": "as_of null, tie_capacity null, both maps {}, kw true, missing quality, extra TieCapacity field -> 422; closed lockout -> 409; naive as_of to build_plan -> ValueError"
+      },
+      {
+        "kind": "test",
+        "ref": "pytest backend -q",
+        "detail": "793 passed, 8 skipped, 1 warning"
+      },
+      {
+        "kind": "command",
+        "ref": "ruff check backend",
+        "detail": "All checks passed!"
+      },
+      {
+        "kind": "command",
+        "ref": "npm --prefix console ci --no-audit --no-fund && npm --prefix console run build",
+        "detail": "exit 0, built in 443ms"
+      },
+      {
+        "kind": "command",
+        "ref": "grep -nE '[[:space:]]+$' docs/flisr/tie-capacity.md README.md",
+        "detail": "no matches"
+      },
+      {
+        "kind": "file",
+        "ref": "backend/app/models.py",
+        "detail": "Source of TIE_CAPACITY_TOLERANCE_KW=0.5, TIE_CAPACITY_MAX_AGE=20 s, TIE_CAPACITY_MAX_LEAD=2 s, AS_OF_MAX_LAG=60 s, AS_OF_MAX_LEAD=2 s, TIE_CAPACITY_GOOD_QUALITY='GOOD'"
+      },
+      {
+        "kind": "note",
+        "ref": "STD-GOV-7",
+        "detail": "The doc has no customer identifiers, personal names or credentials. The environment adds a Co-Authored-By trailer to every agent commit (already noted in PR #24 body); history not rewritten."
+      },
+      {
+        "kind": "note",
+        "ref": "STD-SAFETY-7",
+        "detail": "No tool-certification credit claimed; pytest/ruff/seeded harness are uncertified tools."
+      }
+    ],
+    "artifacts": {
+      "phases": {
+        "prepare": "19 standard clauses confirmed by id; repo skill and DEMO_NOTES.md read",
+        "execute": "docs/flisr/tie-capacity.md added, README.md linked",
+        "verify": "values re-measured, tables regenerated identically, pytest/ruff/build green, diff limited to allowed paths",
+        "deliver": "commit efbadb0 pushed, PR #24 draft updated"
+      },
+      "document": "docs/flisr/tie-capacity.md",
+      "commit": "efbadb0"
+    },
+    "questions": []
+  }
+}
