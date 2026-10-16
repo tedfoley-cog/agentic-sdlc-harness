@@ -49,8 +49,9 @@ boundaries:
     allowed:
     - backend/app/flisr.py
     - backend/tests/**
-    forbidden:
     - backend/app/models.py
+    - backend/app/api.py
+    forbidden:
     - firmware/**
     - legacy/**
   fix:
