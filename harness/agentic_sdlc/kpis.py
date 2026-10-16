@@ -80,7 +80,8 @@ def compute(run_dir: str | Path, story_points: float = 1.0, acu_usd: float = ACU
         "inference_cost_usd": cost,
         "story_points": story_points,
         "inference_cost_per_story_point": round(cost / story_points, 2) if story_points else None,
-        "gates": [{"gate": g["gate"], "status": g["status"], "actor": g.get("actor")} for g in state["gates"]],
+        "gates": [{"gate": g["gate"], "status": g["status"], "decision": g["status"], "actor": g.get("actor"),
+                   "minutes": g.get("review_minutes")} for g in state["gates"]],
         "computed_at": records[-1]["ts"] if records else None,
     }
     (run_dir / "kpis.json").write_text(json.dumps(kpis, indent=2))

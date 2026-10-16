@@ -78,17 +78,24 @@ export function deriveGates(log: LogRecord[]): GateRow[] {
   return [...gates.values()]
 }
 export function deriveLoops(log: LogRecord[]): LoopRow[] {
-  return log.filter((r) => r.event === 'loop.iteration').map((r) => ({
-    loop: String(r.loop), unit: String(r.unit), iteration: Number(r.iteration), verdict: String(r.verdict),
-    resolved: Boolean(r.resolved), source: r.source as string | undefined,
-  }))
+  // Older logs (before loop.iteration became idempotent) may carry the same round twice after a
+  // pause/resume replay; keep one row per (loop, unit, iteration), the latest record winning.
+  const byKey = new Map<string, LoopRow>()
+  for (const r of log.filter((r) => r.event === 'loop.iteration')) {
+    const unit = r.unit == null ? '-' : String(r.unit)
+    byKey.set(`${r.loop}:${unit}:${r.iteration}`, {
+      loop: String(r.loop), unit, iteration: Number(r.iteration), verdict: String(r.verdict),
+      resolved: Boolean(r.resolved), source: (r.source as string | undefined) ?? (Array.isArray(r.findings) && r.findings.length ? `${r.findings.length} finding(s)` : undefined),
+    })
+  }
+  return [...byKey.values()]
 }
 
 // trace.json stores requirements as {id: {source...}}; the console only needs the ordered id list.
 function normalizeTrace(t: unknown): TraceFile {
-  const o = (t ?? {}) as { requirements?: unknown; rows?: TraceRow[] }
+  const o = (t ?? {}) as { requirements?: unknown; rows?: TraceRow[]; waivers?: TraceFile['waivers'] }
   const reqs = Array.isArray(o.requirements) ? (o.requirements as string[]) : Object.keys((o.requirements as object) ?? {})
-  return { requirements: reqs, rows: Array.isArray(o.rows) ? o.rows : [] }
+  return { requirements: reqs, rows: Array.isArray(o.rows) ? o.rows : [], waivers: o.waivers ?? {} }
 }
 
 export async function loadRun(entry: RunIndexEntry): Promise<RunBundle> {

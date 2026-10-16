@@ -40,7 +40,7 @@ export default function KpisView({ b, history }: { b: RunBundle; history: Kpis[]
         {k && (<div className="row" style={{ marginTop: 14 }}>
           <div className="grow"><h4>First-pass by stage</h4><div className="row">{Object.entries(k.first_pass_approval).map(([s, ok]) => <span key={s}><Badge v={ok ? 'PASS' : 'FAIL'} /> <span className="small">{s}</span></span>)}</div></div>
           <div className="grow"><h4>Loop iterations</h4><div className="row">{Object.entries(k.loop_iterations).map(([l, n]) => <span key={l} className="small"><b>{n}</b> {l}</span>)}{Object.keys(k.loop_iterations).length === 0 && <span className="muted small">none</span>}</div></div>
-          <div className="grow"><h4>Gate decisions</h4><table><tbody>{k.gates.map((g) => <tr key={g.gate}><td>{g.gate}</td><td><Badge v={g.decision} /></td><td><b>{g.actor}</b></td><td className="small">{g.minutes} min</td></tr>)}</tbody></table></div>
+          <div className="grow"><h4>Gate decisions</h4><table><tbody>{k.gates.map((g) => <tr key={g.gate}><td>{g.gate}</td><td><Badge v={g.decision ?? g.status} /></td><td><b>{g.actor ?? '—'}</b></td><td className="small">{g.minutes == null ? '—' : `${g.minutes} min`}</td></tr>)}</tbody></table></div>
         </div>)}
       </div>
       <div className="panel">
