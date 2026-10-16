@@ -1,0 +1,249 @@
+{
+  "session_id": "8599234854bc41ac92def612d76a8fee",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/8599234854bc41ac92def612d76a8fee",
+  "status": "waiting_for_user",
+  "devin_mode": "ultra",
+  "acus": 21.545230591116038,
+  "structured_output": {
+    "verdict": "PASS",
+    "model": "ultra",
+    "branch": "agent/feature-tie-capacity/qa-U3",
+    "pr_url": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/21",
+    "session_url": "https://devin-gtm.devinenterprise.com/sessions/8599234854bc41ac92def612d76a8fee",
+    "standards_loaded": [
+      "STD-GOV",
+      "STD-QA",
+      "STD-SAFETY"
+    ],
+    "files_touched": [
+      "backend/tests/test_flisr_tie_capacity_qa_u3.py"
+    ],
+    "summary": "PREPARE: loaded and confirmed STD-GOV v1.1, STD-QA v1.3, STD-SAFETY v3.1; read the safety-critical-change skill, DEMO_NOTES.md, design.md attempt 7, units.json U3 and PR #20. EXECUTE (STD-QA-1/2): checked out agent/feature-tie-capacity/U3 @ 90da16a and re-ran build (exit 0), ruff (clean) and pytest backend -q (350 passed) myself. Wrote backend/tests/test_flisr_tie_capacity_qa_u3.py: a QA-owned closed-form oracle with its own BFS (isolation, candidate nodes, L, customers) and spec literals, ast-checked to import nothing from app.flisr/app.network and no threshold constants (STD-QA-3, STD-SAFETY-6; per-unit tolerance waived by Q-SPEC-4). Own vectors: shipped boundaries (1490.0/1489.5 close, 1489.4 EXCEEDED; ages 19.999/20.000/20.001 and -1.999/-2.000/-2.001 s; as_of -60.000/+2.000 ok, -60.001/+2.001 422), all 2^5 precedence combinations, held tie x 7 capacity states, missing/non-GOOD/invalid/legacy inputs, 36 malformed HTTP bodies with build_plan asserted not called, JSON NaN/Infinity/-1 via both maps -> 200 CAPACITY_INVALID, and 600 seeded random radial/branched feeders (541 plans + 59 FlisrError refusals) all agreeing with the oracle. With the file: 587 passed, 8 skipped (future+stale cannot coexist). VERIFY (STD-QA-4/6): no defaulted .get or 'or 0' in flisr.py; KeyError->404 and FlisrError->409 kept and raise count 3->5; models.py has no control flow; every REQ id in scope has passing tests in >=2 files; design 6.1 test edits limited to exclusions/blocked_ties assertions/skip-note replacement; repro file only lost its xfail markers. No FAIL items. Observations (not U3 defects): PR #19's QA-U2 file needs as_of once rebased on U3; upstream-attached ties back-feed the healthy upstream part while the breaker is re-closed (baseline topology behaviour, out of scope); residual 80 s back-dating window confirmed for reviewers; CI backend job red on pre-existing tools/ UP017 (Q-CODE-U1-1); platform Co-Authored-By trailer vs STD-GOV-7. DELIVER: draft PR #21 (label ai-generated) agent/feature-tie-capacity/qa-U3 -> agent/feature-tie-capacity/U3, commit f5bcd29 with the AI-Governance trailer; no approval, merge or ready-for-review action taken. No UI surface, so no testing-agent run.",
+    "evidence": [
+      {
+        "kind": "command",
+        "ref": "npm --prefix console ci --no-audit --no-fund && npm --prefix console run build",
+        "detail": "exit 0; vite built in 429ms (re-run by QA, STD-QA-2)"
+      },
+      {
+        "kind": "command",
+        "ref": "ruff check backend",
+        "detail": "All checks passed! (U3 head and with the QA file)"
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend -q",
+        "detail": "350 passed, 1 warning on agent/feature-tie-capacity/U3 @ 90da16a; 587 passed, 8 skipped with test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "kind": "command",
+        "ref": "PYTHONPATH=/tmp pytest backend -q -p reqcov",
+        "detail": "requirement-marker collector: REQ-TIECAP-2..18, 20, 23 and 11 each have passing tests in >= 2 files; no failing test references any id in scope (STD-QA-6)"
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py",
+        "detail": "237 tests: oracle self-check, shipped boundaries, age boundaries, 2^5 precedence combinations, held tie, per-tie blocking, notes, accounting, legacy parity, as_of handling, clock-read-once, 36 x 422, as_of bound, echo, OpenAPI, 600-feeder seeded sweep (seed 20261016: 541 plans, 59 refusals; blocked INVALID 192 / EXCEEDED 146 / UNKNOWN 154 / STALE 71 / FAULTED_SECTION 272)"
+      },
+      {
+        "kind": "test",
+        "ref": "test_flisr_tie_capacity_qa_u3.py::test_qa_u3_oracle_imports_nothing_from_flisr_or_network",
+        "detail": "ast check: oracle_* functions reference no app.flisr / app.network name and no TIE_CAPACITY_* / AS_OF_* constant (design 6.3 O1, Q-DESIGN-1)"
+      },
+      {
+        "kind": "test",
+        "ref": "test_flisr_tie_capacity_qa_u3.py::test_qa_u3_flisr_has_no_defaulted_lookup_and_models_has_no_logic",
+        "detail": "STD-QA-4: no .get(x, default) or 'or 0/{}/\"\"' in flisr.py; models.py has no def/if/for/while/try; api.py keeps except KeyError and except flisr.FlisrError; >= 3 raise FlisrError"
+      },
+      {
+        "kind": "commit",
+        "ref": "f5bcd298d407ccefda2a8ab50751aecc21d7f711",
+        "detail": "QA test file; trailer AI-Governance: run=feature-tie-capacity stage=qa agent=devin model=ultra (STD-GOV-2)"
+      },
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/21",
+        "detail": "Draft, label ai-generated, head agent/feature-tie-capacity/qa-U3, base agent/feature-tie-capacity/U3; body carries requirement ids, evidence and trace table (STD-GOV-1/2)"
+      },
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/20",
+        "detail": "Subject under test: draft, label ai-generated, base agent/rca-backfeed/fix, commits 2f7b09f (tests first, red) and 90da16a (fix), both with the coding-stage trailer"
+      },
+      {
+        "kind": "command",
+        "ref": "git diff origin/agent/feature-tie-capacity/U2 HEAD -- backend/tests/test_flisr_characterization.py backend/tests/test_flisr_def_flisr_7.py backend/tests/test_flisr_tie_capacity_models.py backend/tests/test_flisr_tie_capacity_repro.py",
+        "detail": "Edits limited to design 6.1 rules: as_of/deprecations excluded from model_dump, blocked_ties asserted, old skip note replaced; repro file only loses the xfail markers; no switching step, order, count or transferred_load_kw changed (STD-SAFETY-2)"
+      },
+      {
+        "kind": "file",
+        "ref": "backend/app/flisr.py",
+        "detail": "tie_capacity_verdict precedence INVALID > UNKNOWN > STALE > EXCEEDED; loop order section-load check -> DEF-FLISR-7 guard (FAULTED_SECTION) -> L check -> verdict; capacities.get(switch.mrid) with no default; _utc_now() read once before the loop"
+      },
+      {
+        "kind": "file",
+        "ref": "backend/app/api.py",
+        "detail": "FlisrRequest extra=forbid, StrictStr/StrictFloat/IsoAwareDatetime, null rejected, mutual exclusion; server_now dependency; _check_as_of_bound before load_network; 422 handler without input echo; OpenAPI description from models.py constants"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-QA-1",
+        "detail": "QA ran on model=ultra against Coding's model=normal, from the brief and the repository"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-QA-3 / STD-SAFETY-6",
+        "detail": "Independent closed-form oracle and own vectors incl. boundary and invalid inputs; agreement exact at the 0.5 kW tolerance (engineering units); per-unit statement waived by Q-SPEC-4"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-QA-5",
+        "detail": "No FAIL items to report"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-SAFETY-7",
+        "detail": "No tool-certification credit claimed; pytest/ruff/ast checks are T2-class verification tools, agents T3-like: assessor's finding"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-GOV-6 / STD-SAFETY-1",
+        "detail": "Protected path backend/app/flisr.py in PR #20: two human reviewers required; QA did not approve, merge or mark ready-for-review"
+      },
+      {
+        "kind": "note",
+        "ref": "STD-GOV-7",
+        "detail": "The platform appends a Co-Authored-By trailer carrying a personal name to agent commits; not removable by the agent"
+      },
+      {
+        "kind": "note",
+        "ref": "Observation: PR #19 QA-U2 file",
+        "detail": "test_flisr_tie_capacity_qa_u2.py constructs RestorationPlan without the now-required as_of; it will fail once the qa-U2 branch is rebased on U3 (already noted by Coding)"
+      },
+      {
+        "kind": "note",
+        "ref": "Observation: CI backend job",
+        "detail": "Red on the pre-existing UP017 in tools/build_coverage_report.py accepted under Q-CODE-U1-1; not caused by U3 or QA"
+      },
+      {
+        "kind": "session",
+        "ref": "https://devin-gtm.devinenterprise.com/sessions/8599234854bc41ac92def612d76a8fee",
+        "detail": "QA session"
+      },
+      {
+        "kind": "url",
+        "ref": "CI job 116763325681 (backend) on PR #21",
+        "detail": "Fails only at `ruff check backend tools` on UP017 tools/build_coverage_report.py:183 (pre-existing, accepted under Q-CODE-U1-1; tools/ may not be touched by any unit); pytest does not run in CI. The ui (116763325372) and native (116763325472) jobs pass."
+      }
+    ],
+    "trace": [
+      {
+        "requirement_id": "REQ-TIECAP-2",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_offset_as_of_is_the_same_instant_and_echoed_in_utc; test_qa_u3_naive_or_non_datetime_as_of_yields_no_plan; test_qa_u3_absent_as_of_is_utc_now_within_the_call_window"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-3",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_shipped_close_boundary_matches_oracle; test_qa_u3_shipped_boundaries_named_in_the_brief; test_qa_u3_invalid_candidate_section_load_refuses_the_plan; test_qa_u3_seeded_feeders_agree_with_oracle"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-4",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_shipped_close_boundary_matches_oracle; test_qa_u3_seeded_feeders_agree_with_oracle"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-5",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_missing_capacity_is_unknown_never_zero; test_qa_u3_non_good_quality_is_unknown; test_qa_u3_flisr_has_no_defaulted_lookup_and_models_has_no_logic"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-6",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_age_boundaries_match_oracle; test_qa_u3_age_measured_against_as_of_not_wall_clock"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-7",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_age_boundaries_match_oracle; test_qa_u3_age_measured_against_as_of_not_wall_clock"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-8",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_invalid_capacity_blocks_as_invalid; test_qa_u3_zero_capacity_is_valid_and_exceeded_on_shipped_load; test_qa_u3_non_finite_json_capacity_is_200_invalid"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-9",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_precedence_over_all_condition_combinations; test_qa_u3_held_tie_is_faulted_section_before_any_capacity_reason"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-10",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_blocking_one_tie_changes_nothing_else"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-11",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_blocked_ties_in_switch_order_one_note_each; test_qa_u3_held_tie_is_faulted_section_before_any_capacity_reason"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-12",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_blocked_ties_in_switch_order_one_note_each; test_qa_u3_note_names_tie_and_reason"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-13",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_malformed_body_is_422_before_the_planner; test_qa_u3_blocked_tie_is_200_never_409; test_qa_u3_http_freshness_boundaries; test_qa_u3_http_plan_equals_direct_plan_and_existing_errors_unchanged; test_qa_u3_held_tie_over_http_is_200_faulted_section"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-14",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_as_of_echoed_as_utc_instant; test_qa_u3_absent_as_of_is_server_now; test_qa_u3_absent_as_of_with_real_clock_lies_in_the_request_window"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-15",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_both_maps_raise_and_return_no_plan; test_qa_u3_malformed_body_is_422_before_the_planner[both_maps,both_maps_empty]"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-16",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_legacy_value_equals_good_entry_at_as_of; test_qa_u3_legacy_invalid_values_never_close; test_qa_u3_legacy_missing_tie_is_unknown_with_deprecation; test_qa_u3_legacy_http_matches_new_field_and_is_flagged; test_qa_u3_no_map_at_all_is_unknown_without_deprecation"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-17",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_openapi_description_states_deprecation_removal_and_exclusivity"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-18",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_held_tie_counts_healthy_pickup_sections_but_not_faulted_twice; test_qa_u3_blocking_one_tie_changes_nothing_else; test_qa_u3_seeded_feeders_agree_with_oracle"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-20",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_clock_read_once_and_all_ties_aged_against_it; test_qa_u3_no_clock_read_inside_the_tie_loop_by_inspection"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-23",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u3.py::test_qa_u3_as_of_bound_matches_oracle; test_qa_u3_as_of_bound_normalises_offsets; test_qa_u3_bound_is_against_server_clock_not_capacity_timestamp"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-2",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/21"
+      }
+    ],
+    "questions": [],
+    "artifacts": {
+      "qa_report": "# QA report \u2014 feature-tie-capacity U3 (attempt 1) \u2014 PASS\n\n## Prepare\n- Standards loaded and confirmed: STD-GOV v1.1, STD-QA v1.3, STD-SAFETY v3.1. Read `.agents/skills/safety-critical-change/SKILL.md`, `DEMO_NOTES.md`, design.md (attempt 7, sections 3, 4, 6, 7), units.json U3 (amended), the specification in the brief, PR #20.\n- Subject: `agent/feature-tie-capacity/U3` @ 90da16a (PR #20, draft, label ai-generated, base agent/rca-backfeed/fix, trailer on both commits).\n\n## Execute (STD-QA-1/2/3)\n- Re-ran: build exit 0 (vite built); `ruff check backend` All checks passed; `pytest backend -q` 350 passed on the U3 head.\n- Wrote `backend/tests/test_flisr_tie_capacity_qa_u3.py`: QA-owned closed-form oracle (own BFS for isolation / candidate nodes / L / customers; spec literals 0.5 kW, 20 s, -2 s, 60 s/+2 s, \"GOOD\"); `oracle_*` functions import nothing from app.flisr / app.network and no models.py constants (ast-enforced).\n- Vectors: shipped boundaries C 1490.0/1489.5 close, 1489.4 EXCEEDED; ages 19.999/20.000/20.001 and -1.999/-2.000/-2.001 s; as_of -60.000/+2.000 accepted, -60.001/+2.001 422; all 2^5 REQ-TIECAP-9 combinations; held tie x 7 capacity states; missing / non-GOOD / invalid / legacy inputs; 36 malformed HTTP bodies (planner asserted not called); JSON NaN/Infinity/-Infinity/-1 through both maps -> 200 CAPACITY_INVALID; 600 seeded random feeders (seed 20261016): 541 plans + 59 refusals agree with the oracle.\n- Result: 587 passed, 8 skipped (mutually exclusive future+stale combinations) with the QA file; ruff clean.\n\n## Verify (STD-QA-4/5/6)\n- Missing-as-zero: no `.get(x, default)` / `or 0` left in flisr.py (ast); no-entry tie is CAPACITY_UNKNOWN with no \"0 kW\" note.\n- Deleted error handling: KeyError->404 and FlisrError->409 kept; `raise FlisrError` 3 -> 5; DEF-FLISR-7 guard branch unchanged except the appended blocked_ties entry.\n- Model/logic mixing: models.py has no def/if/for/try; thresholds single-sourced in models.py and imported by flisr.py / api.py.\n- Coverage: requirement-marker collector over `pytest backend`: REQ-TIECAP-2..18, 20, 23 (and 11) each have passing tests in >= 2 files; none failing.\n- Design 6.1 edits in test_flisr_characterization.py / test_flisr_def_flisr_7.py / models tests: only exclusions of as_of/deprecations, blocked_ties assertions and the skip-note replacement; no step/count change. Repro file: only xfail markers removed.\n- STD-SAFETY-6: tolerance 0.5 kW engineering units; per-unit waived by Q-SPEC-4. STD-SAFETY-7: no tool-certification credit claimed; pytest/ruff/ast checks are T2-class verification tools, the agents T3-like (assessor's finding).\n\n## Findings\n- None blocking. Observations: (1) PR #19's test_flisr_tie_capacity_qa_u2.py builds RestorationPlan without the now-required as_of and will fail once rebased on U3. (2) Upstream-attached ties back-feed the healthy upstream part while the lockout breaker is re-closed: baseline topology behaviour on the 20d2a30 base, out of scope. (3) Residual 80 s back-dating window (Q-SPEC-12(d)) confirmed by test, for reviewers. (4) CI backend job red on pre-existing UP017 in tools/ (Q-CODE-U1-1). (5) Co-Authored-By trailer with a personal name is appended by the platform (STD-GOV-7), not removable by the agent.\n\n## Deliver\n- Draft PR #21 `agent/feature-tie-capacity/qa-U3` -> `agent/feature-tie-capacity/U3`, label ai-generated, commit f5bcd29 with trailer `AI-Governance: run=feature-tie-capacity stage=qa agent=devin model=ultra`.\n",
+      "qa_test_file": "backend/tests/test_flisr_tie_capacity_qa_u3.py",
+      "sweep": "seed=20261016 count=600 plans=541 refused=59 closed=121 blocked={CAPACITY_INVALID:192,CAPACITY_EXCEEDED:146,CAPACITY_UNKNOWN:154,FAULTED_SECTION:272,CAPACITY_STALE:71}",
+      "phases": "prepare: standards confirmed, inputs read. execute: build/lint/test re-run; independent oracle + vectors written and run. verify: failure modes, coverage, 6.1 edit rules checked. deliver: draft PR #21, structured verdict PASS."
+    }
+  }
+}
