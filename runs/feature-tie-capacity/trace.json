@@ -1531,12 +1531,72 @@
       "kind": "pr",
       "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/16",
       "stage": "coding"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-22",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_characterization.py (21 tests, marker requirement('REQ-TIECAP-22'))",
+      "stage": "qa"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-22",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_qa_u1.py::test_qa_u1_shipped_vectors_match_oracle / two_tie / pinned_constants / excludes_tolerance_band / excludes_held_ties",
+      "stage": "qa"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-19",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_characterization.py (2 no-fault tests, marker requirement('REQ-TIECAP-19'))",
+      "stage": "qa"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-19",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_qa_u1.py::test_qa_u1_no_fault_plan_matches_oracle",
+      "stage": "qa"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-5",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_repro.py (strict xfail, None and {} capacity)",
+      "stage": "qa"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-8",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_repro.py (strict xfail, NaN and +inf capacity)",
+      "stage": "qa"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-5",
+      "kind": "code",
+      "ref": "backend/app/flisr.py `tie_capacity_kw.get(switch.mrid, 0.0)`",
+      "stage": "qa"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-8",
+      "kind": "code",
+      "ref": "backend/app/flisr.py `if transferred > available` (NaN/inf never exceeded)",
+      "stage": "qa"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-22",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76.3 oracle waiver; units.json U1 scope",
+      "stage": "qa"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-22",
+      "kind": "pr",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/17",
+      "stage": "qa"
     }
   ],
   "coverage": {
     "requirements": 24,
     "with_design": 23,
-    "with_code": 0,
+    "with_code": 2,
     "with_test": 23,
     "with_pr": 2,
     "test_coverage": 0.958,
@@ -1575,10 +1635,13 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-8 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-8"
         ],
-        "code": [],
+        "code": [
+          "backend/app/flisr.py `if transferred > available` (NaN/inf never exceeded)"
+        ],
         "test": [
           "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-8",
-          "backend/tests/test_flisr_tie_capacity_repro.py::test_req_tiecap_8_repro_non_finite_capacity_never_closes_tie"
+          "backend/tests/test_flisr_tie_capacity_repro.py::test_req_tiecap_8_repro_non_finite_capacity_never_closes_tie",
+          "backend/tests/test_flisr_tie_capacity_repro.py (strict xfail, NaN and +inf capacity)"
         ],
         "pr": [],
         "doc": []
@@ -1652,10 +1715,13 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-5 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-5"
         ],
-        "code": [],
+        "code": [
+          "backend/app/flisr.py `tie_capacity_kw.get(switch.mrid, 0.0)`"
+        ],
         "test": [
           "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-5",
-          "backend/tests/test_flisr_tie_capacity_repro.py::test_req_tiecap_5_repro_missing_capacity_blocks_tie_as_unknown"
+          "backend/tests/test_flisr_tie_capacity_repro.py::test_req_tiecap_5_repro_missing_capacity_blocks_tie_as_unknown",
+          "backend/tests/test_flisr_tie_capacity_repro.py (strict xfail, None and {} capacity)"
         ],
         "pr": [],
         "doc": []
@@ -1935,7 +2001,9 @@
         "code": [],
         "test": [
           "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-19",
-          "backend/tests/test_flisr_tie_capacity_characterization.py::test_req_tiecap_19_char_no_fault_indication_plan"
+          "backend/tests/test_flisr_tie_capacity_characterization.py::test_req_tiecap_19_char_no_fault_indication_plan",
+          "backend/tests/test_flisr_tie_capacity_characterization.py (2 no-fault tests, marker requirement('REQ-TIECAP-19'))",
+          "backend/tests/test_flisr_tie_capacity_qa_u1.py::test_qa_u1_no_fault_plan_matches_oracle"
         ],
         "pr": [],
         "doc": []
@@ -1995,15 +2063,19 @@
           "design.md header, U1 base 20d2a30; resolved A-4.1",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
           "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-22 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-22"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-22",
+          "docs/specs/feature-tie-capacity/design.md \u00a76.3 oracle waiver; units.json U1 scope"
         ],
         "code": [],
         "test": [
           "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-22",
-          "backend/tests/test_flisr_tie_capacity_characterization.py::test_req_tiecap_22_char_*"
+          "backend/tests/test_flisr_tie_capacity_characterization.py::test_req_tiecap_22_char_*",
+          "backend/tests/test_flisr_tie_capacity_characterization.py (21 tests, marker requirement('REQ-TIECAP-22'))",
+          "backend/tests/test_flisr_tie_capacity_qa_u1.py::test_qa_u1_shipped_vectors_match_oracle / two_tie / pinned_constants / excludes_tolerance_band / excludes_held_ties"
         ],
         "pr": [
-          "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/16"
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/16",
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/17"
         ],
         "doc": []
       },

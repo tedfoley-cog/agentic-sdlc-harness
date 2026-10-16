@@ -1,0 +1,172 @@
+{
+  "session_id": "8a3deb9d448f44b881db185a51618ab4",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/8a3deb9d448f44b881db185a51618ab4",
+  "status": "waiting_for_user",
+  "devin_mode": "ultra",
+  "acus": 8.191408842949704,
+  "structured_output": {
+    "verdict": "PASS",
+    "model": "ultra",
+    "branch": "agent/feature-tie-capacity/qa-U1",
+    "pr_url": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/17",
+    "session_url": "https://devin-gtm.devinenterprise.com/sessions/8a3deb9d448f44b881db185a51618ab4",
+    "standards_loaded": [
+      "STD-GOV",
+      "STD-QA",
+      "STD-SAFETY",
+      ".agents/skills/safety-critical-change/SKILL.md"
+    ],
+    "files_touched": [
+      "backend/tests/test_flisr_tie_capacity_qa_u1.py"
+    ],
+    "summary": "PREPARE: STD-GOV, STD-QA, STD-SAFETY confirmed by id; repo skill safety-critical-change/SKILL.md, DEMO_NOTES.md, design.md \u00a76.3 oracle waiver and units.json U1 scope read; nothing missing. EXECUTE (all re-run by QA on PR #16 head 6b4c72d, base agent/rca-backfeed/fix@20d2a30): console ci+build exit 0; `ruff check backend` clean; `pytest backend -q` 59 passed/4 xfailed; `pytest backend/tests/test_flisr_tie_capacity_repro.py --runxfail` exit 1 with the 4 intended failures (REQ-TIECAP-5 None/{} treated as 0.0 \u2192 skip; REQ-TIECAP-8 NaN/+inf \u2192 tie closed); production diff vs base is empty (only the two new test files). Built a QA-owned oracle (backend/tests/test_flisr_tie_capacity_qa_u1.py, 46 tests; BFS isolation/reachability + closed-form kW/customer sums + baseline rule close iff L <= caps.get(tie, 0.0); AST-enforced no import of app.flisr/app.network) and ran nominal (C=1490.0 close; two-tie 300/150), boundary (C=1489.4 skip, C=L close), missing (None, {}) and invalid (NaN, +inf) vectors: build_plan matches the oracle on every vector and on all 23 characterization pins. VERIFY: same characterization + QA file green on main@5f6b471 (69 passed/4 xfailed) and on U1 (80 passed/4 xfailed); REQ-TIECAP-22 scope exclusions independently confirmed (no vector in C\u2208(L,L+0.5], no DEF-FLISR-7 held tie, notes text not pinned); test_flisr.py unchanged and passing; STD-QA-4 failure modes: no model/logic mixing, no deleted error handling, missing-as-zero present in baseline flisr.py and correctly captured as strict-xfail not as a pin; STD-QA-6: REQ-TIECAP-22 (21 tests), -19 (2), -5 (2 xfail), -8 (2 xfail) all carry requirement markers; STD-GOV: agent/ branches, draft PRs with ai-generated, governance trailers on 7e6453f, 6b4c72d and QA commit efeebe6; nothing merged/approved. DELIVER: PASS. Non-blocking observation: backend CI job is red on #16 and #17 only because of pre-existing UP017 in tools/build_coverage_report.py:183 (CI runs `ruff check backend tools`), outside U1 scope.",
+    "evidence": [
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/16",
+        "detail": "Unit under test: draft, label ai-generated, base agent/rca-backfeed/fix, head 6b4c72d; commits 7e6453f/6b4c72d carry AI-Governance stage=coding trailer"
+      },
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/17",
+        "detail": "QA artifact PR (draft, ai-generated) adding the independent oracle test file; base agent/feature-tie-capacity/U1"
+      },
+      {
+        "kind": "commit",
+        "ref": "efeebe65334bd258e51bf553ca5a5edd9a883c24",
+        "detail": "QA commit with trailer AI-Governance: run=feature-tie-capacity stage=qa agent=devin model=ultra"
+      },
+      {
+        "kind": "command",
+        "ref": "npm --prefix console ci --no-audit --no-fund && npm --prefix console run build",
+        "detail": "exit 0"
+      },
+      {
+        "kind": "command",
+        "ref": "ruff check backend",
+        "detail": "All checks passed (U1 head and with QA file)"
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend -q",
+        "detail": "U1 head: 59 passed, 4 xfailed; with QA file: 80 passed, 4 xfailed; main@5f6b471 worktree with U1 tests + QA file: 69 passed, 4 xfailed"
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend/tests/test_flisr_tie_capacity_repro.py -q --runxfail",
+        "detail": "exit 1, 4 failed: missing capacity None/{} \u2192 tie skipped (treated as 0.0); NaN/+inf \u2192 tie closed"
+      },
+      {
+        "kind": "command",
+        "ref": "git diff --stat 20d2a30..origin/agent/feature-tie-capacity/U1",
+        "detail": "2 files changed, 354 insertions: only test_flisr_tie_capacity_characterization.py and test_flisr_tie_capacity_repro.py; no production file touched"
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend --cov=app --cov-branch",
+        "detail": "backend/app/flisr.py 95% statement coverage"
+      },
+      {
+        "kind": "file",
+        "ref": "backend/app/flisr.py",
+        "detail": "Baseline root cause for REQ-TIECAP-5/-8: `available = tie_capacity_kw.get(switch.mrid, 0.0)`; `if transferred > available: continue` \u2014 missing\u21920.0, NaN/+inf never exceeded"
+      },
+      {
+        "kind": "file",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u1.py",
+        "detail": "46 QA tests: oracle_isolation/oracle_pickup_nodes/oracle_load_kw/oracle_customers/oracle_plan, shipped + two-tie vectors, boundary, missing, invalid, scope-exclusion checks, requirement-marker checks, AST independence check"
+      },
+      {
+        "kind": "file",
+        "ref": "backend/tests/test_flisr_tie_capacity_characterization.py",
+        "detail": "23 tests, @pytest.mark.characterization + requirement markers; pins match oracle"
+      },
+      {
+        "kind": "file",
+        "ref": "backend/tests/test_flisr_tie_capacity_repro.py",
+        "detail": "4 strict xfail reproductions (REQ-TIECAP-5 \u00d72, REQ-TIECAP-8 \u00d72)"
+      },
+      {
+        "kind": "url",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/16#issuecomment-6205215991",
+        "detail": "QA verdict comment posted on PR #16"
+      },
+      {
+        "kind": "artifact",
+        "ref": "/home/ubuntu/qa/qa_report_U1.md",
+        "detail": "Four-phase QA report"
+      },
+      {
+        "kind": "note",
+        "ref": "CI backend job 116745353048 on PR #17",
+        "detail": "Fails at `ruff check backend tools` with UP017 tools/build_coverage_report.py:183 \u2014 pre-existing on main, unrelated to U1/QA changes; ui and native jobs pass"
+      }
+    ],
+    "trace": [
+      {
+        "requirement_id": "REQ-TIECAP-22",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_characterization.py (21 tests, marker requirement('REQ-TIECAP-22'))"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-22",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u1.py::test_qa_u1_shipped_vectors_match_oracle / two_tie / pinned_constants / excludes_tolerance_band / excludes_held_ties"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-19",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_characterization.py (2 no-fault tests, marker requirement('REQ-TIECAP-19'))"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-19",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u1.py::test_qa_u1_no_fault_plan_matches_oracle"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-5",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_repro.py (strict xfail, None and {} capacity)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-8",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_repro.py (strict xfail, NaN and +inf capacity)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-5",
+        "kind": "code",
+        "ref": "backend/app/flisr.py `tie_capacity_kw.get(switch.mrid, 0.0)`"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-8",
+        "kind": "code",
+        "ref": "backend/app/flisr.py `if transferred > available` (NaN/inf never exceeded)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-22",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76.3 oracle waiver; units.json U1 scope"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-22",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/17"
+      }
+    ],
+    "artifacts": {
+      "qa_report": "/home/ubuntu/qa/qa_report_U1.md",
+      "qa_test_file": "backend/tests/test_flisr_tie_capacity_qa_u1.py",
+      "qa_pr": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/17",
+      "unit_pr": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/16",
+      "pr16_comment": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/16#issuecomment-6205215991",
+      "phases": {
+        "prepare": "PASS \u2014 STD-GOV, STD-QA, STD-SAFETY + repo skill confirmed",
+        "execute": "PASS \u2014 build/lint/test/repro re-run; 46-test independent oracle agrees with build_plan",
+        "verify": "PASS \u2014 green on main@5f6b471 and base 20d2a30; STD-QA-4/-6 and STD-GOV checks clean",
+        "deliver": "PASS \u2014 no open questions"
+      }
+    },
+    "questions": []
+  }
+}
