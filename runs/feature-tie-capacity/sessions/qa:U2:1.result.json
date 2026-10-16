@@ -1,0 +1,204 @@
+{
+  "session_id": "47a66fe54e604804a7641af4b149d640",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/47a66fe54e604804a7641af4b149d640",
+  "status": "waiting_for_user",
+  "devin_mode": "ultra",
+  "acus": 7.89423431880171,
+  "structured_output": {
+    "verdict": "PASS",
+    "model": "ultra",
+    "branch": "agent/feature-tie-capacity/qa-U2",
+    "pr_url": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/19",
+    "session_url": "https://devin-gtm.devinenterprise.com/sessions/47a66fe54e604804a7641af4b149d640",
+    "standards_loaded": [
+      "STD-GOV",
+      "STD-QA",
+      "STD-SAFETY"
+    ],
+    "files_touched": [
+      "backend/tests/test_flisr_tie_capacity_qa_u2.py"
+    ],
+    "summary": "QA of U2 (REQ-TIECAP-1, REQ-TIECAP-11) on agent/feature-tie-capacity/U2 @ d9235f0 (draft PR #18), attempt 1: PASS. PREPARE: STD-GOV v1.1, STD-QA v1.3, STD-SAFETY v3.1 confirmed from the brief; read .agents/skills/safety-critical-change/SKILL.md, DEMO_NOTES.md and design.md (sections 2, 6.1, 6.3, 7, 11). EXECUTE: re-ran build (exit 0), ruff check backend (clean) and pytest backend -q (116 passed, 5 xfailed) myself on the U2 head (STD-QA-2). Wrote a QA-owned closed-form oracle for the TieCapacity accept/reject contract from spec literals (field set, JSON-number kw with no range check, strict aware ISO-8601 timestamp parsed by the oracle, string quality; no import of app.flisr/app.network) and compared it with the production model on both validation paths - model_validate_json and a FastAPI TestClient route nesting dict[str, TieCapacity] as POST /flisr/plan will - over 49 named vectors (every brief vector plus boundary/invalid forms) and 600 seeded random bodies: 649/649 agreement, accepted values round-trip exactly (STD-QA-3, STD-SAFETY-5/6; tolerance exact, type contract). Python-mode caller vectors, no-clock and no-app-import ast checks, required-field/extra=forbid/OpenAPI checks, TieBlockReason order (FAULTED_SECTION first per Q-DESIGN-3), BlockedTie accept/reject, RestorationPlan.blocked_ties additive default with base fields pinned and HTTP round trip. Three failure modes checked in the diff: no control flow or clock in models.py, nothing removed but two regrouped import lines, all TieCapacity fields required and the only new default is blocked_ties=[] (STD-QA-4). Coverage via the requirement marker: REQ-TIECAP-1 72 passing tests, REQ-TIECAP-11 10 passing + 1 strict xfail flipped by U3 per Q-CODE-U2-1 (STD-QA-6). Q-CODE-U2-1 test edits inspected: exclude blocked_ties plus blocked_ties == [] assertions only, no expected value changed; U1 files untouched. VERIFY: with the oracle file pytest backend -q gives 205 passed, 5 xfailed; ruff clean. DELIVER: branch agent/feature-tie-capacity/qa-U2, commit 0008887 with the QA AI-Governance trailer, draft PR #19 into the U2 branch with label ai-generated; nothing approved, merged or marked ready. Finding F-QA-U2-1 for U3 (REQ-TIECAP-13), not a U2 defect: FastAPI's default RequestValidationError handler echoes the rejected input, so a TieCapacity body rejected for a missing field whose kw is JSON NaN/Infinity returns 500 instead of 422; U3's endpoint needs a 422 handler that does not echo non-finite input. Compliance note: the platform appends a Co-Authored-By trailer with the git user's name (STD-GOV-7); agents cannot change it. Backend CI job is red on every branch of this run (pre-existing UP017 in tools/, Q-CODE-U1-1).",
+    "evidence": [
+      {
+        "kind": "standard",
+        "ref": "STD-GOV v1.1, STD-QA v1.3, STD-SAFETY v3.1",
+        "detail": "Loaded from the brief and confirmed by id in prepare."
+      },
+      {
+        "kind": "file",
+        "ref": ".agents/skills/safety-critical-change/SKILL.md; DEMO_NOTES.md; docs/specs/feature-tie-capacity/design.md (agent/feature-tie-capacity/design)",
+        "detail": "Repo instruction files and design sections 2, 6.1, 6.3 (P1, oracle independence), 7, 11 read before testing."
+      },
+      {
+        "kind": "command",
+        "ref": "npm --prefix console ci --no-audit --no-fund && npm --prefix console run build",
+        "detail": "exit 0; dist/assets/index-DvMiGgeB.js 159.79 kB, built in 446ms (STD-QA-2)."
+      },
+      {
+        "kind": "command",
+        "ref": "ruff check backend",
+        "detail": "All checks passed! (on U2 head and with the QA file)."
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend -q (U2 head d9235f0)",
+        "detail": "116 passed, 5 xfailed, 1 warning (StarletteDeprecationWarning, pre-existing)."
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend -q (U2 head + QA oracle file)",
+        "detail": "205 passed, 5 xfailed, 1 warning."
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u2.py::test_qa_u2_brief_vector_agrees_with_oracle",
+        "detail": "49 named vectors (brief: 'yesterday', 1790000000, naive, '2000', true, extra field -> reject; NaN, -1.0, +02:00 -> accept; plus 1790000000.0, '1790000000', date-only, null, bool, '', +24:00, 24:00:00, month 13, 'NaN', false, arrays, objects, case-variant key, missing fields, {} -> reject; +-inf, 0.0, -0.0, int literal, 1489.5, 1489.4, -05:00, +00:00, fractional, no seconds, far past/future, any quality string -> accept). Oracle verdict == model_validate_json verdict == HTTP 200/422 on every vector; accepted values round-trip (STD-QA-3)."
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u2.py::test_qa_u2_seeded_bodies_agree_with_oracle_on_both_paths",
+        "detail": "600 seeded random bodies (random.Random(20261016)) over kw/timestamp/quality/structure pools; >=100 accepted and >=100 rejected asserted; 600/600 agreement on JSON and HTTP paths (STD-SAFETY-5 style; tolerance exact)."
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u2.py::test_qa_u2_python_mode_accepts / test_qa_u2_python_mode_rejects",
+        "detail": "Direct-caller path: aware datetime (UTC, +02:00), ISO string, int kw, NaN kw accepted; naive datetime, date, int/float/bytes timestamp, str/bool kw, bytes quality, extra kwarg rejected."
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u2.py::test_qa_u2_models_module_reads_no_clock / test_qa_u2_models_module_imports_no_app_module / test_qa_u2_tie_capacity_fields_have_no_defaults / test_qa_u2_tie_capacity_openapi_schema_is_strict_object",
+        "detail": "REQ-TIECAP-1 'no clock comparison in the model'; stdlib+pydantic imports only; three required fields, extra=forbid; OpenAPI schema additionalProperties false, kw number, timestamp string/date-time, quality string."
+      },
+      {
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u2.py::test_qa_u2_block_reason_enum_members_and_order / test_qa_u2_blocked_tie_* / test_qa_u2_restoration_plan_*",
+        "detail": "REQ-TIECAP-11: enum exactly [FAULTED_SECTION, CAPACITY_INVALID, CAPACITY_UNKNOWN, CAPACITY_STALE, CAPACITY_EXCEEDED] (Q-DESIGN-3) incl. OpenAPI enum; BlockedTie accepts each reason, rejects 9 malformed payloads; RestorationPlan.blocked_ties defaults to a fresh [], base-shaped JSON still validates, 8 base fields/defaults pinned, 3-entry list round-trips over HTTP in order, None/str/unknown reason rejected."
+      },
+      {
+        "kind": "command",
+        "ref": "git diff origin/agent/rca-backfeed/fix..d9235f0 -- backend/app/models.py backend/tests/test_flisr_characterization.py backend/tests/test_flisr_def_flisr_7.py",
+        "detail": "STD-QA-4: models.py additive and declarative (constants, Annotated types, TieCapacity, TieBlockReason, BlockedTie, blocked_ties field); only two import lines removed (regrouped); no try/except/raise or validator removed; no numeric default added. Q-CODE-U2-1: test edits limited to model_dump(exclude={'blocked_ties'}) + blocked_ties == [] and one strict-xfail FAULTED_SECTION test; no expected step/order/count changed."
+      },
+      {
+        "kind": "command",
+        "ref": "git diff --stat origin/agent/feature-tie-capacity/U1..d9235f0",
+        "detail": "Only backend/app/models.py, test_flisr_characterization.py, test_flisr_def_flisr_7.py, test_flisr_tie_capacity_models.py changed by U2; U1 characterization and repro files untouched (STD-SAFETY-2)."
+      },
+      {
+        "kind": "command",
+        "ref": "pytest --collect-only with a requirement-marker plugin",
+        "detail": "STD-QA-6: REQ-TIECAP-1 -> 72 collected tests, all pass; REQ-TIECAP-11 -> 11 collected (10 pass, 1 strict xfail test_req_tiecap_11_held_tie_reported_as_faulted_section, flipped by U3 per Q-CODE-U2-1)."
+      },
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/18",
+        "detail": "Unit under test: open, draft, label ai-generated, head d9235f0, base agent/rca-backfeed/fix (Q-CODE-U1-2). CI on d9235f0: backend failure (pre-existing tools/ UP017, Q-CODE-U1-1), native and ui success."
+      },
+      {
+        "kind": "commit",
+        "ref": "c4d7a62, aa8b13b, 46bdc4f, 551d6f0, d9235f0",
+        "detail": "All five U2 commits carry AI-Governance: run=feature-tie-capacity stage=coding agent=devin model=normal (STD-GOV-2). Each also has a platform-added Co-Authored-By trailer with a personal name (STD-GOV-7 note, human action)."
+      },
+      {
+        "kind": "commit",
+        "ref": "0008887",
+        "detail": "QA oracle commit on agent/feature-tie-capacity/qa-U2 with trailer AI-Governance: run=feature-tie-capacity stage=qa agent=devin model=ultra."
+      },
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/19",
+        "detail": "QA draft PR into agent/feature-tie-capacity/U2, label ai-generated, body carries findings and the requirement/evidence table. Not approved, merged or marked ready (STD-GOV-1)."
+      },
+      {
+        "kind": "note",
+        "ref": "F-QA-U2-1 (for U3, REQ-TIECAP-13)",
+        "detail": "Measured on a plain TieCapacity FastAPI route: body {kw: NaN, timestamp: '2026-10-15T22:00:00Z'} (missing quality) -> HTTP 500, because FastAPI's default RequestValidationError handler echoes the whole rejected object as 'input' and json.dumps refuses NaN/Infinity. kw: Infinity + extra field -> 422 (echo is the extra value only). models.py's verdict is correct (reject); U3's endpoint must install a 422 handler that does not echo non-finite input. Not a U2 defect."
+      },
+      {
+        "kind": "note",
+        "ref": "Observations (no action)",
+        "detail": "datetime.fromisoformat also accepts '2026-10-15 22:00:00Z', '+0200' and ISO week dates and rejects lower-case 'z'; duplicate JSON keys validate on the last value; StrictFloat accepts Decimal in Python mode (unreachable over HTTP); BlockedTie does not forbid extra fields (output type, not required); the brief's unit JSON lists a 4-member enum, units.json was amended to 5 (design section 11)."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-QA-1",
+        "detail": "QA ran on ultra; Coding ran on normal. Started from the brief, spec, design and repository; Coding's report treated as hypotheses and each re-measured."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-SAFETY-6 / Q-DESIGN-1",
+        "detail": "Oracle is a closed form under backend/tests restated from spec literals; does not import app.flisr or app.network and does not use the models.py threshold constants. Tolerance: exact, this unit is a type contract (per-unit statement waived by Q-SPEC-4)."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-SAFETY-7",
+        "detail": "No tool-certification credit claimed; design 8.1 argument applies (pytest/ruff T1/T2 support tools; pydantic/FastAPI pre-existing runtime software with measured behaviour). Finding for the assessor."
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-GOV-6 / STD-SAFETY-1",
+        "detail": "Safety-critical change set: two human reviewers required before merge; agents do not merge."
+      }
+    ],
+    "trace": [
+      {
+        "requirement_id": "REQ-TIECAP-1",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u2.py::test_qa_u2_brief_vector_agrees_with_oracle (49 vectors)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-1",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u2.py::test_qa_u2_seeded_bodies_agree_with_oracle_on_both_paths (600 seeded)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-1",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u2.py::test_qa_u2_python_mode_accepts / test_qa_u2_python_mode_rejects"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-1",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u2.py::test_qa_u2_models_module_reads_no_clock / test_qa_u2_models_module_imports_no_app_module / test_qa_u2_tie_capacity_fields_have_no_defaults / test_qa_u2_tie_capacity_openapi_schema_is_strict_object"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-1",
+        "kind": "code",
+        "ref": "backend/app/models.py::TieCapacity, IsoAwareDatetime, _ISO_8601_INPUT (d9235f0, inspected)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-11",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u2.py::test_qa_u2_block_reason_enum_members_and_order / test_qa_u2_blocked_tie_accepts_each_reason_by_value / test_qa_u2_blocked_tie_rejects_malformed"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-11",
+        "kind": "test",
+        "ref": "backend/tests/test_flisr_tie_capacity_qa_u2.py::test_qa_u2_restoration_plan_is_additive_with_empty_default / test_qa_u2_restoration_plan_blocked_ties_round_trip_over_http_preserves_order / test_qa_u2_restoration_plan_rejects_malformed_blocked_ties"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-11",
+        "kind": "code",
+        "ref": "backend/app/models.py::TieBlockReason, BlockedTie, RestorationPlan.blocked_ties (d9235f0, inspected)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-1",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/19"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-11",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/19"
+      }
+    ],
+    "questions": [],
+    "artifacts": {
+      "qa_report": "# QA report \u2014 feature-tie-capacity / U2 (REQ-TIECAP-1, REQ-TIECAP-11), attempt 1\n\nVerdict: **PASS**. Unit under test: `agent/feature-tie-capacity/U2` @ `d9235f0` (draft PR #18, base `agent/rca-backfeed/fix`). QA model/mode: ultra (Coding ran on normal, STD-QA-1).\n\n## 1. Prepare\n- Standards confirmed from the brief: STD-GOV v1.1, STD-QA v1.3, STD-SAFETY v3.1.\n- Read `.agents/skills/safety-critical-change/SKILL.md`, `DEMO_NOTES.md`, design `docs/specs/feature-tie-capacity/design.md` (\u00a72, \u00a76.1, \u00a76.3 P1, \u00a77, \u00a711) on `agent/feature-tie-capacity/design`.\n- Environment: Python 3.12.13, pydantic 2.14.1, fastapi 0.143.2 (design measured 0.143.1; same behaviour observed).\n\n## 2. Execute \u2014 re-run of the repo commands (STD-QA-2)\n| Command | Result |\n|---|---|\n| `npm --prefix console ci --no-audit --no-fund && npm --prefix console run build` | exit 0 \u2014 `dist/assets/index-DvMiGgeB.js 159.79 kB`, built in 446 ms |\n| `ruff check backend` | `All checks passed!` |\n| `pytest backend -q` on U2 head | `116 passed, 5 xfailed, 1 warning` |\n| `pytest backend -q` with the QA oracle file added | `205 passed, 5 xfailed, 1 warning` |\n\n## 3. Execute \u2014 independent oracle (STD-QA-3, STD-SAFETY-6)\nFile: `backend/tests/test_flisr_tie_capacity_qa_u2.py` on `agent/feature-tie-capacity/qa-U2` (89 tests, all pass).\n- Oracle restates REQ-TIECAP-1 / Q-SPEC-9 / Q-SPEC-13 in closed form from spec literals: field set exactly `{kw, timestamp, quality}`; `kw` a JSON number (int or float, not bool/str/null); `timestamp` a string matching a strict ISO-8601 extended profile with a mandatory `Z` or `\u00b1HH:MM` offset, instant computed by the oracle itself; `quality` a string. No import of `app.flisr`/`app.network`; `app.models` imported for data types only (design \u00a76.3, Q-DESIGN-1).\n- Agreement measured on both validation paths \u2014 `TieCapacity.model_validate_json` (JSON mode) and a FastAPI `TestClient` route whose body is `{\"tie_capacity\": {\"<mRID>\": TieCapacity}}`, the exact nesting `POST /flisr/plan` will use (Python mode):\n  - 49 named vectors (all brief vectors: `\"yesterday\"`, `1790000000`, naive `2026-10-15T22:00:00`, `\"2000\"`, `true`, extra field \u2192 reject; `NaN`, `-1.0`, `+02:00` \u2192 accept; plus `1790000000.0`, `\"1790000000\"`, naive with fraction, date-only, null, bool, empty string, `+24:00`, `24:00:00`, month 13, `\"NaN\"` string, false, arrays, objects, case-variant key, each missing field, empty object; accepts `\u00b1inf`, `0.0`, `-0.0`, integer literal, `1489.5`, `1489.4`, `-05:00`, `+00:00`, fractional seconds, no seconds, far past/future, any quality string). Agreement 49/49 on both paths; accepted values round-trip with the oracle's instant, kw (NaN-aware) and quality.\n  - 600 seeded random bodies (`random.Random(20261016)`) over the kw / timestamp / quality / structure pools (\u2265 100 accepted and \u2265 100 rejected asserted). Agreement 600/600 on both paths. Tolerance: exact (type and instant equality); no numeric tolerance applies to a type contract.\n- Python-mode (direct caller) vectors: aware datetime (UTC and +02:00), ISO string, int kw, NaN kw \u2192 accept; naive datetime, `date`, int/float/bytes timestamp, str/bool kw, bytes quality, extra kwarg \u2192 reject.\n- REQ-TIECAP-11: `TieBlockReason` values and names exactly `[FAULTED_SECTION, CAPACITY_INVALID, CAPACITY_UNKNOWN, CAPACITY_STALE, CAPACITY_EXCEEDED]` in that order (Q-DESIGN-3 amendment), also in the OpenAPI enum; `BlockedTie` accepts each reason by value and rejects 9 malformed payloads; `RestorationPlan.blocked_ties` defaults to a fresh `[]`, a base-shaped JSON document still validates, the eight pre-existing fields and defaults equal the base @ 20d2a30, field order is base + `blocked_ties`, a three-entry list round-trips over HTTP in order, `blocked_ties` is optional in the response schema, and `None` / string / unknown reason / missing reason are rejected.\n- Ad-hoc probes beyond the test file (recorded, no FAIL): `fromisoformat` also accepts the ISO-8601 variants `2026-10-15 22:00:00Z` (space separator), `+0200` (basic-format offset) and `2026-W42-4T22:00:00Z` (week date) and rejects lower-case `z`; a JSON body with duplicate `kw` keys is validated on the last value; in Python mode `kw=Decimal(\"1.0\")` is accepted by `StrictFloat` (unreachable over HTTP). All are inside \"ISO-8601 string\"/\"JSON number\" and outside the spec's reject classes.\n\n## 4. Execute \u2014 three failure modes (STD-QA-4)\n- Model/logic mixing: `models.py` diff is declarative (constants, `Annotated` types, three models, one field). QA ast checks: no `if/for/while/try/match`, no clock call (`now/utcnow/today/time/...`), no `import time`, no import outside stdlib+pydantic. Independent of Coding's own ast test.\n- Deleted error handling: the diff vs `agent/rca-backfeed/fix` removes only the two old import lines (re-grouped); no `try/except/raise` or validator removed; U1's two test files are untouched (`git diff origin/agent/feature-tie-capacity/U1..HEAD` lists only the four U2 files).\n- Missing input treated as zero: `TieCapacity` has three required fields (`is_required()` asserted), `extra=\"forbid\"`; the only new default is `blocked_ties = []` (a list, additive). No numeric default anywhere in the diff.\n\n## 5. Execute \u2014 requirement coverage (STD-QA-6)\nCollected with a pytest plugin reading the `requirement` marker on U2 head: REQ-TIECAP-1 \u2192 72 passing tests (12 test functions in `test_flisr_tie_capacity_models.py`); REQ-TIECAP-11 \u2192 10 passing + 1 strict xfail (`test_req_tiecap_11_held_tie_reported_as_faulted_section`, flipped by U3 per Q-CODE-U2-1 / design \u00a76.1). The QA file adds 89 more (marked REQ-TIECAP-1 module-wide, REQ-TIECAP-11 on the eight blocked-ties tests).\n\n## 6. Execute \u2014 repo contract and governance\n- Q-CODE-U2-1 option (a): edits in `test_flisr_characterization.py` and `test_flisr_def_flisr_7.py` are limited to `model_dump(exclude={\"blocked_ties\"})` plus `assert plan.blocked_ties == []`, and one new strict-xfail test for FAULTED_SECTION; no expected step, order, customer count or `transferred_load_kw` changed (diff inspected line by line).\n- Files touched by U2 are inside the amended unit file list (Q-CODE-1, Q-CODE-U2-1). `tools/`, `firmware/`, `legacy/` untouched.\n- PR #18: open, draft, label `ai-generated`, head `d9235f0`, base `agent/rca-backfeed/fix` (Q-CODE-U1-2). All five U2 commits carry `AI-Governance: run=feature-tie-capacity stage=coding agent=devin model=normal`.\n- CI on `d9235f0`: `backend` job red (pre-existing UP017 in `tools/build_coverage_report.py`, accepted under Q-CODE-U1-1), `native` and `ui` green.\n- STD-GOV-7: the platform appends `Co-Authored-By: <git user name> <email>` to every commit (Coding's and QA's). Agents cannot change the git identity; reported for human action, as in prior stages.\n\n## 7. Findings (none blocks PASS for U2)\n- **F-QA-U2-1 (for U3, REQ-TIECAP-13).** FastAPI's default `RequestValidationError` handler echoes the rejected `input`. When a `TieCapacity` body is rejected for a *missing field* and its `kw` is JSON `NaN`/`Infinity`, the echo is not JSON-serialisable (`ValueError: Out of range float values are not JSON compliant`) and the response is **500**, not 422. Measured: `{\"kw\": NaN, \"timestamp\": \"2026-10-15T22:00:00Z\"}` \u2192 500 on a plain `TieCapacity` route; `kw: Infinity` + extra field \u2192 422 (the echo is the extra value only). models.py's verdict is correct (reject), so this is not a U2 defect; U3's endpoint must install a 422 handler that does not echo non-finite input (the QA harness does exactly that, see the comment in the test file). Today's `POST /flisr/plan` is not affected because `FlisrRequest` ignores extras and has no `TieCapacity` field.\n- **Observation.** `BlockedTie` does not forbid extra fields (it is an output type; the spec does not require it). `IsoAwareDatetime` accepts every `datetime.fromisoformat` form, which is broader than the oracle's extended profile (see \u00a73); all are ISO-8601.\n- **Note.** The brief's unit JSON still lists a 4-member reason enum; `units.json` was amended to 5 members (design \u00a711, Q-DESIGN-3). The 5-member enum is correct.\n\n## 8. Tool classification (STD-SAFETY-7)\nNo tool-certification credit claimed. pytest/ruff/pydantic/FastAPI usage is as argued in design \u00a78.1 (T1/T2 support tools; pydantic/FastAPI are pre-existing runtime software whose validation behaviour is measured, not assumed). Finding for the assessor only.\n",
+      "phases": "prepare: STD-GOV, STD-QA, STD-SAFETY confirmed; SKILL.md, DEMO_NOTES.md, design.md read; U2 @ d9235f0 checked out. execute: build/lint/test re-run (116 passed, 5 xfailed); independent oracle + 649 vectors on both paths, 89 QA tests green; failure modes and marker coverage checked. verify: pytest backend 205 passed, 5 xfailed; ruff clean; standards cited in evidence. deliver: draft PR #19 into agent/feature-tie-capacity/U2 with ai-generated label and QA trailer.",
+      "findings_for_next_stage": "F-QA-U2-1 (U3, REQ-TIECAP-13): FastAPI default 422 handler turns a missing-field rejection with kw NaN/Infinity into HTTP 500 by echoing non-serialisable input; U3 must add a RequestValidationError handler that omits/sanitises 'input'.",
+      "compliance_notes": "STD-GOV-7: platform-appended Co-Authored-By trailer with a personal name on every commit (Coding and QA); agents cannot change the git identity. Q-CODE-U1-1: backend CI job red on every branch of the run (tools/ UP017)."
+    }
+  }
+}

@@ -238,118 +238,123 @@ docs/specs/feature-tie-capacity/architecture-review.md (attempt 5 section) on ag
 
 {
   "verdict": "PASS",
-  "summary": "U2 (REQ-TIECAP-1, REQ-TIECAP-11), attempt 4. PREPARE: loaded STD-CODE v1.4, STD-GOV v1.1 and STD-SAFETY v3.1; read .agents/skills/safety-critical-change/SKILL.md, DEMO_NOTES.md and design.md section 2. EXECUTE: fixed the only verify finding from iteration 1 (model_logic_separation / logic-in-model-file at backend/app/models.py:96 and :98). Test first: commit 551d6f0 adds test_req_tiecap_1_models_module_has_no_control_flow, an ast check that fails while models.py contains if/for/while/try/match. Fix: commit d9235f0 replaces the branching _require_iso_string with a declarative IsoAwareDatetime = Annotated[AwareDatetime, BeforeValidator(TypeAdapter(InstanceOf[datetime] | Annotated[StrictStr, AfterValidator(datetime.fromisoformat)]).validate_python)]. Rejection behaviour is unchanged, so STD-CODE-4 holds: non-ISO string, numeric string, JSON number, null, bool and naive timestamps are still rejected (422 over HTTP). Nothing moved to flisr.py, because the layer map does not let models.py import logic. Kept from earlier attempts: TieCapacity, TieBlockReason, BlockedTie, RestorationPlan.blocked_ties, and the Q-CODE-U2-1 test edits. VERIFY: pytest backend -q gives 116 passed, 5 xfailed (strict, U3 flips them); ruff check backend is clean; the console build passes; models.py coverage is 100%; models.py has no control-flow lines. DELIVER: pushed agent/feature-tie-capacity/U2; draft PR #18 (base agent/rca-backfeed/fix per Q-CODE-U1-2, label ai-generated) body updated with the feedback resolution. Not merged, not marked ready.",
+  "summary": "U2 delivered test-first as draft PR #18 (label ai-generated) on agent/feature-tie-capacity/U2, targeted at agent/rca-backfeed/fix per Q-CODE-U1-2. PREPARE: STD-CODE, STD-GOV, STD-SAFETY loaded from the brief; read .agents/skills/safety-critical-change/SKILL.md, DEMO_NOTES.md, design.md (attempt 7) and units.json U2; base-drift check git diff 20d2a30 6b4c72d -- backend/app/ empty. EXECUTE: c4d7a62 failing model tests (81, REQ-TIECAP-1/11, JSON + FastAPI TestClient echo route); aa8b13b models.py additive types (threshold constants, IsoAwareDatetime, TieCapacity extra=forbid with StrictFloat/StrictStr, 5-member TieBlockReason in precedence order, BlockedTie, RestorationPlan.blocked_ties default []); 46bdc4f resolves Q-CODE-U2-1 option (a): 5 DEF-FLISR-7 tests compare model_dump(exclude={'blocked_ties'}) with unchanged expected values, 4 characterization tests additionally assert blocked_ties == [], and the FAULTED_SECTION expectation for the guard-held tie is a strict-xfail test (build_plan unchanged in U2; U3 removes the marker). VERIFY: pytest backend -q 115 passed / 5 xfailed (all strict); ruff check backend clean; console build OK; models.py coverage 100%; no zero-coercion in models.py; files_touched within the brief's U2 list. CI 'backend' job red only on the pre-existing UP017 in tools/build_coverage_report.py (accepted by Q-CODE-U1-2; same failure on U1 head). Notes for reviewers: FAULTED_SECTION held-tie assertion delivered as strict xfail because the Q-CODE-U2-1 instructions (assert FAULTED_SECTION, suite fully green, no build_plan change) cannot all hold in U2; ..._tie_capacity_short asserts [] per the literal answer and U3 changes it to CAPACITY_EXCEEDED; the platform-added Co-Authored-By trailer conflicts with STD-GOV-7 (compliance note, identity not changeable by the agent). Two human reviewers required (STD-GOV-6, STD-SAFETY-1).",
   "evidence": [
     {
-      "kind": "note",
-      "ref": "verify iteration 1 / model_logic_separation",
-      "detail": "Findings at models.py:96 and :98 ('if isinstance'). Resolved in d9235f0. The models.py grep for if/for/while/try/match/isinstance now returns nothing (rc=1)."
-    },
-    {
       "kind": "commit",
-      "ref": "551d6f0",
-      "detail": "Failing test first (STD-CODE-1, STD-CODE-7): test_req_tiecap_1_models_module_has_no_control_flow, marked requirement REQ-TIECAP-1. Failed on the previous models.py. Has the AI-Governance trailer."
-    },
-    {
-      "kind": "commit",
-      "ref": "d9235f0",
-      "detail": "Declarative IsoAwareDatetime: no control flow in models.py, same accept/reject classes (STD-CODE-4: rejection replaced in the same change). Has the AI-Governance trailer."
+      "ref": "c4d7a62",
+      "detail": "Failing tests first: test_flisr_tie_capacity_models.py (STD-CODE-1, STD-SAFETY-3)"
     },
     {
       "kind": "commit",
       "ref": "aa8b13b",
-      "detail": "Earlier attempt: TieCapacity (extra=forbid, StrictFloat kw, IsoAwareDatetime timestamp, StrictStr quality), TieBlockReason, BlockedTie, RestorationPlan.blocked_ties default []."
+      "detail": "models.py additive types per design section 2"
     },
     {
       "kind": "commit",
       "ref": "46bdc4f",
-      "detail": "Earlier attempt: Q-CODE-U2-1 option (a) edits to test_flisr_characterization.py and test_flisr_def_flisr_7.py. Uses model_dump(exclude={'blocked_ties'}) plus blocked_ties assertions. No expected value changed."
-    },
-    {
-      "kind": "command",
-      "ref": "pytest backend -q",
-      "detail": "116 passed, 5 xfailed, 1 warning (StarletteDeprecationWarning, pre-existing)"
-    },
-    {
-      "kind": "command",
-      "ref": "ruff check backend",
-      "detail": "All checks passed!"
-    },
-    {
-      "kind": "command",
-      "ref": "npm --prefix console ci --no-audit --no-fund && npm --prefix console run build",
-      "detail": "vite build: dist/assets/index-DvMiGgeB.js 159.79 kB, built in 428ms (exit 0)"
-    },
-    {
-      "kind": "command",
-      "ref": "pytest backend -q --cov=app.models",
-      "detail": "backend/app/models.py 98 stmts, 0 missed, 100%"
-    },
-    {
-      "kind": "test",
-      "ref": "backend/tests/test_flisr_tie_capacity_models.py::test_req_tiecap_1_*",
-      "detail": "Accept/reject classes over model_validate_json and the FastAPI TestClient echo route all pass with the new type: 'yesterday', 1790000000, '1790000000', naive, date-only, null, bool -> reject/422; aware Z, +02:00, -05:00, fractional -> accept."
+      "detail": "Q-CODE-U2-1 option (a) test edits; AI-Governance trailer present (STD-CODE-5, STD-GOV-2)"
     },
     {
       "kind": "pr",
       "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/18",
-      "detail": "Draft, label ai-generated, head d9235f0, base agent/rca-backfeed/fix (Q-CODE-U1-2). Body updated with an 'Attempt 4: verify feedback resolved' section."
+      "detail": "Draft, label ai-generated, base agent/rca-backfeed/fix (STD-GOV-1, STD-GOV-2)"
+    },
+    {
+      "kind": "command",
+      "ref": "pytest backend -q",
+      "detail": "115 passed, 5 xfailed (4 U1 strict-xfail repros + test_req_tiecap_11_held_tie_reported_as_faulted_section) (STD-CODE-6)"
+    },
+    {
+      "kind": "command",
+      "ref": "ruff check backend",
+      "detail": "All checks passed! (STD-CODE-6)"
+    },
+    {
+      "kind": "command",
+      "ref": "npm --prefix console ci --no-audit --no-fund && npm --prefix console run build",
+      "detail": "exit 0, vite built in 548ms (STD-CODE-6)"
+    },
+    {
+      "kind": "command",
+      "ref": "pytest backend -q --cov=app.models",
+      "detail": "backend/app/models.py 103 stmts, 100%"
+    },
+    {
+      "kind": "command",
+      "ref": "git diff --stat 20d2a30 origin/agent/feature-tie-capacity/U1 -- backend/app/",
+      "detail": "empty: no base drift (design header A-4.1)"
+    },
+    {
+      "kind": "command",
+      "ref": "pytest backend/tests/test_flisr_def_flisr_7.py --runxfail -k held_tie_reported",
+      "detail": "E assert [] == [{'tie_id': 'TIE-1201-1405', 'reason': 'FAULTED_SECTION'}] - held-tie reporting deferred to U3"
+    },
+    {
+      "kind": "command",
+      "ref": "grep zero-coercion patterns in backend/app/models.py",
+      "detail": "none found (STD-CODE-3)"
+    },
+    {
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_tie_capacity_models.py",
+      "detail": "81 tests; REQ-TIECAP-1 accept/reject classes via model_validate_json and FastAPI TestClient echo route; REQ-TIECAP-11 enum order, BlockedTie, blocked_ties default/order (STD-CODE-7)"
+    },
+    {
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_characterization.py",
+      "detail": "4 tests: model_dump(exclude={'blocked_ties'}) with unchanged expected dicts + blocked_ties == [] (STD-SAFETY-2, Q-CODE-U2-1)"
+    },
+    {
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_def_flisr_7.py",
+      "detail": "held-tie test compared with exclude; new strict xfail test_req_tiecap_11_held_tie_reported_as_faulted_section"
+    },
+    {
+      "kind": "file",
+      "ref": "backend/app/models.py",
+      "detail": "TieCapacity, IsoAwareDatetime, TieBlockReason, BlockedTie, RestorationPlan.blocked_ties, TIE_CAPACITY_*/AS_OF_* constants (STD-CODE-8, Q-DESIGN-1)"
     },
     {
       "kind": "standard",
       "ref": "STD-CODE-2",
-      "detail": "This attempt touched only backend/app/models.py and backend/tests/test_flisr_tie_capacity_models.py, both inside the brief's allowed list. firmware/** and legacy/** are untouched."
+      "detail": "files_touched subset of U2 files (units.amended per Q-CODE-U2-1); no firmware/** or legacy/** or tools/**"
     },
     {
       "kind": "standard",
-      "ref": "STD-CODE-3",
-      "detail": "No missing-to-zero coercion added. missing_input_as_zero passed in iteration 1; the new code has no defaults."
-    },
-    {
-      "kind": "standard",
-      "ref": "STD-GOV-1/STD-GOV-2/STD-CODE-5",
-      "detail": "Branch prefix agent/; trailer AI-Governance: run=feature-tie-capacity stage=coding agent=devin model=normal on both new commits; draft PR with ai-generated label; no merge, approval or ready-for-review."
-    },
-    {
-      "kind": "standard",
-      "ref": "STD-GOV-6/STD-SAFETY-1",
-      "detail": "Safety-critical: two human reviewers are needed before merge. Agents do not merge."
-    },
-    {
-      "kind": "standard",
-      "ref": "STD-SAFETY-2",
-      "detail": "U1 characterization suite still green, with no expected values changed."
+      "ref": "STD-SAFETY-1 / STD-GOV-6",
+      "detail": "Two human reviewers required; stated in PR body"
     },
     {
       "kind": "standard",
       "ref": "STD-SAFETY-7",
-      "detail": "No tool-certification credit claimed; tool classification is left to the assessor."
+      "detail": "No tool-certification credit claimed; classification left to assessor"
     },
     {
       "kind": "note",
-      "ref": "compliance: Co-Authored-By trailer",
-      "detail": "The platform adds a Co-Authored-By trailer with the git user's name to commits, which conflicts with STD-GOV-7. The agent cannot change the git identity, so this is reported for human action."
+      "ref": "CI backend job 116749980021",
+      "detail": "Fails only on pre-existing UP017 in tools/build_coverage_report.py:183 (ruff 0.17.1); same failure on U1 head; accepted by Q-CODE-U1-2"
     },
     {
       "kind": "note",
-      "ref": "CI backend job",
-      "detail": "Expected red: UP017 in tools/build_coverage_report.py predates this run and is accepted under Q-CODE-U1-2. tools/ not touched."
+      "ref": "STD-GOV-7",
+      "detail": "Platform appends Co-Authored-By trailer with a personal name to commits; agent cannot change git identity - compliance note for reviewers"
     }
   ],
   "artifacts": {
-    "phases": "prepare: STD-CODE, STD-GOV, STD-SAFETY loaded; SKILL.md, DEMO_NOTES.md, design section 2 read. execute: test-first commit 551d6f0, fix d9235f0. verify: pytest 116 passed/5 xfailed, ruff clean, build ok, models.py 100% coverage, no control flow in models.py. deliver: draft PR #18 updated.",
-    "feedback_resolution": "verify iteration 1 model_logic_separation (models.py:96, :98) -> resolved by declarative TypeAdapter composition in d9235f0, pinned by an ast no-control-flow test. A PlainValidator-based union was also tried; it validated correctly but caused PydanticSerializationUnexpectedValue warnings on FastAPI responses, so it was not used."
+    "pr_body": "See PR #18 body (requirement ids, before/after table of edited DEF-FLISR-7 tests, evidence, trace).",
+    "phases": "prepare: STD-CODE/STD-GOV/STD-SAFETY loaded, skill + DEMO_NOTES + design + units.json read, base drift empty; execute: tests-first commit, models commit, Q-CODE-U2-1 test edits; verify: pytest 115 passed/5 xfailed, ruff clean, build OK, files within brief; deliver: draft PR #18 with ai-generated label."
   },
   "trace": [
     {
       "requirement_id": "REQ-TIECAP-1",
       "kind": "code",
-      "ref": "backend/app/models.py::TieCapacity, IsoAwareDatetime, _ISO_8601_INPUT, TIE_CAPACITY_*/AS_OF_* constants"
+      "ref": "backend/app/models.py::TieCapacity"
     },
     {
       "requirement_id": "REQ-TIECAP-1",
       "kind": "test",
-      "ref": "backend/tests/test_flisr_tie_capacity_models.py::test_req_tiecap_1_* (incl. test_req_tiecap_1_models_module_has_no_control_flow)"
+      "ref": "backend/tests/test_flisr_tie_capacity_models.py::test_req_tiecap_1_*"
     },
     {
       "requirement_id": "REQ-TIECAP-11",
@@ -359,7 +364,17 @@ docs/specs/feature-tie-capacity/architecture-review.md (attempt 5 section) on ag
     {
       "requirement_id": "REQ-TIECAP-11",
       "kind": "test",
-      "ref": "backend/tests/test_flisr_tie_capacity_models.py::test_req_tiecap_11_*; backend/tests/test_flisr_characterization.py (blocked_ties == []); backend/tests/test_flisr_def_flisr_7.py::test_req_tiecap_11_held_tie_reported_as_faulted_section (strict xfail -> U3)"
+      "ref": "backend/tests/test_flisr_tie_capacity_models.py::test_req_tiecap_11_*"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-11",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_def_flisr_7.py::test_req_tiecap_11_held_tie_reported_as_faulted_section (strict xfail, U3)"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-11",
+      "kind": "test",
+      "ref": "backend/tests/test_flisr_characterization.py (4 x blocked_ties == [])"
     },
     {
       "requirement_id": "REQ-TIECAP-1",
@@ -385,7 +400,7 @@ docs/specs/feature-tie-capacity/architecture-review.md (attempt 5 section) on ag
   ],
   "branch": "agent/feature-tie-capacity/U2",
   "pr_url": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/18",
-  "session_url": "https://devin-gtm.devinenterprise.com/sessions/4b8b79702f6f487299e3e60df2a5b4f6",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/1b299e8283444ab5b913bda4069e7193",
   "model": "normal"
 }
 
