@@ -1,0 +1,477 @@
+{
+  "session_id": "bd21e9f0c28e435db3c9513356710e3b",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/bd21e9f0c28e435db3c9513356710e3b",
+  "status": "waiting_for_user",
+  "devin_mode": "normal",
+  "acus": 3.9935934820940715,
+  "structured_output": {
+    "verdict": "PASS",
+    "model": "normal",
+    "summary": "Integrated feature-tie-capacity U1-U4 and their QA branches (qa-U1..qa-U4) into agent/feature-tie-capacity/integration. The branch starts from qa-U4, with qa-U1/U2/U3 merged in (no conflicts). Draft PR #24 targets agent/rca-backfeed/fix (the stack's base, PR #13) and has the ai-generated label. Nothing was merged or approved. Locally at head aee6b90: pytest backend -q gave 793 passed, 8 skipped; ruff check backend passed; console npm ci + build exited 0. The only new commit (aee6b90) is test wiring in two QA files, for 4 tests that U3 changed on purpose (as_of required, deprecations added, C=L-0.5 now closes, xfail markers removed). Production code is unchanged. All 4 integrate commits carry the required AI-Governance trailer. GitHub CI 'backend' is red. The cause is the existing UP017 in tools/build_coverage_report.py, which the brief puts out of scope; the qa-U4 head fails identically. Because ruff fails first, pytest is skipped in CI. The PR stays a draft (draft-vs-ready contradiction recorded as a question) and needs two human reviewers.",
+    "branch": "agent/feature-tie-capacity/integration",
+    "pr_url": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24",
+    "session_url": "https://devin-gtm.devinenterprise.com/sessions/bd21e9f0c28e435db3c9513356710e3b",
+    "standards_loaded": [
+      "STD-GOV-1",
+      "STD-GOV-2",
+      "STD-GOV-3",
+      "STD-GOV-4",
+      "STD-GOV-5",
+      "STD-GOV-6",
+      "STD-GOV-7",
+      "STD-SAFETY-1",
+      "STD-SAFETY-2",
+      "STD-SAFETY-3",
+      "STD-SAFETY-4",
+      "STD-SAFETY-5",
+      "STD-SAFETY-6",
+      "STD-SAFETY-7",
+      "STD-SAFETY-8",
+      ".agents/skills/safety-critical-change/SKILL.md",
+      "DEMO_NOTES.md"
+    ],
+    "files_touched": [
+      "backend/tests/test_flisr_tie_capacity_qa_u1.py",
+      "backend/tests/test_flisr_tie_capacity_qa_u2.py"
+    ],
+    "evidence": [
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24",
+        "detail": "gh api: draft=true, state=open, merged=false, base=agent/rca-backfeed/fix, head_sha=aee6b90, labels=[ai-generated], requested_reviewers=[]"
+      },
+      {
+        "kind": "commit",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/commit/aee6b90f64f62e7b57c8fb852f3fbbb46fc10979",
+        "detail": "QA U1/U2 wiring to integrated U3; tests only"
+      },
+      {
+        "kind": "commit",
+        "ref": "7b4f136, 9d189c7, 5a2999f",
+        "detail": "merges of qa-U1, qa-U2, qa-U3 onto qa-U4 head 69aa86a; trailer stage=integrate"
+      },
+      {
+        "kind": "command",
+        "ref": "pytest backend -q",
+        "detail": "793 passed, 8 skipped, 0 failed (skips: QA U3 'future-dated and stale are mutually exclusive'); before wiring fix 789 passed/4 failed"
+      },
+      {
+        "kind": "command",
+        "ref": "ruff check backend",
+        "detail": "All checks passed!"
+      },
+      {
+        "kind": "command",
+        "ref": "npm --prefix console ci --no-audit --no-fund && npm --prefix console run build",
+        "detail": "exit 0, vite built 37 modules"
+      },
+      {
+        "kind": "command",
+        "ref": "git log origin/main..HEAD trailer scan",
+        "detail": "all 4 integrate commits carry 'AI-Governance: run=feature-tie-capacity stage=integrate agent=devin model=normal'; unit/QA commits keep their own stage trailers; Co-Authored-By trailer also added by the environment"
+      },
+      {
+        "kind": "command",
+        "ref": "CI check-runs on aee6b90",
+        "detail": "ui success, native success, backend failure at 'ruff check backend tools' (UP017 tools/build_coverage_report.py, pre-existing, also fails on qa-U4 69aa86a); pytest step skipped in CI"
+      },
+      {
+        "kind": "command",
+        "ref": "trial merge of origin/agent/rca-backfeed/integration (PR #14) in throwaway worktree",
+        "detail": "clean merge, but 14 failures in backend/tests/test_flisr_def_flisr_7_qa.py (whole-dict == against new as_of/blocked_ties/deprecations fields); not fixed, file out of change set; documented in PR"
+      },
+      {
+        "kind": "file",
+        "ref": "docs/specs/feature-tie-capacity/units.json (design branch)",
+        "detail": "U1 based on 20d2a30 (PR #13); requirement IDs per unit used for trace"
+      },
+      {
+        "kind": "note",
+        "ref": "STD-GOV-6 / STD-SAFETY-1",
+        "detail": "protected backend/app/flisr.py touched: two human reviewers required; no reviewers requested by agent"
+      }
+    ],
+    "trace": [
+      {
+        "requirement_id": "REQ-TIECAP-19",
+        "kind": "code",
+        "ref": "U1: backend/tests/test_flisr_tie_capacity_characterization.py; backend/tests/test_flisr_tie_capacity_repro.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-19",
+        "kind": "test",
+        "ref": "U1: backend/tests/test_flisr_tie_capacity_qa_u1.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-19",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-22",
+        "kind": "code",
+        "ref": "U1: backend/tests/test_flisr_tie_capacity_characterization.py; backend/tests/test_flisr_tie_capacity_repro.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-22",
+        "kind": "test",
+        "ref": "U1: backend/tests/test_flisr_tie_capacity_qa_u1.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-22",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-1",
+        "kind": "code",
+        "ref": "U2: backend/app/models.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-1",
+        "kind": "test",
+        "ref": "U2: backend/tests/test_flisr_tie_capacity_models.py; backend/tests/test_flisr_tie_capacity_qa_u2.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-1",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-11",
+        "kind": "code",
+        "ref": "U2: backend/app/models.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-11",
+        "kind": "test",
+        "ref": "U2: backend/tests/test_flisr_tie_capacity_models.py; backend/tests/test_flisr_tie_capacity_qa_u2.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-11",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-2",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-2",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-2",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-3",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-3",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-3",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-4",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-4",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-4",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-5",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-5",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-5",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-6",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-6",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-6",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-7",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-7",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-7",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-8",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-8",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-8",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-9",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-9",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-9",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-10",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-10",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-10",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-11",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-11",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-12",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-12",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-12",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-13",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-13",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-13",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-14",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-14",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-14",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-15",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-15",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-15",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-16",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-16",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-16",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-17",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-17",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-17",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-18",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-18",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-18",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-20",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-20",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-20",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-23",
+        "kind": "code",
+        "ref": "U3: backend/app/flisr.py; backend/app/api.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-23",
+        "kind": "test",
+        "ref": "U3: backend/tests/test_flisr_tie_capacity_planner.py; backend/tests/test_flisr_tie_capacity_api.py; backend/tests/test_flisr_tie_capacity_qa_u3.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-23",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "code",
+        "ref": "U4: backend/tests/test_flisr_tie_capacity_invariant.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "test",
+        "ref": "U4: backend/tests/test_flisr_tie_capacity_qa_u4.py"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24"
+      }
+    ],
+    "questions": [
+      {
+        "id": "Q-INTEGRATE-READY",
+        "question": "The brief says 'Draft PRs only' and also 'Mark the PR ready for review \u2014 this is the last agent action'. PR #24 is left as a draft because its base (#13) is unmerged and CI backend is red on the existing UP017. Should it be marked ready for review?",
+        "blocking_units": []
+      },
+      {
+        "id": "Q-INTEGRATE-BASE",
+        "question": "PR #24 targets agent/rca-backfeed/fix (stack base) rather than main. Retarget to main after #13/#14 land?",
+        "blocking_units": []
+      },
+      {
+        "id": "Q-INTEGRATE-PR14",
+        "question": "Merging with PR #14 breaks 14 tests in test_flisr_def_flisr_7_qa.py (whole-plan equality vs the new additive fields). Who adjusts them: the PR that lands second?",
+        "blocking_units": []
+      },
+      {
+        "id": "Q-INTEGRATE-UP017",
+        "question": "The tools/build_coverage_report.py UP017 keeps backend CI red, and pytest never runs in CI. Who owns the separate human chore?",
+        "blocking_units": []
+      }
+    ],
+    "artifacts": {
+      "integrate": "## Integration summary\n- Branch: agent/feature-tie-capacity/integration (head aee6b90), from qa-U4 69aa86a + merges qa-U1 (7b4f136), qa-U2 (9d189c7), qa-U3 (5a2999f), wiring fix aee6b90\n- Draft PR: https://github.com/tedfoley-cog/adms-test-automation-demo/pull/24 -> agent/rca-backfeed/fix, label ai-generated, not merged\n- Units: U1 #16/#17, U2 #18/#19, U3 #20/#21, U4 #22/#23; REQ-TIECAP-1..23 covered\n- Local: pytest 793 passed / 8 skipped; ruff check backend clean; console build ok\n- CI: backend red on the existing UP017 (out of scope); ui/native green\n- Risks: PR #14 QA file conflict (14 tests); customers_remaining accounting note from QA U4; Co-Authored-By trailer; two human reviewers required"
+    }
+  }
+}
