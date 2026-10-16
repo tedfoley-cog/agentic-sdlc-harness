@@ -523,14 +523,18 @@
       "question": "CI 'backend' fails on a pre-existing ruff UP017 in tools/build_coverage_report.py, outside U1's allowed files, and PR #13 fails the same way. Should a separate change fix it?",
       "blocking_units": [],
       "stage": "coding",
-      "status": "open"
+      "status": "answered",
+      "answer": "Yes, but not by an agent unit. The pre-existing UP017 in tools/build_coverage_report.py is outside every unit's allowed files; accept the red 'backend' CI job as a known pre-existing failure for this run and raise a separate human chore PR on the fixture repo. Do not touch tools/ in any unit.",
+      "by": "ops-lead-standin"
     },
     {
       "id": "Q-CODE-U1-2",
       "question": "PR #16 targets agent/rca-backfeed/fix (stacked on PR #13, as the design requires). Retarget it to main after #13 lands?",
       "blocking_units": [],
       "stage": "coding",
-      "status": "open"
+      "status": "answered",
+      "answer": "Keep PR #16 (and the rest of the feature stack) targeted at agent/rca-backfeed/fix as the design requires. Retargeting to main is a human action at the before-merge gate once #14 lands; agents do not retarget or merge.",
+      "by": "ops-lead-standin"
     },
     {
       "id": "Q-CODE-1",
@@ -630,6 +634,16 @@
       "id": "Q-CODE-1",
       "answer": "Yes. The repo contract boundary was wrong for this feature: it predates the approved design. boundaries.coding now allows backend/app/models.py and backend/app/api.py (recorded as contract.amended in the audit log). U2: change backend/app/models.py and backend/tests/test_flisr_tie_capacity_models.py only, tests first. U3 may touch flisr.py, api.py, models.py, tests. firmware/** and legacy/** remain forbidden.",
       "by": "principal-engineer-standin"
+    },
+    {
+      "id": "Q-CODE-U1-1",
+      "answer": "Yes, but not by an agent unit. The pre-existing UP017 in tools/build_coverage_report.py is outside every unit's allowed files; accept the red 'backend' CI job as a known pre-existing failure for this run and raise a separate human chore PR on the fixture repo. Do not touch tools/ in any unit.",
+      "by": "ops-lead-standin"
+    },
+    {
+      "id": "Q-CODE-U1-2",
+      "answer": "Keep PR #16 (and the rest of the feature stack) targeted at agent/rca-backfeed/fix as the design requires. Retargeting to main is a human action at the before-merge gate once #14 lands; agents do not retarget or merge.",
+      "by": "ops-lead-standin"
     }
   ],
   "loops": {},
@@ -724,13 +738,11 @@
     }
   },
   "paused_on": {
-    "reason": "questions-open",
+    "reason": "awaiting-session",
     "stage": "coding",
-    "questions": [
-      "Q-CODE-U1-1",
-      "Q-CODE-U1-2"
-    ],
-    "unit": "U2"
+    "unit": "U2",
+    "attempt": 2,
+    "request": "sessions/coding:U2:2.request.json"
   },
   "results": {
     "specify:-:1": {

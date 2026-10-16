@@ -11,7 +11,7 @@ You never merge, approve, close a gate, or move a ticket past ready-for-review. 
 
 ## Access and boundaries
 Target repository: `tedfoley-cog/adms-test-automation-demo` (default branch `main`). Safety classification: **safety-critical**.
-Files you may change: ['backend/app/flisr.py', 'backend/tests/**']. Files you must not change: ['backend/app/models.py', 'firmware/**', 'legacy/**'].
+Files you may change: ['backend/app/flisr.py', 'backend/tests/**', 'backend/app/models.py', 'backend/app/api.py']. Files you must not change: ['firmware/**', 'legacy/**'].
 Commands — build: `npm --prefix console ci --no-audit --no-fund && npm --prefix console run build`; test: `pytest backend -q`; lint: `ruff check backend`.
 Requirement ids match `(?:REQ|DEF)-[A-Z]+-\d{1,3}`; reference them verbatim.
 Protected paths (two human reviewers): ['backend/app/flisr.py', 'firmware/src/**'].
@@ -116,6 +116,9 @@ scan every 10 s.
 - **Q-DESIGN-1** (principal-engineer-standin): STD-SAFETY-6 governs the oracle: the QA/test oracle is an independent closed form that lives under backend/tests and must not import app.flisr or share its threshold code. STD-ARCH-2's one-shared-implementation rule applies to production consumers only (planner, endpoint, notes); record this as an explicit, scoped waiver in design section 6.3 citing both clauses, and keep the production threshold characteristic (tolerance, max age, max lead) in one shared module that every production consumer imports.
 - **Q-DESIGN-2** (principal-engineer-standin): A negative, NaN or infinite section load is invalid model data, not a load to net off. build_plan refuses the whole plan (FlisrError, HTTP 409, lockout stays open) when any candidate section's load_kw is not a finite non-negative number; L is otherwise the plain sum. This is covered by the out-of-range precondition and needs no change to REQ-TIECAP-3/21; record it in the design as a stated precondition and add a test vector.
 - **Q-DESIGN-3** (principal-engineer-standin): Draft PR #13 (DEF-FLISR-7 hold-open guard) lands first and is kept. Design on top of it: a tie refused because its pick-up set touches the faulted section is reported in blocked_ties with a new reason FAULTED_SECTION, evaluated before every capacity reason (precedence FAULTED_SECTION > CAPACITY_INVALID > CAPACITY_UNKNOWN > CAPACITY_STALE > CAPACITY_EXCEEDED). REQ-TIECAP-21 is amended accordingly in the spec by the Design stage (note the amendment in design.md and the trace); the guard's behaviour must not change.
+- **Q-CODE-1** (principal-engineer-standin): Yes. The repo contract boundary was wrong for this feature: it predates the approved design. boundaries.coding now allows backend/app/models.py and backend/app/api.py (recorded as contract.amended in the audit log). U2: change backend/app/models.py and backend/tests/test_flisr_tie_capacity_models.py only, tests first. U3 may touch flisr.py, api.py, models.py, tests. firmware/** and legacy/** remain forbidden.
+- **Q-CODE-U1-1** (ops-lead-standin): Yes, but not by an agent unit. The pre-existing UP017 in tools/build_coverage_report.py is outside every unit's allowed files; accept the red 'backend' CI job as a known pre-existing failure for this run and raise a separate human chore PR on the fixture repo. Do not touch tools/ in any unit.
+- **Q-CODE-U1-2** (ops-lead-standin): Keep PR #16 (and the rest of the feature stack) targeted at agent/rca-backfeed/fix as the design requires. Retargeting to main is a human action at the before-merge gate once #14 lands; agents do not retarget or merge.
 
 ## Prior artifact: specification
 
@@ -228,24 +231,6 @@ docs/specs/feature-tie-capacity/design.md
 ## Prior artifact: architecture_review
 
 docs/specs/feature-tie-capacity/architecture-review.md (attempt 5 section) on agent/feature-tie-capacity/architect @ 190fe5a62f419bc62f55a88734e4f48cc1ce29c8
-
-## Feedback from the previous iteration (resolve every item or explain why not)
-
-```json
-[
-  {
-    "from": "coding",
-    "iteration": 1,
-    "summary": "session ended with status finished and no structured output",
-    "evidence": [
-      {
-        "kind": "session",
-        "ref": null
-      }
-    ]
-  }
-]
-```
 
 ## Stage skill
 
