@@ -1207,15 +1207,309 @@
       "kind": "doc",
       "ref": "docs/specs/feature-tie-capacity/architecture-review.md @ 60e5f7e (attempt 4, A-6)",
       "stage": "architect"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-1",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-1",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-1",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-1",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-2",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-2",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-2",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-2",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-3",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-3",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-3",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-3",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-4",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-4",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-4",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-4",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-5",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-5",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-5",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-5",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-6",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-6",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-6",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-7",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-7",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-7",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-7",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-8",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-8",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-8",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-8",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-9",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-9",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-9",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-9",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-10",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-10",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-10",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-10",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-11",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-11",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-11",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-11",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-12",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-12",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-12",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-12",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-13",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-13",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-13",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-13",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-14",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-14",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-14",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-14",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-15",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-15",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-15",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-15",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-16",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-16",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-16",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-16",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-17",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-17",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-17",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-17",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-18",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-18",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-18",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-18",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-19",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-19",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-19",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-19",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-20",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-20",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-20",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-20",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-21",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-21",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-21",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-21",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-22",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-22",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-22",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-22",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-23",
+      "kind": "design",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-23",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-23",
+      "kind": "test",
+      "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-23",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-3",
+      "kind": "doc",
+      "ref": "docs/specs/feature-tie-capacity/specification.md REQ-TIECAP-3 (amended Q-DESIGN-3, attempt 7, A-6)",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-4",
+      "kind": "doc",
+      "ref": "docs/specs/feature-tie-capacity/specification.md REQ-TIECAP-4 (amended Q-DESIGN-3, attempt 7, A-6)",
+      "stage": "design"
+    },
+    {
+      "requirement_id": "REQ-TIECAP-3",
+      "kind": "pr",
+      "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/15",
+      "stage": "design"
     }
   ],
   "coverage": {
     "requirements": 24,
     "with_design": 23,
     "with_code": 0,
-    "with_test": 0,
-    "with_pr": 0,
-    "test_coverage": 0.0,
+    "with_test": 23,
+    "with_pr": 1,
+    "test_coverage": 0.958,
     "orphans": [
       "DEF-FLISR-7"
     ],
@@ -1229,10 +1523,13 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-23 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-23 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-23"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-23"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1245,10 +1542,13 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-8 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-8 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-8"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-8"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1261,10 +1561,13 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-1 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-1 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-1"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-1"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1277,10 +1580,13 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-13 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-13 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-13"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-13"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1293,10 +1599,13 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-2 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-2 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-2"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-2"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1309,10 +1618,13 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-5 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-5 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-5"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-5"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1327,13 +1639,19 @@
           "design.md \u00a73 tie_capacity_verdict (A-1 resolved)",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-3 @ 8d49338 \u2014 A-6: contradicts REQ-TIECAP-21 for guard-held ties"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-3 @ 8d49338 \u2014 A-6: contradicts REQ-TIECAP-21 for guard-held ties",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-3"
         ],
         "code": [],
-        "test": [],
-        "pr": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-3"
+        ],
+        "pr": [
+          "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/15"
+        ],
         "doc": [
-          "docs/specs/feature-tie-capacity/architecture-review.md @ 60e5f7e (attempt 4, A-6)"
+          "docs/specs/feature-tie-capacity/architecture-review.md @ 60e5f7e (attempt 4, A-6)",
+          "docs/specs/feature-tie-capacity/specification.md REQ-TIECAP-3 (amended Q-DESIGN-3, attempt 7, A-6)"
         ]
       },
       "REQ-TIECAP-4": {
@@ -1345,12 +1663,17 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-4 @ 8d49338 \u2014 A-6: contradicts REQ-TIECAP-21 for guard-held ties"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-4 @ 8d49338 \u2014 A-6: contradicts REQ-TIECAP-21 for guard-held ties",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-4"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-4"
+        ],
         "pr": [],
-        "doc": []
+        "doc": [
+          "docs/specs/feature-tie-capacity/specification.md REQ-TIECAP-4 (amended Q-DESIGN-3, attempt 7, A-6)"
+        ]
       },
       "REQ-TIECAP-6": {
         "design": [
@@ -1361,10 +1684,13 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-6 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-6 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-6"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-6"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1377,10 +1703,13 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-7 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-7 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-7"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-7"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1394,10 +1723,13 @@
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "design.md \u00a74 pseudocode L183-188, \u00a77 L327",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-9 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-9 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-9"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-9"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1410,10 +1742,13 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-10 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-10 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-10"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-10"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1427,10 +1762,13 @@
           "units.json U2 vs design.md \u00a72 (A-4.2)",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-11 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-11 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-11"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-11"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1443,10 +1781,13 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-12 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-12 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-12"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-12"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1459,10 +1800,13 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-14 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-14 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-14"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-14"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1475,10 +1819,13 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-15 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-15 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-15"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-15"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1491,10 +1838,13 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-16 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-16 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-16"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-16"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1507,10 +1857,13 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-17 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-17 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-17"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-17"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1525,10 +1878,13 @@
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "design.md \u00a74/\u00a77; spec amendment; resolved A-2",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-18 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-18 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-18"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-18"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1541,10 +1897,13 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-19 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-19 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-19"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-19"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1557,10 +1916,13 @@
           "docs/specs/feature-tie-capacity/design.md \u00a77 row",
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-20 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-20 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-20"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-20"
+        ],
         "pr": [],
         "doc": []
       },
@@ -1576,10 +1938,13 @@
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "design.md \u00a77; units.json U4",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-21 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-21 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-21"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-21"
+        ],
         "pr": [],
         "doc": [
           "docs/specs/feature-tie-capacity/architecture-review.md@b897964"
@@ -1596,10 +1961,13 @@
           "https://github.com/tedfoley-cog/adms-test-automation-demo/blob/1238178db84a4ca1b54f647e25d3f85ea942e14c/docs/specs/feature-tie-capacity/design.md#7-requirement--component--test-std-arch-6",
           "design.md header, U1 base 20d2a30; resolved A-4.1",
           "docs/specs/feature-tie-capacity/design.md \u00a77 @ 8d49338",
-          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-22 @ 8d49338"
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-22 @ 8d49338",
+          "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-22"
         ],
         "code": [],
-        "test": [],
+        "test": [
+          "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-22"
+        ],
         "pr": [],
         "doc": []
       },

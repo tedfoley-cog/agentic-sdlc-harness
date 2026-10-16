@@ -1,0 +1,353 @@
+{
+  "session_id": "029f1c5c7bd048c284323f359f27fb50",
+  "session_url": "https://devin-gtm.devinenterprise.com/sessions/029f1c5c7bd048c284323f359f27fb50",
+  "status": "waiting_for_user",
+  "devin_mode": "normal",
+  "acus": 3.714115651785674,
+  "structured_output": {
+    "verdict": "PASS",
+    "model": "normal",
+    "summary": "DESIGN attempt 7. Fixes architect finding A-6 (architecture-review.md @ 60e5f7e) in commit de7e75c on agent/feature-tie-capacity/design, draft PR #15 (label ai-generated). The four phases: PREPARE: loaded STD-ARCH 2.0, STD-GOV 1.1, STD-SAFETY 3.1, .agents/skills/safety-critical-change/SKILL.md and DEMO_NOTES.md. EXECUTE: amended REQ-TIECAP-3/4 per Q-DESIGN-3 so they apply only to candidate ties the DEF-FLISR-7 guard does not hold. For those ties: usable capacity and L <= C + 0.5 kW -> close, else CAPACITY_EXCEEDED. A held tie is FAULTED_SECTION and never closed. Spec \u00a72 item 2 and the \u00a74 oracle note are scoped the same way. design.md \u00a73 docstring, \u00a77 REQ-TIECAP-3/4 rows, \u00a79, new \u00a710.4 and \u00a711 updated. units.json U3 note superseded and replaced, U3/U4 oracles amended, U1 'today'/'main' notes superseded (architect observation). decomposition.md gains an amendments section. The \u00a74 loop is unchanged; it already held these ties. VERIFY: counter-example re-measured on base 20d2a30 (held tie, C=2000, L=1490 -> no close, customers_remaining 341). Repro inputs re-measured. Grep shows that 'iff' now appears only in the amended or superseded text. All 23 REQs are mapped in \u00a77. units.json parses. pytest 2 passed; ruff clean. DELIVER: PR body updated; PR still draft, not merged. No production code changed. Open compliance note O-C (STD-GOV-7): the platform appends a Co-Authored-By trailer with a personal identifier.",
+    "branch": "agent/feature-tie-capacity/design",
+    "pr_url": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/15",
+    "session_url": "https://devin-gtm.devinenterprise.com/sessions/029f1c5c7bd048c284323f359f27fb50",
+    "standards_loaded": [
+      "STD-ARCH",
+      "STD-GOV",
+      "STD-SAFETY",
+      ".agents/skills/safety-critical-change/SKILL.md",
+      "DEMO_NOTES.md"
+    ],
+    "files_touched": [
+      "docs/specs/feature-tie-capacity/specification.md",
+      "docs/specs/feature-tie-capacity/design.md",
+      "docs/specs/feature-tie-capacity/units.json",
+      "docs/specs/feature-tie-capacity/decomposition.md"
+    ],
+    "evidence": [
+      {
+        "kind": "commit",
+        "ref": "de7e75c00275716d4610016d82b5963287589326",
+        "detail": "Design attempt 7; AI-Governance trailer present"
+      },
+      {
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/15",
+        "detail": "draft=true, head de7e75c, label ai-generated"
+      },
+      {
+        "kind": "file",
+        "ref": "docs/specs/feature-tie-capacity/specification.md",
+        "detail": "REQ-TIECAP-3/4 amended per Q-DESIGN-3 (attempt 7, A-6); held-tie verification case added"
+      },
+      {
+        "kind": "file",
+        "ref": "docs/specs/feature-tie-capacity/design.md",
+        "detail": "\u00a73 docstring, \u00a77 rows REQ-TIECAP-3/4, \u00a79, \u00a710.4, \u00a711"
+      },
+      {
+        "kind": "file",
+        "ref": "docs/specs/feature-tie-capacity/units.json",
+        "detail": "U3 note superseded and replaced; U3/U4 oracles amended; U1 notes superseded"
+      },
+      {
+        "kind": "command",
+        "ref": "PYTHONPATH=backend python /tmp/a6.py (worktree @ 20d2a30)",
+        "detail": "fault SEC-1201-04, L 1490, C 2000 -> restoration [CB-1201 close], held-open note, remaining 341"
+      },
+      {
+        "kind": "command",
+        "ref": "PYTHONPATH=backend python /tmp/rep.py (worktree @ 20d2a30)",
+        "detail": "default fault SEC-1201-03: no entry -> skipped '0 kW' note; NaN/+inf -> TIE-1201-1405 closes (repro inputs valid)"
+      },
+      {
+        "kind": "command",
+        "ref": "PYTHONPATH=backend python -m pytest backend -q",
+        "detail": "2 passed (design branch); base 20d2a30: 13 passed, 1 warning"
+      },
+      {
+        "kind": "command",
+        "ref": "ruff check backend",
+        "detail": "All checks passed!"
+      },
+      {
+        "kind": "command",
+        "ref": "grep 'if and only if|close iff|closes iff' spec/design/units",
+        "detail": "matches only the amended REQ-TIECAP-3, the replacement/superseded U3 notes and the \u00a710.4/\u00a711 history"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-ARCH-6",
+        "detail": "REQ-TIECAP-1..23 each have a design \u00a77 row; REQ-TIECAP-3 no longer contradicts REQ-TIECAP-21"
+      },
+      {
+        "kind": "standard",
+        "ref": "STD-GOV-7",
+        "detail": "Open compliance note O-C: the platform appends a Co-Authored-By trailer with a personal identifier"
+      },
+      {
+        "kind": "note",
+        "ref": "STD-ARCH-7",
+        "detail": "Architect review left independent; design handed back unchanged by reviewer"
+      }
+    ],
+    "artifacts": {
+      "design": "docs/specs/feature-tie-capacity/design.md",
+      "specification": "docs/specs/feature-tie-capacity/specification.md",
+      "units": "docs/specs/feature-tie-capacity/units.json",
+      "phases": {
+        "prepare": "STD-ARCH 2.0, STD-GOV 1.1, STD-SAFETY 3.1 loaded",
+        "execute": "A-6 amendments",
+        "verify": "measured counter-example, grep, trace, tests, lint",
+        "deliver": "commit de7e75c, draft PR #15 updated"
+      }
+    },
+    "trace": [
+      {
+        "requirement_id": "REQ-TIECAP-1",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-1"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-1",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-1"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-2",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-2"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-2",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-2"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-3",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-3",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-3"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-4",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-4"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-4",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-4"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-5",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-5"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-5",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-5"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-6",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-6"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-6",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-6"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-7",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-7"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-7",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-7"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-8",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-8"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-8",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-8"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-9",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-9"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-9",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-9"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-10",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-10"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-10",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-10"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-11",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-11"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-11",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-11"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-12",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-12"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-12",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-12"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-13",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-13"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-13",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-13"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-14",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-14"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-14",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-14"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-15",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-15"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-15",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-15"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-16",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-16"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-16",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-16"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-17",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-17"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-17",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-17"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-18",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-18"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-18",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-18"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-19",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-19"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-19",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-19"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-20",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-20"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-20",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-20"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-21"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-21",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-21"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-22",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-22"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-22",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-22"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-23",
+        "kind": "design",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a77 row REQ-TIECAP-23"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-23",
+        "kind": "test",
+        "ref": "docs/specs/feature-tie-capacity/design.md \u00a76 / units.json test strategy for REQ-TIECAP-23"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-3",
+        "kind": "doc",
+        "ref": "docs/specs/feature-tie-capacity/specification.md REQ-TIECAP-3 (amended Q-DESIGN-3, attempt 7, A-6)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-4",
+        "kind": "doc",
+        "ref": "docs/specs/feature-tie-capacity/specification.md REQ-TIECAP-4 (amended Q-DESIGN-3, attempt 7, A-6)"
+      },
+      {
+        "requirement_id": "REQ-TIECAP-3",
+        "kind": "pr",
+        "ref": "https://github.com/tedfoley-cog/adms-test-automation-demo/pull/15"
+      }
+    ]
+  }
+}
